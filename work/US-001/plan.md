@@ -43,7 +43,7 @@
 - Approved wallets/platform scope and numeric policy are in the story, which is authoritative over the older proposal map.
 - Installed Better Auth support and hooks must be verified; library defaults alone do not prove nonce/session requirements.
 - Real desktop MetaMask and Android wallet access may not exist in this environment. Never claim AC-09 based on injected mocks. If actual device demonstrations cannot complete, mark BLOCKED with exact next action despite green automated checks.
-- CI and protected PR approval have not run for these local changes. Public HTTPS evaluation testing was authorized; no production release is authorized.
+- Required CI passed for published implementation SHA ac0294259cc14d37e25dfe4e83bdb8c358685d9d. Protected PR review has not been performed; user explicitly authorized direct commit/push. Public HTTPS evaluation testing was authorized; no production release is authorized.
 - Current Git HEAD at entry: 9cfada7; approved story has local edits. Evidence must distinguish base commit from uncommitted implementation.
 
 ## Execution checklist
@@ -52,11 +52,11 @@
 - [x] Feature works end-to-end in automated tests and user-reported real MetaMask desktop/Android Explore demonstrations, including reload and logout checks
 - [x] Regression checks run: 9 harness, 51 integration/HTTP, 18 browser tests; types and build passed
 - [x] Independent review completed; both findings fixed and re-reviewed
-- [x] Evidence records actual verification and user-reported device outcomes; CI remains pending
+- [x] Evidence records actual verification, user-reported device outcomes and successful implementation CI provenance
 
 ## Remaining delivery gate
 
-- User reports real MetaMask Chrome desktop works; supplied versions are recorded in evidence.md. The user now reports Android Explore connection/sign-in succeeds after the correction. The user confirmed both signed-in reload persistence and logout/reload requiring sign-in on both environments. Manual AC-09 observations are complete; story is a local QA candidate, with commit-specific CI still pending. See evidence.md for exact next actions. All approved ACs and human metadata are preserved.
+- User reports real MetaMask Chrome desktop works; supplied versions are recorded in evidence.md. The user now reports Android Explore connection/sign-in succeeds after the correction. The user confirmed both signed-in reload persistence and logout/reload requiring sign-in on both environments. Manual AC-09 observations are complete and implementation CI passed; the remaining product gate is formal human acceptance. See evidence.md for exact next actions. All approved ACs and human metadata are preserved.
 
 ## Android manual-test correction — 2026-11-03
 
@@ -70,3 +70,8 @@
 
 - User-confirmed desktop and Android session checks recorded. Final scripts/verify.sh run passed 9 harness, 51 integration/HTTP and 18 browser tests plus types/build.
 - QA_PASSED is local only; changes are uncommitted and required CI on the implementation SHA remains pending. No final human acceptance was recorded.
+
+## Publication — 2026-11-03
+
+- User authorized commit/push with evidence and CI verification. Published implementation ac0294259cc14d37e25dfe4e83bdb8c358685d9d; required CI run 41649017643 succeeded on that SHA.
+- Follow-up evidence records the actual SHA/run and required-check logs. No product/test inputs change. Verify final-head CI after publishing this provenance update; human acceptance remains pending.

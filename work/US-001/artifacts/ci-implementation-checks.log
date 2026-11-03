@@ -1,0 +1,492 @@
+Harness and product verification	Run harness and required product checks	﻿2026-11-03T13:58:10.3581221Z ##[group]Run bash scripts/verify.sh
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:10.3581561Z [36;1mbash scripts/verify.sh[0m
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:10.3625984Z shell: /usr/bin/bash -e {0}
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:10.3626147Z env:
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:10.3626307Z   pythonLocation: /opt/hostedtoolcache/Python/3.11.18/x64
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:10.3626561Z   PKG_CONFIG_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib/pkgconfig
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:10.3626819Z   Python_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:10.3627046Z   Python2_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:10.3627268Z   Python3_ROOT_DIR: /opt/hostedtoolcache/Python/3.11.18/x64
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:10.3627502Z   LD_LIBRARY_PATH: /opt/hostedtoolcache/Python/3.11.18/x64/lib
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:10.3627695Z ##[endgroup]
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:10.3729183Z [harness] Running harness self-tests...
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:10.5906733Z .........
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:10.5907140Z ----------------------------------------------------------------------
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:10.5907422Z Ran 9 tests in 0.012s
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:10.5907574Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:10.5907634Z OK
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:10.5961193Z [harness] Validating repository state...
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:10.6157238Z Harness state valid: 5 story file(s) checked. This is not product acceptance.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:10.6395259Z [product] Implementation story detected. Running mandatory application checks...
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:10.7112605Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:10.7113132Z > walletgate@0.1.0 typecheck
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:10.7113409Z > tsc --noEmit
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:10.7113498Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:11.3834947Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:11.3835670Z > walletgate@0.1.0 test
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:11.3835950Z > vitest run
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:11.3836026Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:11.5746389Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:11.5747835Z [1m[30m[46m RUN [49m[39m[22m [36mv5.1.0 [39m[90m/home/runner/work/agent-first-agile-starter/agent-first-agile-starter[39m
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:11.5748281Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.0716163Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mSIWE authentication (AC-01, AC-02, AC-06, AC-10)[2m > [22m[2msigns a trusted message and returns only the canonical verified address and expiry
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.0717267Z [22m[39m[2m2026-11-03T13:58:12.049Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.0717561Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.0717654Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.0717916Z     session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.0718101Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.0718284Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.0718501Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1126739Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mSIWE authentication (AC-01, AC-02, AC-06, AC-10)[2m > [22m[2mcanonicalizes case variants into one wallet identity and distinguishes other wallets
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1128206Z [22m[39m[2m2026-11-03T13:58:12.108Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1128556Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1128823Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1129102Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1129336Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1129526Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1129784Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1471719Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mSIWE authentication (AC-01, AC-02, AC-06, AC-10)[2m > [22m[2mrejects a correctly signed message with altered domain
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1472749Z [22m[39m[2m2026-11-03T13:58:12.144Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1473060Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1473155Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1473436Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1473645Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1473839Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1474103Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1549405Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mSIWE authentication (AC-01, AC-02, AC-06, AC-10)[2m > [22m[2mrejects a correctly signed message with altered URI
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1550482Z [22m[39m[2m2026-11-03T13:58:12.152Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1550692Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1550750Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1550931Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1551070Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1551198Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1551347Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1632301Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mSIWE authentication (AC-01, AC-02, AC-06, AC-10)[2m > [22m[2mrejects a correctly signed message with altered chain
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1633289Z [22m[39m[2m2026-11-03T13:58:12.160Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1633620Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1633704Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1633966Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1634117Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1634247Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1634395Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1691154Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mSIWE authentication (AC-01, AC-02, AC-06, AC-10)[2m > [22m[2mrejects a correctly signed message with altered address
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1691878Z [22m[39m[2m2026-11-03T13:58:12.167Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1692127Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1692253Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1692481Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1692609Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1692851Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1693098Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1749276Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mSIWE authentication (AC-01, AC-02, AC-06, AC-10)[2m > [22m[2mrejects a correctly signed message with altered version
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1750090Z [22m[39m[2m2026-11-03T13:58:12.172Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1750352Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1750521Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1750826Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1751049Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1751281Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1751496Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1806776Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mSIWE authentication (AC-01, AC-02, AC-06, AC-10)[2m > [22m[2mrejects a correctly signed message with altered unknown nonce
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1807508Z [22m[39m[2m2026-11-03T13:58:12.178Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1808058Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1808344Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1808665Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1808896Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1809139Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1809365Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1874664Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mSIWE authentication (AC-01, AC-02, AC-06, AC-10)[2m > [22m[2mrejects a correctly signed message with altered missing nonce
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1875587Z [22m[39m[2m2026-11-03T13:58:12.184Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1875873Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1876054Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1876661Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1877078Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1877210Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1877364Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1935047Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mSIWE authentication (AC-01, AC-02, AC-06, AC-10)[2m > [22m[2mrejects a correctly signed message with altered future issued-at
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1935928Z [22m[39m[2m2026-11-03T13:58:12.191Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1936456Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1936614Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1937188Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1937584Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1937717Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1937862Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1991423Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mSIWE authentication (AC-01, AC-02, AC-06, AC-10)[2m > [22m[2mrejects a correctly signed message with altered future not-before
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1992204Z [22m[39m[2m2026-11-03T13:58:12.197Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1992461Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1992617Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1992921Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1993115Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1993310Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.1993550Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2068991Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mSIWE authentication (AC-01, AC-02, AC-06, AC-10)[2m > [22m[2mrejects a correctly signed message with altered extended expiry
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2069694Z [22m[39m[2m2026-11-03T13:58:12.204Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2069903Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2069961Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2070141Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2070279Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2070412Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2070563Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2122658Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mSIWE authentication (AC-01, AC-02, AC-06, AC-10)[2m > [22m[2mrejects a correctly signed message with altered expired message
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2123290Z [22m[39m[2m2026-11-03T13:58:12.210Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2123501Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2123563Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2123743Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2123873Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2123996Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2124189Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2174319Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mSIWE authentication (AC-01, AC-02, AC-06, AC-10)[2m > [22m[2mrejects a correctly signed message with altered malformed date
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2175065Z [22m[39m[2m2026-11-03T13:58:12.215Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2175264Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2175318Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2175647Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2176248Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2176472Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2176682Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2227264Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mSIWE authentication (AC-01, AC-02, AC-06, AC-10)[2m > [22m[2mrejects a correctly signed message with altered missing date
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2228536Z [22m[39m[2m2026-11-03T13:58:12.220Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2229556Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2229881Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2230216Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2230441Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2230649Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2230896Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2291714Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mSIWE authentication (AC-01, AC-02, AC-06, AC-10)[2m > [22m[2mrejects a correctly signed message with altered malformed message
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2292535Z [22m[39m[2m2026-11-03T13:58:12.227Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2293264Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2293453Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2293671Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2293842Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2293969Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2294134Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2345620Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mSIWE authentication (AC-01, AC-02, AC-06, AC-10)[2m > [22m[2mrejects a valid signature made by another account
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2346440Z [22m[39m[2m2026-11-03T13:58:12.232Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2346763Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2346854Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2347125Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2347334Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2347535Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2347721Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2444996Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mSIWE authentication (AC-01, AC-02, AC-06, AC-10)[2m > [22m[2mrejects hostile origin and unsupported challenge input
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2445926Z [22m[39m[2m2026-11-03T13:58:12.242Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2446130Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2446193Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2446373Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2446510Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2446632Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2446787Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2507004Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mchallenge binding, atomic consumption and boundaries (AC-03, AC-04, AC-05)[2m > [22m[2mvalidates challenge deadline at 299999 ms
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2526844Z [22m[39m[2m2026-11-03T13:58:12.248Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2527331Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2527601Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2528151Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2528559Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2528903Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2529283Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2609280Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mchallenge binding, atomic consumption and boundaries (AC-03, AC-04, AC-05)[2m > [22m[2mvalidates challenge deadline at 300000 ms
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2610103Z [22m[39m[2m2026-11-03T13:58:12.259Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2610370Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2610533Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2610820Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2611001Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2611450Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2611599Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2658073Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mchallenge binding, atomic consumption and boundaries (AC-03, AC-04, AC-05)[2m > [22m[2mvalidates challenge deadline at 300001 ms
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2658819Z [22m[39m[2m2026-11-03T13:58:12.264Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2659069Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2659230Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2659498Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2659696Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2659890Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2660118Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2707521Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mchallenge binding, atomic consumption and boundaries (AC-03, AC-04, AC-05)[2m > [22m[2mrejects a future issued-at even for an unchanged server message
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2708284Z [22m[39m[2m2026-11-03T13:58:12.269Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2708483Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2708541Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2708881Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2709016Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2709136Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2709291Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2767018Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mchallenge binding, atomic consumption and boundaries (AC-03, AC-04, AC-05)[2m > [22m[2mrejects cross-browser attempts without preventing the initiating browser from authenticating
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2768033Z [22m[39m[2m2026-11-03T13:58:12.274Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2768566Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2768736Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2768999Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2769202Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2769389Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2769607Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2885958Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mchallenge binding, atomic consumption and boundaries (AC-03, AC-04, AC-05)[2m > [22m[2maccepts at most one concurrent submission and rejects replay
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2887299Z [22m[39m[2m2026-11-03T13:58:12.286Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2887795Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2887970Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2888308Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2888530Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2888732Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2888968Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2996923Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mchallenge binding, atomic consumption and boundaries (AC-03, AC-04, AC-05)[2m > [22m[2mreplaces prior challenges on retry and succeeds with a new challenge
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2997650Z [22m[39m[2m2026-11-03T13:58:12.297Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2997863Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2997929Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2998111Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2998249Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2998373Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.2998530Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3123159Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mchallenge binding, atomic consumption and boundaries (AC-03, AC-04, AC-05)[2m > [22m[2mrejects malformed verification body {}
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3124364Z [22m[39m[2m2026-11-03T13:58:12.310Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3124824Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3125002Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3125341Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3126191Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3126407Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3126654Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3161724Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mchallenge binding, atomic consumption and boundaries (AC-03, AC-04, AC-05)[2m > [22m[2mrejects malformed verification body {"message":"x"}
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3162417Z [22m[39m[2m2026-11-03T13:58:12.314Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3162625Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3162691Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3162877Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3163019Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3163146Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3163304Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3203573Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mchallenge binding, atomic consumption and boundaries (AC-03, AC-04, AC-05)[2m > [22m[2mrejects malformed verification body {"message":"x","signature":"0x00"}
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3204461Z [22m[39m[2m2026-11-03T13:58:12.317Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3204979Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3205114Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3205356Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3205777Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3205979Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3206206Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3253700Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mchallenge binding, atomic consumption and boundaries (AC-03, AC-04, AC-05)[2m > [22m[2mrejects malformed verification body {"message":"x","signature":null}
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3254376Z [22m[39m[2m2026-11-03T13:58:12.323Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3254587Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3254648Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3254833Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3254974Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3255105Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3255260Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3288417Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mpersisted SIWE-only sessions (AC-07, AC-08)[2m > [22m[2menforces absolute session deadline at 3599999 ms without refresh
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3289130Z [22m[39m[2m2026-11-03T13:58:12.327Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3289335Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3289391Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3289565Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3289701Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3289824Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3289973Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3403131Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mpersisted SIWE-only sessions (AC-07, AC-08)[2m > [22m[2menforces absolute session deadline at 3600000 ms without refresh
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3404395Z [22m[39m[2m2026-11-03T13:58:12.338Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3404988Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3405629Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3405979Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3406262Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3406477Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3406721Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3504245Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mpersisted SIWE-only sessions (AC-07, AC-08)[2m > [22m[2menforces absolute session deadline at 3600001 ms without refresh
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3505208Z [22m[39m[2m2026-11-03T13:58:12.348Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3505653Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3505737Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3506013Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3506595Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3506728Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3506882Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3630861Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mpersisted SIWE-only sessions (AC-07, AC-08)[2m > [22m[2mrevokes a logged-out credential while keeping another browser session valid
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3631579Z [22m[39m[2m2026-11-03T13:58:12.361Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3631790Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3631848Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3632035Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3632168Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3632295Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3632451Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3864703Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mpersisted SIWE-only sessions (AC-07, AC-08)[2m > [22m[2mrejects forged credentials and sessions lacking SIWE provenance
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3865384Z [22m[39m[2m2026-11-03T13:58:12.384Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3865787Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3865852Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3866372Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3866512Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3866638Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3866792Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3971982Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mpersisted SIWE-only sessions (AC-07, AC-08)[2m > [22m[2mdoes not expose generic auth route sign-up/email
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3972645Z [22m[39m[2m2026-11-03T13:58:12.395Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3972856Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3972913Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3973094Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3973234Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3973360Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3973527Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3995297Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mpersisted SIWE-only sessions (AC-07, AC-08)[2m > [22m[2mdoes not expose generic auth route sign-in/email
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3996584Z [22m[39m[2m2026-11-03T13:58:12.397Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3997002Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3997235Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3997538Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3997758Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3997976Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.3998224Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4017355Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mpersisted SIWE-only sessions (AC-07, AC-08)[2m > [22m[2mdoes not expose generic auth route sign-in/social
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4018356Z [22m[39m[2m2026-11-03T13:58:12.400Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4018709Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4018808Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4019092Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4019310Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4019521Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4019771Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4039742Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mpersisted SIWE-only sessions (AC-07, AC-08)[2m > [22m[2mdoes not expose generic auth route sign-in/anonymous
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4040938Z [22m[39m[2m2026-11-03T13:58:12.402Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4041541Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4041871Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4042227Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4042449Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4042665Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4042919Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4061205Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mpersisted SIWE-only sessions (AC-07, AC-08)[2m > [22m[2mdoes not expose generic auth route passkey/verify-authentication
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4062464Z [22m[39m[2m2026-11-03T13:58:12.404Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4062959Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4063259Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4063615Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4063850Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4064059Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4064315Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4105955Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mpersisted SIWE-only sessions (AC-07, AC-08)[2m > [22m[2mdoes not expose generic auth route link-social
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4107372Z [22m[39m[2m2026-11-03T13:58:12.406Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4107863Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4108096Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4108509Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4108836Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4109171Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4123923Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4124896Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mpersisted SIWE-only sessions (AC-07, AC-08)[2m > [22m[2mdoes not expose generic auth route siwe/nonce
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4126163Z [22m[39m[2m2026-11-03T13:58:12.409Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4126619Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4126834Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4127225Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4127557Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4127879Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4128232Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4151814Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mpersisted SIWE-only sessions (AC-07, AC-08)[2m > [22m[2mdoes not expose generic auth route siwe/get-nonce
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4152793Z [22m[39m[2m2026-11-03T13:58:12.412Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4153266Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4153431Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4153708Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4153910Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4154099Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4154335Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4179197Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mpersisted SIWE-only sessions (AC-07, AC-08)[2m > [22m[2mdoes not expose generic auth route siwe/verify
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4180200Z [22m[39m[2m2026-11-03T13:58:12.415Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4180544Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4180636Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4180938Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4181162Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4181380Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4181634Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4202525Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mpersisted SIWE-only sessions (AC-07, AC-08)[2m > [22m[2mdoes not expose generic auth route get-session
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4203527Z [22m[39m[2m2026-11-03T13:58:12.418Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4203876Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4203972Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4204262Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4204475Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4204687Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4204932Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4223667Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mpersisted SIWE-only sessions (AC-07, AC-08)[2m > [22m[2mdoes not expose generic auth route register
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4224653Z [22m[39m[2m2026-11-03T13:58:12.420Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4225280Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4225383Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4225817Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4226041Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4226247Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4226501Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4245024Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mpersisted SIWE-only sessions (AC-07, AC-08)[2m > [22m[2mpersists sessions across server restart without a browser signing again
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4246236Z [22m[39m[2m2026-11-03T13:58:12.422Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4246580Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4246670Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4246953Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4247172Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4247385Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4247647Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4427220Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mpersisted SIWE-only sessions (AC-07, AC-08)[2m > [22m[2mpersists sessions across server restart without a browser signing again
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4428010Z [22m[39m[2m2026-11-03T13:58:12.422Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4428216Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4428277Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4428454Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4428583Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4428707Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4428860Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4593849Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mconfiguration (AC-10)[2m > [22m[2mrequires a strong configured secret and a trusted origin
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4594432Z [22m[39m[2m2026-11-03T13:58:12.457Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4594652Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4594710Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4594900Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4595085Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4595212Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4595370Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4622551Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mHTTP request boundaries[2m > [22m[2mlimits streamed bodies even without Content-Length
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4623324Z [22m[39m[2m2026-11-03T13:58:12.460Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4623532Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4623585Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4623758Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4623893Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4624014Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4624164Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4661379Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mHTTP request boundaries[2m > [22m[2mrejects invalid JSON and mutation requests without an Origin
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4662303Z [22m[39m[2m2026-11-03T13:58:12.464Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4662710Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4662884Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4663336Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4663588Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4663824Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4664089Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4684348Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mHTTP request boundaries[2m > [22m[2muses Secure HttpOnly host cookies on an HTTPS origin
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4685183Z [22m[39m[2m2026-11-03T13:58:12.466Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4685601Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4685729Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4685999Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4686457Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4686649Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4686885Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4702668Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mHTTP request boundaries[2m > [22m[2muses Secure HttpOnly host cookies on an HTTPS origin
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4703489Z [22m[39m[2m2026-11-03T13:58:12.466Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4703794Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4703873Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4704131Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4704334Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4704524Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4704747Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4740877Z [90mstderr[2m | tests/app/auth.test.ts[2m > [22m[2mactual Node HTTP transport[2m > [22m[2mreturns HTTP 413 for an oversized chunked body rather than resetting the socket
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4741773Z [22m[39m[2m2026-11-03T13:58:12.472Z[0m [31mERROR[0m [1m[Better Auth]:[0m Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4742077Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4742153Z   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4742563Z     user, session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4742756Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4742947Z   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4743178Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4874256Z  [32m✓[39m tests/app/auth.test.ts [2m([22m[2m51 tests[22m[2m)[22m[33m 437[2mms[22m[39m
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4904522Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4908325Z [2m Test Files [22m [1m[32m1 passed[39m[22m[90m (1)[39m
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4908986Z [2m      Tests [22m [1m[32m51 passed[39m[22m[90m (51)[39m
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4909382Z [2m   Start at [22m 13:58:11
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4912304Z [2m   Duration [22m 913ms[2m (tests 52%, import 41%, transform 7%)[22m
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.4920094Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.5797320Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.5797744Z > walletgate@0.1.0 build
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.5798043Z > vite build
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.5798159Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.7115630Z [36mvite v8.3.5 [32mbuilding client environment for production...[36m[39m
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.7201160Z transforming...
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.8159185Z [33m[plugin rolldown:vite-resolve] Module "node:worker_threads" has been externalized for browser compatibility, imported by "/home/runner/work/agent-first-agile-starter/agent-first-agile-starter/node_modules/ox/_esm/tempo/internal/virtualMasterPool.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.[39m
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.8251462Z ✓ 1595 modules transformed.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.8546075Z rendering chunks...
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.8843738Z computing gzip size...
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.8879250Z dist/index.html                   0.43 kB │ gzip:  0.30 kB
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.8879627Z dist/assets/index-moED_opA.css    3.13 kB │ gzip:  1.27 kB
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.8879967Z dist/assets/index-CytWI8ru.js   288.08 kB │ gzip: 89.79 kB
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.8880106Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.8913396Z [32m✓ built in 179ms[39m
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.9752595Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.9753238Z > walletgate@0.1.0 test:e2e
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.9753498Z > playwright test
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:12.9753589Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:14.1781481Z [WebServer] 2026-11-03T13:58:14.176Z ERROR [Better Auth]: Database schema mismatch
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:14.1781821Z [WebServer]
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:14.1781975Z [WebServer]   Missing tables
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:14.1782209Z [WebServer]     session, account, verification, walletAddress
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:14.1782407Z [WebServer]
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:14.1782644Z [WebServer]   help: Run `npx auth migrate` to add the missing tables and columns.
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:14.4558235Z
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:14.4558834Z Running 18 tests using 1 worker
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:32.5853276Z ··················
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:32.5855722Z   18 passed (19.2s)
+Harness and product verification	Run harness and required product checks	2026-11-03T13:58:32.6031256Z [product] Application verification completed successfully.

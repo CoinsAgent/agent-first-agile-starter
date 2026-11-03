@@ -5,20 +5,20 @@ Status: PASS
 Local automated verification passed, and the user confirmed real MetaMask sign-in,
 signed-in reload persistence, and logout followed by sign-in-required reload on
 both approved environments. Versions are recorded below as supplied. US-001 is
-QA_PASSED as a local QA candidate; implementation changes remain uncommitted,
-CI for the implementation SHA is pending, and human business acceptance is not
-recorded. Dated history below describes earlier blockers and is superseded by
-the final confirmation and verification records.
+QA_PASSED. Published implementation commit
+`ac0294259cc14d37e25dfe4e83bdb8c358685d9d` passed the required GitHub CI run
+linked below. Human business acceptance is pending. Dated history below describes
+earlier blockers and is superseded by the final verification/publication records.
 
 ## Context and provenance
 
 - Story: [US-001](../../backlog/US-001.md).
 - Verification date: 2026-11-03.
 - Git base commit: `9cfada76214872e8f24e3a0a87923389d81a3222`.
-- Implementation and approval updates are local, uncommitted changes on top of that base. The base SHA alone does not identify the tested implementation. [Source hashes](artifacts/source-manifest.sha256) identify tested application, test, setup and workflow inputs; run `sha256sum -c work/US-001/artifacts/source-manifest.sha256` to check them.
+- Published implementation commit: `ac0294259cc14d37e25dfe4e83bdb8c358685d9d` on origin/main. The base SHA identifies only the starting point. The publication commit contains the tested implementation and approval updates. [Source hashes](artifacts/source-manifest.sha256) identify tested application, test, setup and workflow inputs; run `sha256sum -c work/US-001/artifacts/source-manifest.sha256` to check them.
 - Environment: Linux 7.0.0-30-generic; Node v22.22.1; npm 9.2.0; TypeScript 7.0.2; Better Auth 1.7.15; better-sqlite3 13.0.3; wagmi 3.7.11; viem 2.57.15; React 19.3.1; Vite 8.3.5; Vitest 5.1.0; Playwright 1.64.1.
 - Automated browser: Playwright Chrome for Testing / headless Chromium 156.0.8078.4, browser revision 1248, on Linux. This is not the approved real MetaMask Chrome/Android matrix.
-- CI workflow URL: none for the uncommitted implementation. CI configuration now installs Node dependencies and Chromium, but has not been observed running for these changes. Protected PR review has not been performed.
+- Required implementation CI: [Harness and product verification — run 41649017643](https://github.com/CoinsAgent/agent-first-agile-starter/actions/runs/41649017643), push event, completed SUCCESS for `ac0294259cc14d37e25dfe4e83bdb8c358685d9d`. [Observed run metadata](artifacts/ci-implementation-run.json) and [required-check output](artifacts/ci-implementation-checks.log). Protected PR review has not been performed; user explicitly authorized the direct commit/push.
 
 ## Acceptance matrix
 
@@ -76,12 +76,12 @@ browser runner also reported NO_COLOR/FORCE_COLOR environment warnings.
 - Real-device outcomes are user-reported rather than independently observed. Supplied versions: Windows 11 / Chrome 148.0.7778.215 / MetaMask OTA 8.15; Android 16 / MetaMask OTA 8.15 in Explore. Android Chrome 148.0.7778.215 was supplied separately, not treated as the embedded browser engine version. No additional MetaMask package/build information is inferred.
 - Android external Chrome handoff remains outside the approved story scope. The successful Android path is MetaMask Explore.
 - No application registration, OIDC issuance, public `sub` behavior, production deployment or production-readiness validation is part of this story. The public HTTPS instance is authorized for evaluation testing only.
-- Changes remain uncommitted on base SHA 9cfada76214872e8f24e3a0a87923389d81a3222. No successful CI or protected PR result is claimed for this implementation. Commit-specific CI must pass before G2 and any final business-acceptance request.
+- Required commit-specific CI passed for implementation SHA ac0294259cc14d37e25dfe4e83bdb8c358685d9d. The provenance-only follow-up commit recording this result is checked separately before completion. No protected PR review or human business acceptance is claimed.
 
 ## Human acceptance
 
 - Outcome: PENDING. No delivered behavior has been accepted on the human's behalf.
-- The story retains its existing approved_by/approved_at and empty acceptance fields. It is QA_PASSED as a local technical candidate after successful automated checks and explicit user-reported device checks; G2 still awaits commit-specific CI.
+- The story retains its existing approved_by/approved_at and empty acceptance fields. It is QA_PASSED as a local technical candidate after successful automated checks and explicit user-reported device checks; Required implementation CI has now passed; human business acceptance remains pending.
 
 ## Manual-test service startup — 2026-11-03
 
@@ -162,3 +162,13 @@ browser runner also reported NO_COLOR/FORCE_COLOR environment warnings.
 - Removed trailing whitespace from the archived before-fix log to satisfy the staged diff check; substantive output, failures and command text are preserved. No logs were rewritten to change test outcomes.
 - Checked publishable files against the real local BETTER_AUTH_SECRET without printing it; no matches. Staged diff whitespace/structure checks are required before commit.
 - CI remains pending at implementation-commit creation. The observed commit SHA and CI URL/result will be recorded after publication; no successful run is inferred from local verification.
+
+
+## Published implementation and observed CI — 2026-11-03
+
+- Committed and pushed US-001 plus evidence artifacts to origin/main as `ac0294259cc14d37e25dfe4e83bdb8c358685d9d` (`feat: deliver US-001 SIWE wallet authentication with verification evidence`), 34 files. `.env`, SQLite data, dependencies and generated builds were excluded.
+- `gh run watch 41649017643 --repo CoinsAgent/agent-first-agile-starter --exit-status --interval 10`: exit **0**. GitHub reported the required Harness and product verification job SUCCESS for that same full SHA; all setup, install, project checks and post-job steps succeeded.
+- The observed required-check log confirms **9 harness**, **51 integration/configuration/HTTP**, **18 browser tests**, TypeScript and build passed on GitHub, not just locally. Sources: ci-implementation-run.json and ci-implementation-checks.log above.
+- Non-blocking runner annotations reported action-runtime deprecation and the ubuntu-latest image migration. No checks were bypassed, disabled or weakened.
+- This follow-up records observed CI provenance without changing application, test, workflow, or approved story inputs. The source manifest remains valid. Its own final-head CI is checked separately after push; the implementation run is not represented as a run for a different SHA.
+- US-001 remains QA_PASSED, with accepted_by/accepted_at empty. Formal human business acceptance is the next product gate.
