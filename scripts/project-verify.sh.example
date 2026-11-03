@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+# EXAMPLE ONLY. Do NOT rename this file without replacing this script with
+# real checks for the chosen stack and acceptance criteria.
+set -euo pipefail
+cat >&2 <<'EOF'
+Application verification has NOT been configured.
+Create scripts/project-verify.sh for the actual project stack with real
+build/lint/type/unit/integration/E2E checks. Never replace this with exit 0.
+EOF
+exit 2

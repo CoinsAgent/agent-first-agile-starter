@@ -1,0 +1,9 @@
+# Rename to .github/CODEOWNERS after replacing @YOUR_GITHUB_USERNAME.
+# Then configure required Code Owner reviews under branch protection.
+/docs/VISION.md @YOUR_GITHUB_USERNAME
+/docs/PRODUCT_CONTRACT.md @YOUR_GITHUB_USERNAME
+/backlog/ @YOUR_GITHUB_USERNAME
+/.github/ @YOUR_GITHUB_USERNAME
+/AGENTS.md @YOUR_GITHUB_USERNAME
+/.agents/ @YOUR_GITHUB_USERNAME
+/scripts/ @YOUR_GITHUB_USERNAME
