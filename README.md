@@ -1,5 +1,7 @@
 # Humans steer. Agents execute.
 
+WalletGate product work is now in this repository. See [the local setup and verification guide](docs/DEVELOPMENT.md) for the US-001 SIWE authentication slice. Delivery status and approval remain authoritative in [US-001](backlog/US-001.md); automated checks do not establish real MetaMask device compatibility.
+
 **Human-led decisions → Agent execution → Automated verification → Human acceptance**
 
 A technology-neutral **Codex-first agile starter**. A human owns the product direction and business acceptance; Codex prepares stories and delivers one approved, end-to-end vertical slice at a time. The repository stores the context and evidence needed to resume work in a new conversation.

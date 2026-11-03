@@ -1,0 +1,74 @@
+[harness] Running harness self-tests...
+.........
+----------------------------------------------------------------------
+Ran 9 tests in 0.011s
+
+OK
+[harness] Validating repository state...
+Harness state valid: 5 story file(s) checked. This is not product acceptance.
+[product] Implementation story detected. Running mandatory application checks...
+
+> walletgate@0.1.0 typecheck
+> tsc --noEmit
+
+
+> walletgate@0.1.0 test
+> vitest run
+
+
+ RUN  v5.1.0 /home/ubuntu/agent-first-agile-starter
+
+
+ Test Files  1 passed (1)
+      Tests  51 passed (51)
+   Start at  17:35:20
+   Duration  1.83s (tests 51%, import 43%, transform 6%)
+
+
+> walletgate@0.1.0 build
+> vite build
+
+vite v8.3.5 building client environment for production...
+transforming...
+[plugin rolldown:vite-resolve] Module "node:worker_threads" has been externalized for browser compatibility, imported by "/home/ubuntu/agent-first-agile-starter/node_modules/ox/_esm/tempo/internal/virtualMasterPool.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+✓ 1595 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.43 kB │ gzip:  0.30 kB
+dist/assets/index-moED_opA.css    3.13 kB │ gzip:  1.27 kB
+dist/assets/index-C5W4sex-.js   286.56 kB │ gzip: 89.35 kB
+
+✓ built in 384ms
+
+> walletgate@0.1.0 test:e2e
+> playwright test
+
+[WebServer] (node:823004) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:823018) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:823035) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:823035) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 13 tests using 1 worker
+
+(node:823077) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/e2e/login.spec.ts:44:1 › connect, review, sign, reload and logout with a simulated EOA provider (745ms)
+  ✓   2 tests/e2e/login.spec.ts:57:1 › missing MetaMask offers a recovery action without authenticating (218ms)
+  ✓   3 tests/e2e/login.spec.ts:64:1 › other injected wallets are outside the supported connection path (209ms)
+  ✓   4 tests/e2e/login.spec.ts:71:1 › unsupported chain cannot reach signature review (208ms)
+  ✓   5 tests/e2e/login.spec.ts:79:1 › signature rejection permits a fresh successful attempt (428ms)
+  ✓   6 tests/e2e/login.spec.ts:93:1 › cancelling review grants no session (277ms)
+  ✓   7 tests/e2e/login.spec.ts:100:1 › changing accounts before signing discards the reviewed message (236ms)
+  ✓   8 tests/e2e/login.spec.ts:108:57 › changeOnSign while signing cannot submit a stale signature (271ms)
+  ✓   9 tests/e2e/login.spec.ts:108:57 › disconnectOnSign while signing cannot submit a stale signature (293ms)
+  ✓  10 tests/e2e/login.spec.ts:119:1 › narrow viewport keeps the message and controls usable (simulated viewport only) (277ms)
+  ✓  11 tests/e2e/login.spec.ts:127:1 › desktop sign-in screen has no page errors or horizontal overflow (227ms)
+  ✓  12 tests/e2e/login.spec.ts:136:1 › a late signature response cannot clear a newer account review (369ms)
+  ✓  13 tests/e2e/login.spec.ts:155:1 › connection rejection leaves no session and permits retry (278ms)
+
+  13 passed (8.8s)
+[product] Application verification completed successfully.

@@ -10,3 +10,6 @@ build/
 .env.*
 !.env.example
 .DS_Store
+data/
+playwright-report/
+test-results/

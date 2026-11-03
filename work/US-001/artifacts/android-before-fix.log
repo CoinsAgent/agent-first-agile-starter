@@ -1,0 +1,132 @@
+
+> walletgate@0.1.0 test:e2e
+> playwright test --grep requests mainnet|provider injected after|Android Chrome without
+
+[WebServer] (node:839547) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:839565) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:839576) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:839576) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 3 tests using 1 worker
+
+(node:839624) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  1 tests/e2e/login.spec.ts:176:1 › requests mainnet for a mobile-style provider on another network and completes sign-in (5.4s)
+(node:839736) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  2 tests/e2e/login.spec.ts:185:1 › waits for a provider injected after the connect click (5.3s)
+(node:839869) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✘  3 tests/e2e/login.spec.ts:191:1 › Android Chrome without an injected provider gives in-app browser guidance (5.3s)
+
+
+  1) tests/e2e/login.spec.ts:176:1 › requests mainnet for a mobile-style provider on another network and completes sign-in
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByLabel('Sign-in message')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByLabel('Sign-in message') with timeout 5000ms
+      - waiting for getByLabel('Sign-in message')
+
+
+      48 |   await page.goto('/');
+      49 |   await page.getByRole('button',{ name:'Connect MetaMask' }).click();
+    > 50 |   await expect(page.getByLabel('Sign-in message')).toBeVisible();
+         |                                                    ^
+      51 | }
+      52 |
+      53 | test('connect, review, sign, reload and logout with a simulated EOA provider', async ({ page }) => {
+        at review (/home/ubuntu/agent-first-agile-starter/tests/e2e/login.spec.ts:50:52)
+        at /home/ubuntu/agent-first-agile-starter/tests/e2e/login.spec.ts:178:3
+
+    Error Context: test-results/login-requests-mainnet-for-2e536-twork-and-completes-sign-in/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/login-requests-mainnet-for-2e536-twork-and-completes-sign-in/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/login-requests-mainnet-for-2e536-twork-and-completes-sign-in/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  2) tests/e2e/login.spec.ts:185:1 › waits for a provider injected after the connect click ─────────
+
+    Error: expect(locator).toBeVisible() failed
+
+    Locator: getByLabel('Sign-in message')
+    Expected: visible
+    Timeout: 5000ms
+    Error: element(s) not found
+
+    Call log:
+      - Expect "toBeVisible" getByLabel('Sign-in message') with timeout 5000ms
+      - waiting for getByLabel('Sign-in message')
+
+
+      186 |   await provider(page,{injectDelay:1500});
+      187 |   await page.goto('/');await page.getByRole('button',{name:'Connect MetaMask'}).click();
+    > 188 |   await expect(page.getByLabel('Sign-in message')).toBeVisible();
+          |                                                    ^
+      189 | });
+      190 |
+      191 | test('Android Chrome without an injected provider gives in-app browser guidance', async ({browser}) => {
+        at /home/ubuntu/agent-first-agile-starter/tests/e2e/login.spec.ts:188:52
+
+    Error Context: test-results/login-waits-for-a-provider-injected-after-the-connect-click/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/login-waits-for-a-provider-injected-after-the-connect-click/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/login-waits-for-a-provider-injected-after-the-connect-click/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3) tests/e2e/login.spec.ts:191:1 › Android Chrome without an injected provider gives in-app browser guidance
+
+    Error: expect(locator).toContainText(expected) failed
+
+    Locator: getByRole('alert')
+    Expected substring: "Open this site inside MetaMask"
+    Received string:    "Could not connect. Unlock MetaMask, approve the connection, and try again. Use Chrome with MetaMask or the MetaMask browser on Android."
+    Timeout: 5000ms
+
+    Call log:
+      - Expect "toContainText" getByRole('alert') with timeout 5000ms
+      - waiting for getByRole('alert')
+        14 × locator resolved to <p role="alert" class="error">Could not connect. Unlock MetaMask, approve the c…</p>
+           - unexpected value "Could not connect. Unlock MetaMask, approve the connection, and try again. Use Chrome with MetaMask or the MetaMask browser on Android."
+
+
+      194 |     const page=await context.newPage();await page.goto('/');
+      195 |     await page.getByRole('button',{name:'Connect MetaMask'}).click();
+    > 196 |     await expect(page.getByRole('alert')).toContainText('Open this site inside MetaMask');
+          |                                           ^
+      197 |     expect((await page.request.get('/api/session')).status()).toBe(401);
+      198 |   } finally {await context.close();}
+      199 | });
+        at /home/ubuntu/agent-first-agile-starter/tests/e2e/login.spec.ts:196:43
+
+    Error Context: test-results/login-Android-Chrome-witho-bc6c5-ves-in-app-browser-guidance/error-context.md
+
+    attachment #2: trace (application/zip) ─────────────────────────────────────────────────────────
+    test-results/login-Android-Chrome-witho-bc6c5-ves-in-app-browser-guidance/trace.zip
+    Usage:
+
+        npx playwright show-trace test-results/login-Android-Chrome-witho-bc6c5-ves-in-app-browser-guidance/trace.zip
+
+    ────────────────────────────────────────────────────────────────────────────────────────────────
+
+  3 failed
+    tests/e2e/login.spec.ts:176:1 › requests mainnet for a mobile-style provider on another network and completes sign-in
+    tests/e2e/login.spec.ts:185:1 › waits for a provider injected after the connect click ──────────
+    tests/e2e/login.spec.ts:191:1 › Android Chrome without an injected provider gives in-app browser guidance

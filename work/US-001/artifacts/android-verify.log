@@ -1,0 +1,79 @@
+[harness] Running harness self-tests...
+.........
+----------------------------------------------------------------------
+Ran 9 tests in 0.009s
+
+OK
+[harness] Validating repository state...
+Harness state valid: 5 story file(s) checked. This is not product acceptance.
+[product] Implementation story detected. Running mandatory application checks...
+
+> walletgate@0.1.0 typecheck
+> tsc --noEmit
+
+
+> walletgate@0.1.0 test
+> vitest run
+
+
+ RUN  v5.1.0 /home/ubuntu/agent-first-agile-starter
+
+
+ Test Files  1 passed (1)
+      Tests  51 passed (51)
+   Start at  18:34:06
+   Duration  1.79s (tests 54%, import 44%, transform 1%)
+
+
+> walletgate@0.1.0 build
+> vite build
+
+vite v8.3.5 building client environment for production...
+transforming...
+[plugin rolldown:vite-resolve] Module "node:worker_threads" has been externalized for browser compatibility, imported by "/home/ubuntu/agent-first-agile-starter/node_modules/ox/_esm/tempo/internal/virtualMasterPool.js". See https://vite.dev/guide/troubleshooting.html#module-externalized-for-browser-compatibility for more details.
+✓ 1595 modules transformed.
+rendering chunks...
+computing gzip size...
+dist/index.html                   0.43 kB │ gzip:  0.30 kB
+dist/assets/index-moED_opA.css    3.13 kB │ gzip:  1.27 kB
+dist/assets/index-CytWI8ru.js   288.08 kB │ gzip: 89.79 kB
+
+✓ built in 268ms
+
+> walletgate@0.1.0 test:e2e
+> playwright test
+
+[WebServer] (node:840892) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:840904) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:840915) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+[WebServer] (node:840915) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+[WebServer] (Use `node --trace-warnings ...` to show where the warning was created)
+
+Running 18 tests using 1 worker
+
+(node:840967) Warning: The 'NO_COLOR' env is ignored due to the 'FORCE_COLOR' env being set.
+(Use `node --trace-warnings ...` to show where the warning was created)
+  ✓   1 tests/e2e/login.spec.ts:52:1 › connect, review, sign, reload and logout with a simulated EOA provider (705ms)
+  ✓   2 tests/e2e/login.spec.ts:65:1 › missing MetaMask offers a recovery action without authenticating (3.5s)
+  ✓   3 tests/e2e/login.spec.ts:72:1 › other injected wallets are outside the supported connection path (3.5s)
+  ✓   4 tests/e2e/login.spec.ts:79:1 › unsupported chain cannot reach signature review (221ms)
+  ✓   5 tests/e2e/login.spec.ts:87:1 › signature rejection permits a fresh successful attempt (420ms)
+  ✓   6 tests/e2e/login.spec.ts:101:1 › cancelling review grants no session (268ms)
+  ✓   7 tests/e2e/login.spec.ts:108:1 › changing accounts before signing discards the reviewed message (242ms)
+  ✓   8 tests/e2e/login.spec.ts:116:57 › changeOnSign while signing cannot submit a stale signature (279ms)
+  ✓   9 tests/e2e/login.spec.ts:116:57 › disconnectOnSign while signing cannot submit a stale signature (275ms)
+  ✓  10 tests/e2e/login.spec.ts:127:1 › narrow viewport keeps the message and controls usable (simulated viewport only) (276ms)
+  ✓  11 tests/e2e/login.spec.ts:135:1 › desktop sign-in screen has no page errors or horizontal overflow (215ms)
+  ✓  12 tests/e2e/login.spec.ts:144:1 › a late signature response cannot clear a newer account review (384ms)
+  ✓  13 tests/e2e/login.spec.ts:163:1 › connection rejection leaves no session and permits retry (269ms)
+  ✓  14 tests/e2e/login.spec.ts:175:1 › requests mainnet for a mobile-style provider on another network and completes sign-in (308ms)
+  ✓  15 tests/e2e/login.spec.ts:184:1 › waits for a provider injected after the connect click (2.0s)
+  ✓  16 tests/e2e/login.spec.ts:190:1 › Android Chrome without an injected provider gives in-app browser guidance (3.5s)
+  ✓  17 tests/e2e/login.spec.ts:201:1 › switching an already connected wallet to mainnet recovers without invalidating its new review (340ms)
+  ✓  18 tests/e2e/login.spec.ts:214:1 › declining the network switch grants no access and allows retry (257ms)
+
+  18 passed (21.9s)
+[product] Application verification completed successfully.
