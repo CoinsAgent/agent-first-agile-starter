@@ -1,6 +1,7 @@
 # WalletGate — Product Vision
 
-**Status:** DRAFT — pending human review and approval.  
+**Status:** ACCEPTED
+
 **Source:** [Product Understanding Contract, version 1.1](PRODUCT_CONTRACT.md).
 
 ## Purpose

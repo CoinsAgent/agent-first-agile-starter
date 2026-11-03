@@ -1,8 +1,11 @@
 # WalletGate — Product Understanding Contract
 
+**Status:** ACCEPTED
+
 **Version:** 1.1  
-**Project:** 
-**Repository:** 
+**Project:** WalletGate
+
+**Repository:** https://github.com/CoinsAgent/agent-first-agile-starter
 
 ## 1. Product vision
 
