@@ -1,19 +1,32 @@
 ---
 name: shape-story
-description: Draft and refine one or more user stories with measurable acceptance criteria from a human's product intent, without implementing code. Use for product discovery, backlog grooming, and preparing human approval.
+description: Map user journeys, propose a minimal end-to-end release, split it into draft stories, and detail the next story for human approval. Use for product discovery and backlog grooming, without implementing code.
 ---
 
 # Shape Story
 
-Use when the user asks to discover/refine stories or define what to build. **Do not** use this to execute a READY story; use `deliver-story` instead.
+Use for discovery and refinement. Use `deliver-story` to execute one READY story.
 
-1. Read the relevant human-provided product intent. If `docs/VISION.md` or `docs/PRODUCT_CONTRACT.md` is absent, clearly label any work as provisional **DRAFT** and ask the human to provide/approve these files before a story can be READY.
-2. Identify the actor, goal, expected value, explicit non-goals and dependencies.
-3. Propose the vertical slice independently testable end-to-end user capability. Ask the human about *material business ambiguity*, not routine engineering decisions.
-4. Draft observable acceptance Criteria with positive, negative and boundary behaviors; avoid implementation-specific criteria unless the contract requires them.
-5. Identify any mismatch with product documents and namethe open decisions. Never silently change human-owned product documents.
-6. Copy `backlog/STORY_TEMPLATE.md` to `backlog/US-NNN.md`, choosing an unused ID. Preserve the metadata fields; set `status: DRAFT` and keep approval/acceptance fields empty.
-7. Give a concise review packet: user value, scope, ACs, assumptions, decision(s) needed. **Do not self-approve the story** and do not start product implementation.
-8. After the human explicitly approves, instruct the human to record approval in the story and protected PR flow. Run `bash scripts/verify.sh` to check structure. A human—not Codex—must change `status: READY` and approval metadata.
+## Context and boundaries
 
-Output: a DRAFT story file and a small set of human decisions. Never report DRAFT as READY.
+Read the relevant human-provided intent, `docs/VISION.md`, `docs/PRODUCT_CONTRACT.md`, existing story map and relevant stories. If product documents are missing or their approval is unresolved, label all proposals provisional DRAFT and identify the approval needed before READY. Never silently change human-owned product documents.
+
+A bare `$shape-story` starts with the broader map, not an isolated first story. For a request to refine a specific story, reuse the existing map and update only the relevant context; do not regenerate the backlog. For discussion-only requests, discuss proposals without changing files.
+
+## Shape breadth before detail
+
+1. **Map journeys.** Identify actors, goals, expected value and ordered user activities. Create or refine `backlog/STORY_MAP.md` using `backlog/STORY_MAP_TEMPLATE.md`. Organize capabilities by journey and release slice, not technical layers.
+2. **Propose a minimal end-to-end release.** Describe the smallest usable outcome spanning the necessary journey steps, its observable success signal, exclusions and dependencies. A foundational sign-in slice may be one story without being a usable release of the whole product. Treat priorities and release boundaries as proposals until the human decides.
+3. **Split into stories.** Identify independently testable vertical capabilities, their value, dependencies and suggested order. Assign unused IDs and create DRAFT files from `backlog/STORY_TEMPLATE.md` for the proposed minimal release; keep later capabilities at map level unless more detail is requested. Preserve existing IDs and approved scope. Multiple draft stories are allowed; one-story-at-a-time governs delivery, not discovery.
+4. **Detail the next story.** Recommend the next story and explain why. Give it observable positive, negative and boundary ACs, explicit non-goals and dependencies. Other draft stories may retain explicitly provisional AC outlines and unresolved decisions; they are not READY. Avoid implementation-specific criteria unless required by the contract.
+5. **Expose decisions.** Ask about material business ambiguity. Do not silently select policy durations, supported audiences/wallets/platforms, release priorities or security boundaries. If proposing defaults, label them as unapproved assumptions and show their impact. Identify any mismatch with product documents.
+
+## Artifacts and review
+
+Keep story `status: DRAFT` and approval/acceptance fields empty in newly created files. The map links to stories for status and ACs; it is not a competing approval or delivery tracker. Revising a map never changes an approved story's scope or authorizes implementation.
+
+Present a concise review packet: journey map, proposed minimal release, story list/order, detailed next story, assumptions and smallest set of human decisions. Do not self-approve or start product implementation. Run `bash scripts/verify.sh` after file changes and report its structural scope accurately.
+
+After explicit human approval, instruct the human to record approval metadata and set the selected story to READY through the protected PR flow. Map/release approval does not make every linked story READY. A human—not Codex—must perform the approval transition.
+
+Output: a proposed story map, DRAFT stories for the minimal release, detailed ACs for the next story, and open human decisions. For targeted refinement, output only the relevant updates. Never report DRAFT as READY.

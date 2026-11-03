@@ -13,6 +13,17 @@
 | Changes to approved scope, significant risk/cost or elevated privileges | Human |
 | Business acceptance and authorization to release | Human |
 
+## Shaping before delivery
+
+Use `shape-story` to map journeys → propose a minimal end-to-end release → split it into stories → detail the next story’s acceptance criteria.
+
+- Map actors and their ordered activities in `backlog/STORY_MAP.md`, using `backlog/STORY_MAP_TEMPLATE.md`. Group capabilities into a proposed minimal usable release and later slices. Explain the release outcome, exclusions, dependencies and success signal.
+- Create DRAFT stories for that release; keep later capabilities in the map until needed. Give each draft an actor, value, scope and provisional AC outline. Detail positive, negative and boundary ACs for the next recommended story before asking for READY approval.
+- A small foundation story can be delivered first, but the map must show how it contributes to the end-to-end release. Do not equate an isolated foundation with the full product outcome.
+- Human decisions own release priorities, product policy and scope. Label proposed defaults and unresolved decisions; map approval alone does not authorize implementation or make linked stories READY.
+- The map supplies breadth and links; story files own status, approved scope and ACs. Do not copy lifecycle statuses or approval metadata into the map. Changes to a map cannot override approved story scope.
+- Multiple DRAFT and READY stories may exist. Deliver one approved story at a time. For targeted refinement, reuse the map and update the relevant story without rebuilding the entire backlog.
+
 ## Story states
 
 - `DRAFT` — agent may draft and refine. No product work.
@@ -39,6 +50,8 @@ For a failure: `IN_PROGRESS/VERIFYING → BLOCKED → IN_PROGRESS`; for a failed
 **G3 — Human acceptance:** Human directly inspects the result (demo or usable feature), approves the user behavior, and updates `accepted_by`, `accepted_at`, `status: ACCEPTED`. Merging or deploying is a separate permission decision unless your governance explicitly couples it to acceptance.
 
 ## Persistent artifacts
+
+- One story map: `backlog/STORY_MAP.md` (copy `backlog/STORY_MAP_TEMPLATE.md`); proposed journeys, release slices, story links and open decisions.
 
 - One story: `backlog/US-001.md` (copy `backlog/STORY_TEMPLATE.md`). Its front matter is the **single source of truth for status**.
 - One execution plan: `work/US-001/plan.md` (copy `work/PLAN_TEMPLATE.md`).
