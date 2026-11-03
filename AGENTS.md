@@ -6,6 +6,7 @@ Human-led product decisions → Codex execution → automated verification → h
 
 - A human owns Vision, Product Contract, business scope, priorities, approved acceptance criteria and acceptance. Codex owns implementation approach and routine engineering decisions within those boundaries.
 - This repository is **product-uninitialized** until BOTH `docs/VISION.md` and `docs/PRODUCT_CONTRACT.md` exist and have human-approved content. Until then, work only on harness, research or clearly labeled DRAFT stories. Do **not** implement product functionality.
+- Shape work in this order: map user journeys → propose a end-to-end release → split it into stories → detail the next story’s acceptance criteria. A story map provides breadth; individual stories provide delivery detail. Multiple DRAFT stories are allowed; the one-story WIP limit applies to delivery.
 - Implement only a **READY** story, one end-to-end vertical slice at a time. Do not silently add functionality outside approved acceptance criteria.
 - Do not represent plans, self-reported checks or generated evidence as passing tests. Report actual commands, output and limitations.
 
@@ -13,6 +14,7 @@ Human-led product decisions → Codex execution → automated verification → h
 
 - `docs/VISION.md` — human-owned product purpose and outcomes.
 - `docs/PRODUCT_CONTRACT.md` — human-owned rules, constraints and non-goals.
+- `backlog/STORY_MAP.md` — proposed journeys, release slices, story links and open decisions; no duplicate story statuses or approvals.
 - `backlog/US-*.md` — story status, approved scope and acceptance criteria.
 - `work/US-*/plan.md` — agent implementation plan.
 - `work/US-*/evidence.md` — agent-generated reproducible test/review evidence.

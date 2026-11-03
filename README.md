@@ -7,10 +7,11 @@ A technology-neutral **Codex-first agile starter**. A human owns the product dir
 ## What's included
 
 - `AGENTS.md`: always-on repository guardrails, not a giant process manual.
-- `.agents/skills/shape-story/SKILL.md`: refine *draft* stories for human approval.
+- `.agents/skills/shape-story/SKILL.md`: map journeys, propose a minimal release, split draft stories and detail the next story for human approval.
 - `.agents/skills/deliver-story/SKILL.md`: plan, implement, test, review and report *one approved* story.
 - `docs/PROCESS.md`: state transitions, ownership and quality gates.
-- `backlog/STORY_TEMPLATE.md`: story structure and approval metadata.
+- `backlog/STORY_MAP_TEMPLATE.md`: journeys, release slices, story links and open decisions.
+- `backlog/STORY_TEMPLATE.md`: story structure, map context and approval metadata.
 - `work/{PLAN_TEMPLATE,EVIDENCE_TEMPLATE}.md`: implementation and verification records.
 - `scripts/check_harness.py`: standard-library-only structural checks.
 - `scripts/verify.sh` and `.github/workflows/ci.yml`: CI entry point.
@@ -21,11 +22,11 @@ A technology-neutral **Codex-first agile starter**. A human owns the product dir
 1. Copy the contents of this starter into a **new or existing Git repository** (including hidden `.agents/` and `.github/` directories). Review existing files before overwriting.
 2. Run `bash scripts/verify.sh`. It should validate the harness; **it does not claim any application is tested**.
 3. **You** create and approve `docs/VISION.md` and `docs/PRODUCT_CONTRACT.md`. They are deliberately absent from the starter. See `docs/README.md`.
-4. Start Codex in the repository: `codex`. Ask it to use `$shape-story` to draft your first user story. Codex writes `backlog/US-001.md` with `status: DRAFT`.
-5. Review its value, scope and measurable acceptance criteria. **You** edit `approved_by`, `approved_at` and `status: READY` (or approve through a protected PR). Read `docs/PROCESS.md` for requirements.
+4. Start Codex in the repository: `codex`. Ask it to use `$shape-story`. Codex maps journeys in `backlog/STORY_MAP.md`, proposes a minimal end-to-end release, splits it into DRAFT stories, and details the next story’s acceptance criteria. Later capabilities remain at map level until needed.
+5. Review the map, proposed release and open product decisions, then the next story’s value, scope and measurable positive, negative and boundary acceptance criteria. Map approval does not make every story READY. **You** edit `approved_by`, `approved_at` and `status: READY` (or approve through a protected PR). Read `docs/PROCESS.md` for requirements.
 6. Ask Codex: `$deliver-story US-001`. Codex determines the stack-specific commands and creates `scripts/project-verify.sh` with **real** validation. The CI job runs these commands whenever a story reaches `IN_PROGRESS` or later.
 7. Review the actual application, acceptance matrix, commands and CI outcome. **You** set `status: ACCEPTED`, `accepted_by`, and `accepted_at` when the user behavior is satisfactory.
-8. Repeat one vertical slice at a time. To recover progress in a new session ask Codex to inspect the repository and summarize the statuses and evidence.
+8. Refine the map and detail the next story as needed; repeat delivery one vertical slice at a time. Multiple draft stories are allowed; the one-story WIP limit applies to delivery. To recover progress in a new session ask Codex to inspect the repository and summarize the statuses and evidence.
 
 ## Run the checks
 
@@ -49,7 +50,8 @@ The first command is the same entry point CI uses. Before the first approved imp
 
 | Purpose | Request to Codex |
 |---|---|
-| Draft story | `$shape-story` followed by the product capability |
+| Map and shape | `$shape-story` followed by product intent; map journeys, propose a minimal release, split stories and detail the next |
+| Refine a story | `$shape-story US-001` with the desired refinement; reuse existing map context |
 | Deliver story | `$deliver-story US-001` |
 | Resume | `Read AGENTS.md and docs/PROCESS.md, inspect Git/backlog/work; report current state, missing evidence, and next action. Read-only.` |
 | Diagnose | `For US-001, report failing acceptance criteria and actual test evidence. Do not change product scope.` |

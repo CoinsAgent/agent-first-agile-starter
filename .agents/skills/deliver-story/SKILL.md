@@ -9,9 +9,9 @@ Input: exactly one story ID, e.g. `US-001`. Never begin implementation without i
 
 ## Entry gate
 
-1. Read `AGENTS.md`, `docs/PROCESS.md`, `docs/VISION.md`, `docs/PRODUCT_CONTRACT.md`, and `backlog/<id>.md`.
+1. Read `AGENTS.md`, `docs/PROCESS.md`, `docs/VISION.md`, `docs/PRODUCT_CONTRACT.md`, and `backlog/<id>.md`. Read the relevant journey/release context in `backlog/STORY_MAP.md` when present; linked story files remain authoritative for status and approved ACs.
 2. If product documents are missing, story status is not `READY`, approval metadata is absent, ACs conflict, another story is WIP, or a material product decision is unresolved, **stop** and report the blocking gate. Do not alter human-owned approvals or approved ACs.
-3. Inspect only relevant existing implementation and tests. Create `work/<id>/plan.md` from the plan template, mapping every AC to executable verification. Record risk and dependencies.
+3. Inspect only relevant existing implementation and tests. Create `work/<id>/plan.md` from the plan template, mapping every AC to executable verification. Record risk and dependencies. Verify prerequisite stories or capabilities are available; a proposed map order is not evidence that a dependency is delivered. Implement only the selected story, not the entire mapped release.
 
 ## Execution
 
