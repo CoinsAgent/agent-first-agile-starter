@@ -56,7 +56,7 @@
 
 ## Remaining delivery gate
 
-- User reports real MetaMask Chrome desktop works; supplied versions are recorded in evidence.md. The user now reports Android Explore connection/sign-in succeeds after the correction. The user confirmed both signed-in reload persistence and logout/reload requiring sign-in on both environments. Manual AC-09 observations are complete and implementation CI passed; the remaining product gate is formal human acceptance. See evidence.md for exact next actions. All approved ACs and human metadata are preserved.
+- User reports real MetaMask Chrome desktop works; supplied versions are recorded in evidence.md. The user now reports Android Explore connection/sign-in succeeds after the correction. The user confirmed both signed-in reload persistence and logout/reload requiring sign-in on both environments. Manual AC-09 observations and required CI are complete. The user explicitly accepted US-001; the authoritative decision is recorded in backlog/US-001.md. See evidence.md for exact next actions. All approved ACs and human metadata are preserved.
 
 ## Android manual-test correction — 2026-11-03
 
@@ -75,3 +75,7 @@
 
 - User authorized commit/push with evidence and CI verification. Published implementation ac0294259cc14d37e25dfe4e83bdb8c358685d9d; required CI run 41649017643 succeeded on that SHA.
 - Follow-up evidence records the actual SHA/run and required-check logs. No product/test inputs change. Verify final-head CI after publishing this provenance update; human acceptance remains pending.
+
+## Human acceptance — 2026-11-03
+
+- User explicitly instructed “Accept US-001” after final-head CI succeeded. Recorded the decision in the story without changing its approved scope or criteria. No additional delivery work remains for this story.

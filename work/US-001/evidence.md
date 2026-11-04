@@ -5,9 +5,9 @@ Status: PASS
 Local automated verification passed, and the user confirmed real MetaMask sign-in,
 signed-in reload persistence, and logout followed by sign-in-required reload on
 both approved environments. Versions are recorded below as supplied. US-001 is
-QA_PASSED. Published implementation commit
+ACCEPTED by the human decision recorded in the story. Published implementation commit
 `ac0294259cc14d37e25dfe4e83bdb8c358685d9d` passed the required GitHub CI run
-linked below. Human business acceptance is pending. Dated history below describes
+linked below. The user explicitly accepted US-001 on 2026-11-03 after final-head CI passed. Dated history below describes
 earlier blockers and is superseded by the final verification/publication records.
 
 ## Context and provenance
@@ -80,8 +80,8 @@ browser runner also reported NO_COLOR/FORCE_COLOR environment warnings.
 
 ## Human acceptance
 
-- Outcome: PENDING. No delivered behavior has been accepted on the human's behalf.
-- The story retains its existing approved_by/approved_at and empty acceptance fields. It is QA_PASSED as a local technical candidate after successful automated checks and explicit user-reported device checks; Required implementation CI has now passed; human business acceptance remains pending.
+- Outcome: explicit user acceptance recorded in backlog/US-001.md following the instruction “Accept US-001” on 2026-11-03.
+- The story preserves its approval metadata and records the user-directed acceptance decision. Required implementation CI and final-head CI passed before that decision.
 
 ## Manual-test service startup — 2026-11-03
 
@@ -172,3 +172,10 @@ browser runner also reported NO_COLOR/FORCE_COLOR environment warnings.
 - Non-blocking runner annotations reported action-runtime deprecation and the ubuntu-latest image migration. No checks were bypassed, disabled or weakened.
 - This follow-up records observed CI provenance without changing application, test, workflow, or approved story inputs. The source manifest remains valid. Its own final-head CI is checked separately after push; the implementation run is not represented as a run for a different SHA.
 - US-001 remains QA_PASSED, with accepted_by/accepted_at empty. Formal human business acceptance is the next product gate.
+
+
+## Human acceptance and final-head CI — 2026-11-03
+
+- Final published head before acceptance: `578514d7204930ab212e22d73a2715addbb517a2`. [Required CI run 41649406668](https://github.com/CoinsAgent/agent-first-agile-starter/actions/runs/41649406668) completed SUCCESS on that same SHA; `gh run watch --exit-status` returned 0. The implementation run and final-head run are distinct and both passed.
+- User explicitly instructed “Accept US-001”. Recorded that decision in the story using the previously authorized CoinsAgent identity and current date; no additional scope or acceptance was inferred.
+- The acceptance update changes documentation/metadata only. The source manifest is refreshed for the story metadata; application/test inputs remain those verified by CI. The acceptance record is versioned by the commit containing this section. Its push-triggered CI is checked separately from the earlier implementation CI; no new product or test code is introduced.
