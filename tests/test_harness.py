@@ -70,6 +70,29 @@ class HarnessTests(unittest.TestCase):
         self.assertTrue(any("VISION.md" in e for e in errors))
         self.assertTrue(any("approved_by" in e for e in errors))
 
+    def test_follow_on_story_uses_existing_lifecycle_gates(self):
+        path = self.root / "backlog" / "US-001-01.md"
+        content = STORY.replace("US-001", "US-001-01")
+        path.write_text(content.format(status="DRAFT", approved_by="", approved_at=""))
+        self.assertEqual(check_repository(self.root), [])
+        path.write_text(content.format(status="READY", approved_by="", approved_at=""))
+        errors = check_repository(self.root)
+        self.assertTrue(any("US-001-01.md: human approved_by" in e for e in errors))
+        self.write_docs()
+        path.write_text(content.format(status="IN_PROGRESS", approved_by="Owner", approved_at="2026-11-04"))
+        errors = check_repository(self.root)
+        self.assertTrue(any("work/US-001-01/plan.md" in e for e in errors))
+        self.assertTrue(has_implementation_story(self.root))
+
+    def test_malformed_story_ids_are_rejected(self):
+        for story_id in ("US-01", "US-001-1", "US-001-aa", "US-001-01-01"):
+            with self.subTest(story_id=story_id):
+                path = self.root / "backlog" / f"{story_id}.md"
+                path.write_text(STORY.replace("US-001", story_id).format(
+                    status="DRAFT", approved_by="", approved_at=""))
+                self.assertTrue(any("story filename" in e for e in check_repository(self.root)))
+                path.unlink()
+
     def test_ready_after_human_fields_and_docs(self):
         self.write_docs()
         self.write_story()

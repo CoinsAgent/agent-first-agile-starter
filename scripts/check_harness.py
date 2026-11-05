@@ -14,7 +14,7 @@ import re
 import sys
 
 ROOT = Path(__file__).resolve().parents[1]
-STORY_RE = re.compile(r"US-\d{3,}\.md$")
+STORY_RE = re.compile(r"US-\d{3,}(?:-\d{2,})?\.md$")
 STATES = {"DRAFT", "READY", "IN_PROGRESS", "VERIFYING", "BLOCKED", "QA_PASSED", "ACCEPTED"}
 IMPLEMENTATION_STATES = {"IN_PROGRESS", "VERIFYING", "BLOCKED", "QA_PASSED", "ACCEPTED"}
 WIP_STATES = {"IN_PROGRESS", "VERIFYING", "BLOCKED", "QA_PASSED"}
@@ -89,7 +89,7 @@ def check_repository(root: Path) -> list[str]:
     for path in paths:
         rel = path.relative_to(root)
         if not STORY_RE.fullmatch(path.name):
-            errors.append(f"{rel}: story filename must look like US-001.md")
+            errors.append(f"{rel}: story filename must look like US-001.md or US-001-01.md")
             continue
         content = path.read_text(encoding="utf-8")
         try:

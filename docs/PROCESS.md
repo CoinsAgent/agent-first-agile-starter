@@ -43,6 +43,8 @@ For a failure: `IN_PROGRESS/VERIFYING → BLOCKED → IN_PROGRESS`; for a failed
 
 **G0 — Contract:** Story must not contradict the two human-approved product documents.
 
+For UI stories, read `docs/UI_DESIGN_CONTRACT.md` during shaping, implementation and review. Apply relevant design and accessibility requirements within approved scope; product/security rules and protocol correctness take precedence, followed by accessibility, then aesthetic preferences. Record applicable UI checks, actual results and deviations in the story plan/evidence. Resolve conflicts that require scope or product decisions with the human; the design contract does not authorize scope expansion or replace G3 human acceptance.
+
 **G1 — Ready:** Value, user, measurable positive/negative ACs, scope boundaries and dependencies are explicit. Human sets `status: READY`, `approved_by` and `approved_at` in the story metadata. The harness checker checks formatting, not whether approval is authentic. Enforce authenticity with protected branch PR review.
 
 **G2 — Engineering:** Relevant ACs are covered by executable tests, regressions run, review findings are addressed, and evidence records actual outcomes. The agent may commit `QA_PASSED` **after actual successful local checks**, enabling CI to evaluate that same commit. However, G2 is satisfied only when the required project checks subsequently pass **in CI for that commit**. While CI is pending, report "QA candidate; CI pending" and do not request final acceptance. If CI fails, fix and re-verify. The Python checker validates structure, not semantics or authenticity.
@@ -54,6 +56,7 @@ For a failure: `IN_PROGRESS/VERIFYING → BLOCKED → IN_PROGRESS`; for a failed
 - One story map: `backlog/STORY_MAP.md` (copy `backlog/STORY_MAP_TEMPLATE.md`); proposed journeys, release slices, story links and open decisions.
 
 - One story: `backlog/US-001.md` (copy `backlog/STORY_TEMPLATE.md`). Its front matter is the **single source of truth for status**.
+- A separately scoped follow-on story may use `backlog/US-001-01.md` (base number of at least three digits, optional suffix of at least two digits). It has its own approvals, plan/evidence and the same lifecycle/WIP gates; the suffix does not inherit approval from its predecessor.
 - One execution plan: `work/US-001/plan.md` (copy `work/PLAN_TEMPLATE.md`).
 - One evidence record: `work/US-001/evidence.md` (copy `work/EVIDENCE_TEMPLATE.md`).
 - Git commits and PR links provide provenance; test logs or CI run URLs provide evidence. Keep stale results clearly distinguished.

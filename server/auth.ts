@@ -10,6 +10,7 @@ import { getAddress, verifyMessage, type Hex } from 'viem';
 import { createSiweMessage, parseSiweMessage } from 'viem/siwe';
 import { z } from 'zod';
 import type { Config } from './config';
+import { createQrAuth } from './qr';
 
 export const CHALLENGE_MS = 5 * 60 * 1000;
 export const SESSION_MS = 60 * 60 * 1000;
@@ -109,12 +110,35 @@ export async function createWalletGate(config: Config) {
   function internal(request: Request, path: string, body: unknown) {
     return auth.handler(new Request(`${config.origin}/api/auth${path}`, { method: 'POST', headers: request.headers, body: JSON.stringify(body) }));
   }
+  const qr = createQrAuth(db, config.origin, {
+    nonce: async request => {
+      const response = await internal(request, '/siwe/nonce', {});
+      if (!response.ok) throw new Error('NonceUnavailable');
+      return (await response.json() as { nonce: string }).nonce;
+    },
+    complete: async (request, proof) => {
+      // Reuse the supported SIWE plugin and its nonce consumption/session hooks.
+      // This attempt binding is server-only, made solely for the approved QR proof.
+      const binding = randomBytes(32).toString('hex');
+      db.prepare('INSERT INTO walletChallenge VALUES (?, ?, ?)').run(hash(binding), proof.message, proof.expiresAt);
+      const headers = new Headers(request.headers);
+      const existing = (headers.get('cookie') ?? '').split(';').filter(v => !v.trim().startsWith(`${attemptCookie}=`)).join(';');
+      headers.set('cookie', `${existing}; ${attemptCookie}=${binding}`);
+      try {
+        const response = await internal(new Request(request.url, { headers }), '/siwe/verify', { message: proof.message, signature: proof.signature });
+        const result = json(response.ok ? { success: true } : { error: 'QR approval expired or could not complete. Start again.' }, response.ok ? 200 : 401);
+        for (const value of response.headers.getSetCookie()) result.headers.append('Set-Cookie', value);
+        return result;
+      } finally { db.prepare('DELETE FROM walletChallenge WHERE attemptHash = ?').run(hash(binding)); }
+    },
+  });
   async function handle(request: Request): Promise<Response> {
     const url = new URL(request.url);
     if (url.origin !== config.origin) return json({ error: 'Untrusted origin.' }, 403);
     if (request.method === 'POST' && (request.headers.get('origin') !== config.origin || !request.headers.get('content-type')?.startsWith('application/json')))
       return json({ error: 'Use a same-origin JSON request.' }, 403);
     try {
+      if (url.pathname.startsWith('/api/qr/') && request.method === 'POST') return await qr(request, url.pathname.slice('/api/qr/'.length), await readJson(request));
       if (url.pathname === '/api/session' && request.method === 'GET') {
         const current = await session(request.headers);
         return current ? json(current) : json({ error: 'Sign in with your wallet.' }, 401);

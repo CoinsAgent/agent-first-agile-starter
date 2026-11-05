@@ -1,121 +1,75 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { createRoot } from 'react-dom/client';
-import { connect, disconnect, getConnection, signMessage, switchChain, watchConnection } from 'wagmi/actions';
-import { MetaMaskProviderUnavailableError, walletConfig, waitForMetaMaskProvider } from './wallet';
+import { useWalletAuth } from './hooks/use-wallet-auth';
+import { WalletFlow } from './components/wallet/wallet-flow';
+import { MobileApproval } from './components/wallet/mobile-approval';
+import { Button } from './components/ui/button';
+import { setNonce } from 'get-nonce';
 import './style.css';
-
-type Session = { address: string; expiresAt: string };
-type Challenge = { message: string; address: string; expiresAt: string };
-async function api<T>(path: string, body?: unknown): Promise<T> {
-  const response = await fetch(`/api/${path}`, { credentials: 'same-origin', ...(body === undefined ? {} : { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body) }) });
-  const data = await response.json();
-  if (!response.ok) throw new Error(data.error ?? 'Request failed. Try again.');
-  return data as T;
+import { preloadWalletSdks } from './wallet-sdk';
+void preloadWalletSdks().catch(() => {});
+// Nonce only the trusted Radix runtime styles; retain a strict CSP without unsafe-inline.
+const styleNonce = document.querySelector<HTMLMetaElement>('meta[name="style-nonce"]')?.content;
+if (styleNonce) setNonce(styleNonce);
+function ThemeControl() {
+  const [theme, setTheme] = useState<'light' | 'dark' | null>(null);
+  const [systemDark, setSystemDark] = useState(() => matchMedia('(prefers-color-scheme: dark)').matches);
+  const dark = theme === null ? systemDark : theme === 'dark';
+  useEffect(() => {
+    const query = matchMedia('(prefers-color-scheme: dark)');
+    const update = () => setSystemDark(query.matches);
+    update(); query.addEventListener('change', update);
+    return () => query.removeEventListener('change', update);
+  }, []);
+  useEffect(() => { document.documentElement.classList.toggle('dark', dark); }, [dark]);
+  const label = dark ? 'Switch to light mode' : 'Switch to dark mode';
+  return <button className="theme-toggle" type="button" aria-label={label} title={label} onClick={() => setTheme(dark ? 'light' : 'dark')}>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" aria-hidden="true">
+      <circle cx="12" cy="12" r="4" />
+      <path d="M12 2v2m0 16v2M2 12h2m16 0h2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42" />
+    </svg>
+  </button>;
+}
+function SignIn() {
+  const auth = useWalletAuth();
+  const step = auth.session ? 3 : auth.challenge ? 2 : 1;
+  const heading = useRef<HTMLHeadingElement>(null);
+  const content = useRef<HTMLDivElement>(null);
+  const previousStep = useRef(step);
+  useEffect(() => {
+    if (previousStep.current !== step) {
+      previousStep.current = step;
+      if (content.current) content.current.scrollTop = 0;
+      heading.current?.focus({ preventScroll: true });
+    }
+  }, [step]);
+  return <div className="sign-in-shell">
+  <section className="auth-card sign-in-card" aria-labelledby="signin-title" aria-describedby={auth.error ? 'signin-error' : undefined} data-step={step}>
+    <span className="mini-label">WALLET-NATIVE IDENTITY</span>
+    <h1 id="signin-title" ref={heading} tabIndex={-1}>{step === 3 ? '3 Signed in' : step === 2 ? '2 Review and sign' : <>Sign in with<br/>your wallet.</>}</h1>
+    {step === 1 && <p className="card-intro">A familiar sign-in. Powered by proof<br className="desktop-only"/> that your wallet is yours.</p>}
+    <ol className="steps" aria-label="Sign-in progress">{['Choose wallet', 'Review & sign', 'Signed in'].map((label, index) => <li key={label} aria-current={step === index + 1 ? 'step' : undefined} data-complete={step > index + 1}>{label}</li>)}</ol>
+    <div className="card-content" ref={content} tabIndex={0} role="region" aria-label="Sign-in details">
+      {auth.loading ? <p role="status">Checking your session…</p> : auth.session ? <div className="signed-in-details">
+        <span className="success-badge">Wallet verified</span>
+        <p>Your verified Ethereum address</p>
+        <p className="address" data-testid="verified-address">{auth.session.address}</p>
+        <p className="small muted">Session ends at {new Date(auth.session.expiresAt).toLocaleTimeString()}. Signing out ends it immediately.</p>
+        <Button onClick={() => { void auth.logout(); }} disabled={auth.busy}>Sign out</Button>
+      </div> : <WalletFlow auth={auth} />}
+    </div>
+    <p className="privacy-note">No password. No transaction.<br/>Your keys stay in your wallet.</p>
+  </section>
+  {auth.error && <p id="signin-error" role="alert" className="error sign-in-error">{auth.error}</p>}
+  </div>;
 }
 function App() {
-  const [session, setSession] = useState<Session | null>(null);
-  const [challenge, setChallenge] = useState<Challenge | null>(null);
-  const [connection, setConnection] = useState(() => getConnection(walletConfig));
-  const [busy, setBusy] = useState(false);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const attempt = useRef(0);
-  const expectedMainnetSwitch = useRef<number | null>(null);
-  useEffect(() => {
-    void api<Session>('session').then(setSession).catch(() => setSession(null)).finally(() => setLoading(false));
-    return watchConnection(walletConfig, { onChange(next, previous) {
-      setConnection(next);
-      const accountChanged = next.address?.toLowerCase() !== previous.address?.toLowerCase();
-      const approvedNetworkChange = expectedMainnetSwitch.current === attempt.current &&
-        !accountChanged && next.isConnected && next.chainId === 1;
-      if (previous.address && (accountChanged || !next.isConnected ||
-          (next.chainId !== previous.chainId && !approvedNetworkChange))) {
-        attempt.current++;
-        setChallenge(null);
-        setBusy(false);
-        setError('Wallet account or network changed. Connect and review a new sign-in message.');
-      }
-    } });
-  }, []);
-  useEffect(() => {
-    if (!session) return;
-    const timer = setTimeout(() => { setSession(null); setChallenge(null); setError('Your session expired. Sign in again.'); }, Math.max(0, Date.parse(session.expiresAt) - Date.now()));
-    return () => clearTimeout(timer);
-  }, [session]);
-  async function prepare() {
-    const generation = ++attempt.current;
-    setBusy(true); setError(''); setChallenge(null);
-    try {
-      await waitForMetaMaskProvider();
-      if (generation !== attempt.current) return;
-      expectedMainnetSwitch.current = generation;
-      const connected = getConnection(walletConfig);
-      if (!connected.isConnected) await connect(walletConfig, { connector: walletConfig.connectors[0], chainId: 1 });
-      else if (connected.chainId !== 1) await switchChain(walletConfig, { chainId: 1 });
-      if (generation !== attempt.current) return;
-      const current = getConnection(walletConfig);
-      if (!current.address || current.chainId !== 1) throw new Error('Select Ethereum Mainnet in MetaMask, then try again.');
-      const next = await api<Challenge>('challenge', { address: current.address, chainId: current.chainId });
-      if (generation !== attempt.current || getConnection(walletConfig).address !== current.address) return;
-      setChallenge(next);
-    } catch (error) {
-      if (generation !== attempt.current) return;
-      const current = getConnection(walletConfig);
-      if (current.isConnected && current.chainId !== 1) {
-        setError(`MetaMask is connected to ${Number.isSafeInteger(current.chainId) ? `chain ID ${current.chainId}` : 'an unknown network'}. Choose Switch to Ethereum Mainnet and approve the network change in MetaMask.`);
-      } else if (/Android/i.test(navigator.userAgent) && error instanceof MetaMaskProviderUnavailableError) {
-        setError('Open this site inside MetaMask using Explore, then connect there. Connecting from Android Chrome is not supported in this release.');
-      } else {
-        setError('Could not connect. Unlock MetaMask, approve the connection and Ethereum Mainnet request, then try again. On Android, open this site inside MetaMask using Explore.');
-      }
-    } finally {
-      if (expectedMainnetSwitch.current === generation) expectedMainnetSwitch.current = null;
-      if (generation === attempt.current) setBusy(false);
-    }
-  }
-  async function authenticate() {
-    if (!challenge) return;
-    const generation = attempt.current;
-    setBusy(true); setError('');
-    try {
-      const before = getConnection(walletConfig);
-      if (before.address?.toLowerCase() !== challenge.address || before.chainId !== 1) throw new Error('Wallet changed. Start again.');
-      const signature = await signMessage(walletConfig, { message: challenge.message, account: before.address });
-      const after = getConnection(walletConfig);
-      if (generation !== attempt.current || after.address?.toLowerCase() !== challenge.address || after.chainId !== 1) throw new Error('Wallet changed. Start again.');
-      await api('verify', { message: challenge.message, signature });
-      const authenticated = await api<Session>('session');
-      if (generation !== attempt.current) return;
-      setSession(authenticated); setChallenge(null);
-    } catch {
-      if (generation !== attempt.current) return;
-      setChallenge(null);
-      setError('Sign-in was cancelled, changed or expired. Review a new message and try again.');
-    } finally { if (generation === attempt.current) setBusy(false); }
-  }
-  async function logout() {
-    setBusy(true); setError('');
-    try {
-      await api('logout', {});
-      setSession(null); setChallenge(null); attempt.current++;
-      await disconnect(walletConfig);
-    } catch { setError('Could not sign out. Try again.'); }
-    finally { setBusy(false); }
-  }
+  const [phoneId, setPhoneId] = useState(() => new URLSearchParams(location.hash.slice(1)).get('approve'));
+  useEffect(() => { const update = () => setPhoneId(new URLSearchParams(location.hash.slice(1)).get('approve')); window.addEventListener('hashchange', update); return () => window.removeEventListener('hashchange', update); }, []);
   return <main>
-    <header><a href="/" className="brand"><span className="mark" aria-hidden="true">W</span>WalletGate</a><span className="network">Ethereum Mainnet</span></header>
-    <section className="intro"><p className="eyebrow">A familiar wallet. A new way in.</p><h1>Your wallet.<br/><span>Your way in.</span></h1><p>Prove it’s you with a signature. Your keys stay in your wallet.</p></section>
-    <section className="card" aria-labelledby="card-title">
-      {loading ? <p role="status">Checking your session…</p> : session ? <>
-        <span className="badge">Wallet verified</span><h2 id="card-title">You’re signed in.</h2><p>Your verified Ethereum address</p><p className="address" data-testid="verified-address">{session.address}</p><p className="muted">This session ends at {new Date(session.expiresAt).toLocaleTimeString()}. Signing out ends it immediately.</p><button onClick={logout} disabled={busy}>Sign out</button>
-      </> : <>
-        <h2 id="card-title">Sign in with Ethereum</h2><p>No password. No transaction. Just your signature.</p>
-        <ol className="steps"><li aria-current={!challenge ? 'step' : undefined}>Connect wallet</li><li aria-current={challenge ? 'step' : undefined}>Review & sign</li><li>Signed in</li></ol>
-        {challenge ? <><p className="muted">Check the address and message before signing. This request expires in five minutes.</p><pre aria-label="Sign-in message">{challenge.message}</pre><button onClick={authenticate} disabled={busy}>{busy ? 'Waiting for your wallet…' : 'Sign message & continue'}</button><button className="secondary" onClick={() => { setChallenge(null); attempt.current++; }} disabled={busy}>Cancel</button></> : <><button onClick={prepare} disabled={busy}>{busy ? 'Waiting for MetaMask…' : connection.isConnected && connection.chainId !== 1 ? 'Switch to Ethereum Mainnet' : connection.isConnected ? 'Review a new sign-in message' : 'Connect MetaMask'}</button><p className="muted">Use MetaMask in Chrome on desktop, or open this page in the MetaMask browser on Android.</p></>}
-      </>}
-      {error && <p className="error" role="alert">{error}</p>}
-    </section>
-    <footer>Signatures prove wallet control. They never share your private key.</footer>
+    <header className="page-header"><a href="/" className="brand"><span className="brand-mark" aria-hidden="true">W</span><span>WalletGate</span></a><div className="header-controls"><span className="network"><span aria-hidden="true">◆</span> Ethereum Mainnet</span><ThemeControl /></div></header>
+    <div className="auth-layout">{phoneId ? <MobileApproval key={phoneId} id={phoneId} /> : <SignIn />}</div>
+    <footer>Your wallet. Your way in.<span>Signatures prove control. They never share your private key.</span></footer>
   </main>;
 }
 createRoot(document.getElementById('root')!).render(<React.StrictMode><App/></React.StrictMode>);

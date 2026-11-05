@@ -13,3 +13,7 @@ build/
 data/
 playwright-report/
 test-results/
+
+# Local test captures, logs and research outputs are reproducible, not source.
+/work/*/artifacts/
+/work/*/experiments/

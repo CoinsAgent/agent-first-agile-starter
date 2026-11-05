@@ -20,12 +20,16 @@ files own lifecycle status, approved ACs and approval metadata.
 | Minimal end-to-end release | [Connect, sign SIWE, enter owner session](US-001.md) | [Create two independent clients and obtain configuration](US-002.md) | [List, edit redirects and disable owned clients](US-003.md) |
 | Later | Broader wallet/platform coverage | Authorized dynamic registration | Ownership transfer, credential rotation, richer scope/policy controls |
 
+Proposed authentication refinement before registration: [US-001-01 — choose a wallet or approve SIWE login by QR](US-001-01.md). The owner follows the same connect → review SIWE → sign → server verification journey with a custom shadcn/ui wallet dialog and wagmi EIP-6963 discovery.
+
 ### End user
 
 | Proposed slice | Arrive from an application | Prove identity | Decide access | Return signed in |
 |---|---|---|---|---|
 | Minimal end-to-end release | [Start a standard OIDC authorization request](US-004.md) | [Step-by-step wallet authentication](US-001.md) | [Allow or deny named application's requested access](US-004.md) | [Application receives and validates wallet subject](US-005.md) |
 | Later | More client types | Broader wallet support | Remembered consent and grant management | Broader claim sets and account bindings |
+
+The shared prove-identity entry point is refined by [US-001-01](US-001-01.md); the human selected installed-wallet choice, custom SIWE QR authentication and Android Chrome handoff using wagmi, viem, Better Auth, shadcn/ui and Tailwind. The human confirmed phone approval of the originating desktop when Chrome has no wallet extension; the approved request/session policy and wallet matrix are maintained in the story. Wallet transport, RPC, ENS, images and wallet-owned services require separate configuration and network verification. OIDC consent and return remain in US-004/005.
 
 ### Application developer and self-hosting operator
 
@@ -48,6 +52,7 @@ files own lifecycle status, approved ACs and approval metadata.
 | Story | Actor and value | Dependencies | Contribution to release |
 |---|---|---|---|
 | [US-001](US-001.md) — Prove wallet control | Owner/end user obtains a SIWE-authenticated session | Human policy decisions D2–D4 below | Shared authentication boundary and first usable sign-in journey |
+| [US-001-01](US-001-01.md) — Choose a wallet or approve SIWE login by QR | Owner/end user selects a wallet and completes existing SIWE login with a custom dialog, shared CSS/Tailwind tokens and phone approval | US-001; wallet/platform and custom QR security-policy decisions in the story | Human-selected next slice before US-002; custom QR binding/consent implementation and real-device verification are required |
 | [US-002](US-002.md) — Register independent applications | Owner obtains distinct client identities and configuration | US-001; client profile decision D5 | Supplies real clients for third-party sign-in |
 | [US-003](US-003.md) — Manage owned applications | Owner maintains and disables only their applications | US-002 | Demonstrates ongoing owner control and isolation |
 | [US-004](US-004.md) — Authorize wallet sign-in | End user consents and returns an authorization code to an application | US-001–US-003; D5 | Provides standards-based consent and token issuance |
@@ -55,7 +60,7 @@ files own lifecycle status, approved ACs and approval metadata.
 
 ## Next story to detail
 
-- Recommendation: [US-001](US-001.md). Both owner management and end-user authorization depend on trustworthy SIWE authentication. Delivering it first exposes session and wallet compatibility risks without conflating authentication with OIDC integration.
+- Recommendation: [US-001-01](US-001-01.md), following the user's selected custom shadcn/ui/Tailwind wallet UI and wagmi/viem/Better Auth stack. The human selected this story next, including EIP-6963 selection, custom SIWE QR authentication and Android Chrome handoff. The earlier external-service restriction has been withdrawn; approved custom QR semantics, binding policy and wallet matrix are recorded in the story; phone-reachable configuration and actual compatibility evidence are delivery responsibilities. The human-confirmed custom QR journey authenticates the originating desktop through explicit phone approval when Chrome has no extension; it does not establish a remote wallet connector. Refer to US-001 itself for its authoritative lifecycle and accepted scope.
 - Detailed positive, negative and boundary acceptance criteria are maintained in that story. Other stories have provisional outlines to refine before delivery.
 
 ## Open human decisions
@@ -70,4 +75,4 @@ All defaults below are proposals, not approved policy. No product-document chang
 | D4 — Authentication policy | Server-issued nonce valid for 5 minutes; absolute session lifetime 1 hour without sliding renewal; explicit logout; fresh SIWE after expiry; reuse only sessions proven to originate from SIWE | Longer/shorter durations change usability and exposure. SIWE expiration must not exceed nonce deadline, no future issued-at/not-before values accepted, and zero clock-skew allowance proposed. Tests must cover exact boundaries. |
 | D5 — Initial OIDC profile | Confidential server-side web clients; authorization code with PKCE S256; `openid` only; explicit consent each authorization; no refresh tokens or dynamic registration | Public/native clients, remembered consent and additional claims/grants need separate scope. Before US-002/004 becomes READY, resolve redirect policy, credential lifecycle, token/code lifetimes and client-auth method. |
 
-Before US-001 can become READY, confirm D1–D4 and review its ACs. D5 may remain provisional until the dependent stories are refined. The human records approval metadata and performs the READY transition through the protected PR flow described in [PROCESS](../docs/PROCESS.md); approval of this map does not authorize every story.
+US-001 records the human's decisions for its delivered scope; the historical proposals above do not override that record. For US-001-01, its story records the human-approved QR policy and expanded wallet matrix; refer there for lifecycle and authorization. D5 may remain provisional until the dependent stories are refined. The human records approval metadata and performs the READY transition through the protected PR flow described in [PROCESS](../docs/PROCESS.md); approval of this map does not authorize every story.

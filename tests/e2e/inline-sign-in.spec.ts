@@ -1,0 +1,51 @@
+import { expect, test } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
+import { provider, wallet } from './wallet-fixture';
+
+for (const theme of ['light', 'dark'] as const) for (const width of [320, 1440]) {
+  test(`${theme} ${width}px keeps review and verified success in one responsive card`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1000 });
+    await page.emulateMedia({ colorScheme: theme, reducedMotion: 'reduce' });
+    await provider(page, { eip6963: true });
+    await page.goto('/');
+    const card = page.locator('.sign-in-card');
+    const initial = await card.boundingBox();
+    const url = page.url();
+    await page.getByRole('button', { name: 'Sign in with MetaMask', exact: true }).click();
+    const review = page.getByRole('heading', { name: '2 Review and sign', exact: true });
+    await expect(review).toBeFocused();
+    await expect(card.getByLabel('Sign-in message', {exact:true})).toContainText(wallet.address);
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    await expect(card.locator('[aria-current="step"]')).toHaveText('Review & sign');
+    expect((await page.request.get('/api/session')).status()).toBe(401);
+    expect(await page.evaluate(() => (window as any).ethereum.completedSignatures)).toBe(0);
+    const reviewSize = await card.boundingBox();
+    expect(reviewSize?.width).toBe(initial?.width);
+    if(width>=768) expect(reviewSize?.height).toBe(initial?.height);
+    else expect(reviewSize!.height).toBeLessThanOrEqual(560);
+    expect((await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze()).violations).toEqual([]);
+    await page.screenshot({ path: `work/US-001-01/artifacts/card-review-${theme}-${width}.png`, fullPage: true });
+    await card.getByRole('button', { name: 'Sign message & continue' }).click();
+    await expect(page.getByRole('heading', { name: '3 Signed in', exact: true })).toBeFocused();
+    await expect(card.getByTestId('verified-address')).toHaveText(wallet.address.toLowerCase());
+    await expect(card.getByRole('button', { name: 'Sign out' })).toBeVisible();
+    await expect(card.locator('[aria-current="step"]')).toHaveText('Signed in');
+    await expect(page.getByRole('dialog')).toHaveCount(0);
+    const successSize = await card.boundingBox();
+    expect(successSize?.width).toBe(initial?.width);
+    if(width>=768) expect(successSize?.height).toBe(initial?.height);
+    else expect(successSize!.height).toBeLessThanOrEqual(560);
+    const details=await card.locator('.card-content').boundingBox();
+    const footer=await card.locator('.privacy-note').boundingBox();
+    expect(footer!.y-(details!.y+details!.height)).toBeLessThanOrEqual(16);
+    expect(page.url()).toBe(url);
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+    expect((await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze()).violations).toEqual([]);
+    await page.screenshot({ path: `work/US-001-01/artifacts/card-success-${theme}-${width}.png`, fullPage: true });
+    await card.getByRole('button', { name: 'Sign out' }).click();
+    await expect(page.getByRole('button', { name: 'Sign in with MetaMask', exact: true })).toBeVisible();
+    expect((await card.boundingBox())?.height).toBe(initial?.height);
+    expect((await page.request.get('/api/session')).status()).toBe(401);
+    await expect(page.getByRole('alert')).toHaveCount(0);
+  });
+}
