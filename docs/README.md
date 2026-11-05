@@ -14,6 +14,10 @@ Suggested headings: `Product principles`, `Non-negotiable constraints`, `Trust a
 
 Codex may offer drafts or questions, but never assert a product decision is approved without the person's explicit approval. Product work cannot become `READY` until both files exist, are meaningful and have been reviewed by a human. Structural checks cannot prove genuine human approval: use Git branch protections and reviews.
 
+## UI design principles
+
+[UI_DESIGN_CONTRACT.md](UI_DESIGN_CONTRACT.md) is the reference for UI design principles, visual tokens, interaction patterns and accessibility requirements. Read it when shaping, implementing or reviewing UI work. Product/security rules and protocol correctness take precedence, followed by accessibility, then aesthetic preferences. Apply relevant requirements within approved story scope, record verification and deviations in the story's evidence, and raise scope conflicts for human decision. This reference does not make a story READY or establish human acceptance.
+
 ## From product intent to stories
 
 After reviewing these documents, use `$shape-story` to map journeys, propose a

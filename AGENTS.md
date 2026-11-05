@@ -14,6 +14,7 @@ Human-led product decisions → Codex execution → automated verification → h
 
 - `docs/VISION.md` — human-owned product purpose and outcomes.
 - `docs/PRODUCT_CONTRACT.md` — human-owned rules, constraints and non-goals.
+- `docs/UI_DESIGN_CONTRACT.md` — UI design principles, visual tokens, interaction and accessibility guidance for UI work.
 - `backlog/STORY_MAP.md` — proposed journeys, release slices, story links and open decisions; no duplicate story statuses or approvals.
 - `backlog/US-*.md` — story status, approved scope and acceptance criteria.
 - `work/US-*/plan.md` — agent implementation plan.
@@ -21,6 +22,8 @@ Human-led product decisions → Codex execution → automated verification → h
 - `docs/PROCESS.md` — workflow rules, statuses and approvals.
 
 Read only relevant documents for the task. For story execution, read the story, the two product documents and the process. Do not create competing status files.
+
+For UI story shaping, implementation and review, also read `docs/UI_DESIGN_CONTRACT.md` and apply its relevant requirements within approved story scope. Product/security rules and protocol correctness take precedence, followed by accessibility, then aesthetic preferences. Record gaps or deviations; raise conflicts requiring changes to approved scope for human decision. The design contract does not authorize additional features, change story status or establish human acceptance.
 
 ## Human authorization and safety
 

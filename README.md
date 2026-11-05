@@ -12,6 +12,7 @@ A technology-neutral **Codex-first agile starter**. A human owns the product dir
 - `.agents/skills/shape-story/SKILL.md`: map journeys, propose a minimal release, split draft stories and detail the next story for human approval.
 - `.agents/skills/deliver-story/SKILL.md`: plan, implement, test, review and report *one approved* story.
 - `docs/PROCESS.md`: state transitions, ownership and quality gates.
+- [docs/UI_DESIGN_CONTRACT.md](docs/UI_DESIGN_CONTRACT.md): UI design principles, visual tokens, interaction and accessibility requirements. Read it when shaping, implementing or reviewing UI stories; apply relevant requirements within approved scope and record deviations in story evidence.
 - `backlog/STORY_MAP_TEMPLATE.md`: journeys, release slices, story links and open decisions.
 - `backlog/STORY_TEMPLATE.md`: story structure, map context and approval metadata.
 - `work/{PLAN_TEMPLATE,EVIDENCE_TEMPLATE}.md`: implementation and verification records.

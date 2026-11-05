@@ -13,6 +13,8 @@ Input: exactly one story ID, e.g. `US-001`. Never begin implementation without i
 2. If product documents are missing, story status is not `READY`, approval metadata is absent, ACs conflict, another story is WIP, or a material product decision is unresolved, **stop** and report the blocking gate. Do not alter human-owned approvals or approved ACs.
 3. Inspect only relevant existing implementation and tests. Create `work/<id>/plan.md` from the plan template, mapping every AC to executable verification. Record risk and dependencies. Verify prerequisite stories or capabilities are available; a proposed map order is not evidence that a dependency is delivered. Implement only the selected story, not the entire mapped release.
 
+For UI work, also read `docs/UI_DESIGN_CONTRACT.md` before planning or changing code. Apply relevant design, interaction and accessibility requirements within approved scope. Product/security rules and protocol correctness take precedence, followed by accessibility, then aesthetic preferences. Map applicable UI requirements to verification in the plan and record actual results, artifacts and deviations in evidence. Raise conflicts requiring scope changes for human decision; the design contract's checklist does not authorize additional features or establish human acceptance.
+
 ## Execution
 
 4. On beginning implementation, change only the story `status` to `IN_PROGRESS` (preserve all human metadata). Create `scripts/project-verify.sh` for the real tech stack if missing; **never** use a no-op or always-pass implementation. Run `bash scripts/verify.sh`; it is allowed to fail while work is unfinished, but failure must be resolved before QA_PASSED.
