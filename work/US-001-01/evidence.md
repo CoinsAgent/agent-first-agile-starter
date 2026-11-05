@@ -2,9 +2,9 @@
 
 Status: PASS
 
-Scope: local clean-install verification passed. Story is a QA candidate; replacement same-commit CI is still pending.
+Scope: local clean-install verification and implementation CI passed on e802c2bd8729192c4664463405f752af0ea4f028. [Successful CI](https://github.com/CoinsAgent/agent-first-agile-starter/actions/runs/41992265151).
 
-Latest: local automated checks passed (11 harness, 83 API/SDK, 68 browser tests). The user now reports Android wallet-browser and desktop phone-QR PASS; Android Chrome → Coinbase app remains failed and explicitly deferred pending a future SDK release. Exact Android wallet/device/version metadata is not supplied. Original CI failed during installation; the registry repair passed fresh-install local verification and is a local QA candidate awaiting replacement CI; prior human business acceptance is recorded. Historical sections below retain their original observations and are superseded by the latest updates where stated.
+Latest: local automated checks passed (11 harness, 83 API/SDK, 68 browser tests). The user now reports Android wallet-browser and desktop phone-QR PASS; Android Chrome → Coinbase app remains failed and explicitly deferred pending a future SDK release. Exact Android wallet/device/version metadata is not supplied. Original CI failed during installation; the registry repair passed fresh-install local verification and corresponding-commit CI; prior human business acceptance is recorded. Historical sections below retain their original observations and are superseded by the latest updates where stated.
 
 ## Context and provenance
 
@@ -518,3 +518,10 @@ Observed checks:
 - Fresh review confirmed URL-only lock changes, standard CI install preserved, explicit preflight before network install, no new credentials/permissions, app behavior and SDK versions unchanged. git diff --check: exit 0.
 
 Only eight repair files are selected for the follow-up commit: .npmrc, package-lock.json, scripts/check-lockfile.mjs, scripts/project-verify.sh, .github/workflows/ci.yml, backlog/US-001-01.md, this evidence file and the existing plan. Generated outputs, old experiments, unused images and unrelated edits stay excluded. Prior main-push authorization applies to this necessary CI correction. Local status is QA_PASSED candidate; replacement CI must pass on the pushed repair SHA before G2 is satisfied. No claim that original CI passed, no repeated business acceptance request and no accepted_by/accepted_at metadata written.
+
+
+## Confirmed successful implementation CI — 2026-11-05
+
+GitHub Actions run [41992265151](https://github.com/CoinsAgent/agent-first-agile-starter/actions/runs/41992265151) completed **successfully** on implementation repair SHA `e802c2bd8729192c4664463405f752af0ea4f028`. Observed stages: lockfile-source preflight, real npm ci, Playwright/browser dependencies, harness and full product checks. Downloaded actual CI output confirms **11 harness, 83 API/SDK and 68 Playwright tests passed**, with lint/types/build and mandatory project checks successful. Actual runner: Node 22.23.4/npm 10.9.9; no clean-install cache dependency was required. Local ignored artifacts: artifacts/ci-repair-success.json and artifacts/ci-repair-success.log.
+
+The prior failed installation on 0c53ea9 is superseded by this passing repair run; no version/integrity/auth policy change was needed. Story is QA_PASSED with the implementation G2 CI evidence now present. User-reported device passes and prior explicit business acceptance remain recorded; accepted_by/accepted_at and lifecycle ACCEPTED are not written by the agent. Android Chrome → Coinbase app remains explicitly deferred. This follow-up changes only evidence/story narrative and will run ordinary CI again; no bypass or skipped check is introduced.
