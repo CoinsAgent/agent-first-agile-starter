@@ -21,6 +21,8 @@ jobs:
         with:
           node-version: '22'
           cache: npm
+      - name: Check dependency download sources
+        run: node scripts/check-lockfile.mjs
       - run: npm ci
       - run: npx playwright install --with-deps chromium
       - name: Run harness and required product checks

@@ -1,8 +1,10 @@
 # Verification evidence — US-001-01
 
-Status: BLOCKED
+Status: PASS
 
-Latest: local automated checks passed (11 harness, 83 API/SDK, 68 browser tests). The user now reports Android wallet-browser and desktop phone-QR PASS; Android Chrome → Coinbase app remains failed and explicitly deferred pending a future SDK release. Exact Android wallet/device/version metadata is not supplied. Corresponding-commit CI is still pending, so technical status remains BLOCKED; prior human business acceptance is recorded. Historical sections below retain their original observations and are superseded by the latest updates where stated.
+Scope: local clean-install verification passed. Story is a QA candidate; replacement same-commit CI is still pending.
+
+Latest: local automated checks passed (11 harness, 83 API/SDK, 68 browser tests). The user now reports Android wallet-browser and desktop phone-QR PASS; Android Chrome → Coinbase app remains failed and explicitly deferred pending a future SDK release. Exact Android wallet/device/version metadata is not supplied. Original CI failed during installation; the registry repair passed fresh-install local verification and is a local QA candidate awaiting replacement CI; prior human business acceptance is recorded. Historical sections below retain their original observations and are superseded by the latest updates where stated.
 
 ## Context and provenance
 
@@ -499,3 +501,20 @@ Git diff --check exited 0. Git check-ignore confirms generated artifact/experime
 The user subsequently instructed: “please commit your proposed files set.” This supersedes the previous no-commit restriction only for the reviewed 56-file manifest in local artifacts/necessary-files.txt. Verified all selected non-plan/evidence contents are identical to the source set that passed isolated verification (11 harness, 83 API/SDK, 68 browser tests); only these narrative records changed afterward. Stage and commit exactly that set, exclude generated outputs and unrelated changes, and do not push or claim CI success. Existing story BLOCKED/acceptance metadata remains unchanged pending corresponding-commit CI.
 
 Staged-file whitespace check also inspected previously untracked files and found 8 intentional Markdown hard breaks expressed as trailing spaces in docs/UI_DESIGN_CONTRACT.md. Converted those to explicit backslash hard breaks, preserving rendered line breaks and wording; no runtime/test code changed. Staged whitespace validation rerun before committing.
+
+
+## CI install failure repaired with fresh dependencies — 2026-11-05
+
+Original run: https://github.com/CoinsAgent/agent-first-agile-starter/actions/runs/41990581676 on 0c53ea9416c634f8a51d63bf2bb187fbe681c194. It failed at npm ci with “Exit handler never called!”; no product checks ran. Runner reported Node 22.23.4/npm 10.9.9. The npm debug file was not uploaded by that run, so its deeper diagnostic is unavailable. Independently identified a concrete portability defect: 403 package tarball URLs were http://mirrors.tencentyun.com/npm/, which resolves here to link-local 169.254.0.3; other 244 URLs used the public registry. Prior local source verification reused node_modules and did not test fresh installation.
+
+Repair: rewrite only those 403 resolved URLs to https://registry.npmjs.org and explicitly set that registry in .npmrc. Compared entire parsed old/new locks after URL normalization: every package version, integrity hash, dependency edge and other field unchanged. Keep omit=peer and SDK 4.4.0. Added scripts/check-lockfile.mjs, run before npm ci in CI and by project-verify.sh: dependency download URLs must use the public npm registry over HTTPS, with no URL credentials. It reports a count without printing potentially sensitive URLs. No checks skipped/weakened or install scripts disabled.
+
+Observed checks:
+
+- Source checker on original committed lock: exit 1, identifies 403 non-public sources; corrected lock: exit 0.
+- First fresh install in /tmp hit local EDQUOT (-122). Moving source/cache to root filesystem still exposed node-gyp's temporary/header extraction quota; reran with local TMPDIR and npm_config_devdir on that filesystem. These are test-runner resource corrections, not CI check bypasses or dependency changes. Preserved diagnostic logs locally; removed only the failed temporary install/cache created during this repair.
+- Independent source checkout /home/ubuntu/.cache/walletgate-ci-review-shkyfbji has no shared node_modules. `env TMPDIR=... npm_config_devdir=... npm exec --yes --package=npm@10.9.9 --registry=https://registry.npmjs.org -- npm ci --cache /home/ubuntu/.cache/walletgate-ci-npm-cache`: exit 0, 331 packages installed, lifecycle/native build scripts enabled. Install reported 0 vulnerabilities; this is not a broader security certification. Log: artifacts/ci-fresh-install.log. Local Node was 22.22.1, same major but different patch than CI.
+- `env TMPDIR=... bash scripts/verify.sh` in that independently installed source checkout: exit 0; **11 harness, 83 API/SDK and 68 browser tests passed**, plus lock-source check, lint, types and build. Log: artifacts/ci-fresh-verify.log.
+- Fresh review confirmed URL-only lock changes, standard CI install preserved, explicit preflight before network install, no new credentials/permissions, app behavior and SDK versions unchanged. git diff --check: exit 0.
+
+Only eight repair files are selected for the follow-up commit: .npmrc, package-lock.json, scripts/check-lockfile.mjs, scripts/project-verify.sh, .github/workflows/ci.yml, backlog/US-001-01.md, this evidence file and the existing plan. Generated outputs, old experiments, unused images and unrelated edits stay excluded. Prior main-push authorization applies to this necessary CI correction. Local status is QA_PASSED candidate; replacement CI must pass on the pushed repair SHA before G2 is satisfied. No claim that original CI passed, no repeated business acceptance request and no accepted_by/accepted_at metadata written.
