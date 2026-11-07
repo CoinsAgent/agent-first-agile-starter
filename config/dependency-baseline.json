@@ -1,10 +1,35 @@
 {
   "version": 1,
   "violations": [
-    {"importer": "src/main.tsx", "target": "src/hooks/use-wallet-auth.ts", "rule": "private-feature-import", "reason": "Existing app composition imports legacy wallet controller; no migration in US-001-02."},
-    {"importer": "src/main.tsx", "target": "src/components/wallet/wallet-flow.tsx", "rule": "private-feature-import", "reason": "Existing app composition imports legacy wallet view; no migration in US-001-02."},
-    {"importer": "src/main.tsx", "target": "src/components/wallet/mobile-approval.tsx", "rule": "private-feature-import", "reason": "Existing app composition imports legacy phone approval; no migration in US-001-02."},
-    {"importer": "src/main.tsx", "target": "src/wallet-sdk.ts", "rule": "private-feature-import", "reason": "Existing app composition preloads wallet SDK; no migration in US-001-02."},
-    {"importer": "server/index.ts", "target": "server/auth.ts", "rule": "private-feature-import", "reason": "Existing server composition mounts authentication; no migration in US-001-02."}
+    {
+      "importer": "frontend/src/pages/sign-in.tsx",
+      "target": "frontend/src/wallet-auth/hooks/use-wallet-auth.ts",
+      "rule": "private-feature-import",
+      "reason": "Exact US-001-04 translation of src/main.tsx -> src/hooks/use-wallet-auth.ts; same existing private-feature-import relationship, no new exception."
+    },
+    {
+      "importer": "frontend/src/pages/sign-in.tsx",
+      "target": "frontend/src/wallet-auth/components/wallet-flow.tsx",
+      "rule": "private-feature-import",
+      "reason": "Exact US-001-04 translation of src/main.tsx -> src/components/wallet/wallet-flow.tsx; same existing private-feature-import relationship, no new exception."
+    },
+    {
+      "importer": "frontend/src/bootstrap/app.tsx",
+      "target": "frontend/src/wallet-auth/components/mobile-approval.tsx",
+      "rule": "private-feature-import",
+      "reason": "Exact US-001-04 translation of src/main.tsx -> src/components/wallet/mobile-approval.tsx; same existing private-feature-import relationship, no new exception."
+    },
+    {
+      "importer": "frontend/src/bootstrap/app.tsx",
+      "target": "frontend/src/wallet-auth/wallet-sdk.ts",
+      "rule": "private-feature-import",
+      "reason": "Exact US-001-04 translation of src/main.tsx -> src/wallet-sdk.ts; same existing private-feature-import relationship, no new exception."
+    },
+    {
+      "importer": "backend/src/bootstrap/server.ts",
+      "target": "backend/src/wallet-auth/auth.ts",
+      "rule": "private-feature-import",
+      "reason": "Exact US-001-04 translation of server/index.ts -> server/auth.ts; same existing private-feature-import relationship, no new exception."
+    }
   ]
 }

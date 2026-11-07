@@ -23,7 +23,7 @@ for (const theme of ['light','dark'] as const) for (const [width,height] of [[32
         const box=await icon.boundingBox();expect(box!.width).toBeGreaterThanOrEqual(44);expect(box!.height).toBeGreaterThanOrEqual(44);
       }
       expect((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()).violations).toEqual([]);
-      await page.screenshot({path:`work/US-001-01/artifacts/android-compact-${theme}-${width}.png`,fullPage:true});
+      await page.screenshot({path:`work/US-001-04/artifacts/android-compact-${theme}-${width}.png`,fullPage:true});
     }finally{await context.close();}
   });
 }

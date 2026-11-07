@@ -53,10 +53,15 @@ The current default-branch workflow still has old triggers until this change mer
 - [x] Regression tests demonstrate the changed lifecycle and event behavior
 - [x] Local checks and fresh complete-diff review pass
 - [x] Evidence records actual commands/results and limitations
-- [ ] QA_PASSED result presented to the human before PR/CI publication
-- [ ] Human merges only after current required CI and review
-- [ ] Post-human-merge acceptance recorded locally and carried into next approved PR
+- [x] QA_PASSED result presented to the human before PR/CI publication
+- [x] Human merges only after current required CI and review
+- [x] Post-human-merge acceptance recorded locally and preserved for recovery
+- [ ] Carry preserved acceptance record into the next approved PR
 
 ## Completion of local engineering
 
 Full verification passed (43 Python, 29 structure, 83 unit/integration, 68 browser tests plus lint/types/build/dependencies/scope). Independent read-only review found no material defect; three prose clarifications were reviewed afterward. Implementation commit a265247605da8cd8afacd660c3c04310a819f3ba; final record commit contains reviewed prose and QA/evidence bookkeeping only. No paths added beyond the original 26-file declaration. Actual paths match the scope manifest. Human result review precedes all publication/PR/CI; no merge or release is authorized.
+
+## Authorized publication and observed completion
+
+The human explicitly approved PR/CI publication. Published reviewed head c6de960; PR #5 required checks passed in run 42379201607. GitHub subsequently confirms human CoinsAgent merged at 2026-11-07T13:58:30Z as 78c848047ced99104127d595e1aaef420121e593. No agent merge. Record observed acceptance in story/evidence/plan only on local recovery branch `codex/accept-us-001-03`, based on that actual merge. Validate metadata and declared paths locally; preserve this commit for the next approved PR. Do not modify the historical scope manifest, trigger acceptance-only CI or publish a dedicated acceptance PR.

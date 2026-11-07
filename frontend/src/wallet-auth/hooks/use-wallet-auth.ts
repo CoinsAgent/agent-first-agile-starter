@@ -3,7 +3,7 @@ import { connect, disconnect, getConnection, getConnectors, signMessage, switchC
 import type { Connector } from 'wagmi';
 import { sdkIds } from '../wallet-sdk';
 import { walletConfig } from '../wallet';
-import { api, errorMessage, type Challenge, type Session } from '../lib/api';
+import { api, errorMessage, type Challenge, type Session } from '../api';
 
 export function useWalletAuth(phoneRequest?: string) {
   const [session, setSession] = useState<Session | null>(null);

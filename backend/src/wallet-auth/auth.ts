@@ -9,7 +9,7 @@ import { siwe } from 'better-auth/plugins';
 import { getAddress, verifyMessage, type Hex } from 'viem';
 import { createSiweMessage, parseSiweMessage } from 'viem/siwe';
 import { z } from 'zod';
-import type { Config } from './config';
+import type { Config } from '../infrastructure/config';
 import { createQrAuth } from './qr';
 
 export const CHALLENGE_MS = 5 * 60 * 1000;

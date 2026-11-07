@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
-import { api, errorMessage, type QrRequest } from '../../lib/api';
-import { useWalletAuth } from '../../hooks/use-wallet-auth';
-import { Button } from '../ui/button';
+import { api, errorMessage, type QrRequest } from '../api';
+import { useWalletAuth } from '../hooks/use-wallet-auth';
+import { Button } from '../../ui/button';
 import { SignatureReview } from './wallet-flow';
 export function metaMaskLink(url: string) { return `https://link.metamask.io/dapp/${url.replace(/^https?:\/\//, '')}`; }
 export function MobileApproval({ id }: { id: string }) {

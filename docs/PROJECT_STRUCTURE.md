@@ -6,17 +6,17 @@ This is the authoritative human-readable structure guide for this repository. Pr
 
 Document the intended structure and proposed paths on the story branch before implementing a new area. Obtain a human decision if the structure changes approved story outcomes or other human-owned boundaries. Create a directory only when an approved task needs its first real file. Do not scaffold empty features, add placeholder services, or create folders for the entire roadmap. A documented path is a placement rule, not permission to edit it.
 
-The skeleton below defines the selected migration target. The existing-code table separately identifies current locations. Other projects adopting the starter may choose different paths while preserving the responsibilities and dependency rules. Target paths do not exist merely because they appear here; their first use must be included in the task's approved file scope. Changes to ownership or the skeleton need human review before affected implementation.
+The skeleton below describes the adopted US-001-04 layout. Entries marked `[future]` remain documentation-only destinations. The historical mapping explains earlier records without changing their results.
 
-## Intended skeleton
+## Adopted skeleton
 
-### Selected future naming — separate migration
+### Frontend and backend ownership
 
-The human selected `frontend/src/` for React and `backend/src/` for Node.js, initially with one root `package.json` and lockfile. The separate DRAFT [US-001-04](../backlog/US-001-04.md) proposes the existing→target mapping, tooling/import updates and regression checks. This is a future naming decision, not an instruction to move code during another story. Feature-owned code, shared UI/helpers and app composition retain their logical roles under the new prefixes; `shared/contracts/` remains optional and runtime-neutral.
+React source is in `frontend/src/`, Node.js source in `backend/src/`, and the HTML entry in `frontend/index.html`. One root package and lockfile remain authoritative. The active `@/` alias resolves to `frontend/src/`. Root `src/` and `server/` are historical locations and contain no active implementation.
 
-Until that migration is approved and delivered, current application code, build paths and the active `@/` alias continue to use root `src/` and `server/`, as identified in the existing-code table. The transition ownership declaration checks those existing sources and explicitly declares the selected `frontend/src/` and `backend/src/` destinations, so any approved code introduced there is checked too. It grants no generic `app/` or `features/` directory ownership. Do not drop current-source coverage, switch active imports/build paths, create duplicate implementations, or change US-001-02's approved scope ahead of actual migration. Preserve the five real current baseline edges until their exact migration is reviewed; declaring future public interfaces does not exempt legacy private imports.
+The executable declaration covers the adopted roots. Five existing private-feature imports are translated one-for-one in the finite baseline, with old paths in each rationale; they remain legacy exceptions rather than new public APIs. The exact move inventory is in `work/US-001-04/mapping.json`. This migration changes no earlier story's approved scope or historical evidence.
 
-For the future frontend, the human selected explicit responsibilities directly under `frontend/src/`, rather than generic `app/` and `features/` containers:
+For the frontend, the human selected explicit responsibilities directly under `frontend/src/`, rather than generic `app/` and `features/` containers:
 
 | Selected target | Logical ownership and responsibility |
 |---|---|
@@ -33,7 +33,7 @@ Pages/bootstrap have composition ownership, the named domains retain feature own
 
 OIDC Core terminology informs authentication/authorization responsibilities, not React folder names. Discovery is backend-published machine-readable metadata, not a frontend page/domain. Do not create consent/application pages or empty `authorization/`/`applications/` directories as part of migrating the existing sign-in implementation.
 
-For the future backend, the human selected explicit domain names directly under `backend/src/`, rather than generic `app/` and `features/` containers:
+For the backend, the human selected explicit domain names directly under `backend/src/`, rather than generic `app/` and `features/` containers:
 
 | Selected target | Logical ownership and responsibility |
 |---|---|
@@ -48,9 +48,9 @@ These names change placement, not dependency principles: bootstrap consumes doma
 
 Within future `oidc/`, names such as `discovery.ts`, `authorization.ts`, `token.ts`, `jwks.ts`, `consent.ts` and `claims.ts` express responsibilities aligned with OIDC Core/Discovery. They are implementation conventions, not protocol-mandated filenames or endpoint URLs. Reuse supported Better Auth provider functionality instead of handwritten token/cryptographic implementations. Discovery describes provider capabilities and endpoint/key locations; wallet verification and owner application management keep their own domain ownership. These future capabilities belong to US-002–US-004, not the layout migration. Do not scaffold empty OIDC/application modules or split existing mixed auth responsibilities merely to populate this proposed structure.
 
-### Selected target tree
+### Adopted tree and future destinations
 
-This is the single intended tree. It replaces earlier proposals for generic production `app/`, `features/` and `shared/ui/` containers. Comments identify the responsibility of each directory. `[future]` means reserve the ownership in documentation only; create no empty directory or placeholder module until an approved story requires real code.
+This is the single adopted tree, with future destinations explicitly marked. It replaces earlier proposals for generic production `app/`, `features/` and `shared/ui/` containers. Comments identify the responsibility of each directory. `[future]` means reserve the ownership in documentation only; create no empty directory or placeholder module until an approved story requires real code.
 
 ```text
 AGENTS.md                         Codex entry instructions and document routing
@@ -78,7 +78,7 @@ frontend/
       wallet.ts                   Wallet connection integration
       wallet-sdk.ts               Wallet SDK integration
       api.ts                      Browser calls to authentication HTTP endpoints
-      index.ts                    Public domain interface when needed
+      index.ts                    [future] Public domain interface when needed
     authorization/                [future] Application/scopes context and allow/deny UI
     applications/                 [future] Owner registration/management interactions
     ui/                           Generic presentation primitives; no domain imports
@@ -93,7 +93,7 @@ backend/
     wallet-auth/
       auth.ts                     Existing SIWE/session/auth integration
       qr.ts                       Existing cross-device approval behavior
-      index.ts                    Public domain interface when needed
+      index.ts                    [future] Public domain interface when needed
     oidc/                         [future] OIDC Core/Discovery provider integration
     applications/                 [future] Owner-authorized client configuration
     infrastructure/
@@ -109,27 +109,33 @@ Subfiles are responsibility examples, not a mandatory file count or layering fra
 
 The existing central `tests/app/` has a dedicated meaning: application unit/integration tests. Retaining it does not authorize a production `app/` container or imply a test migration. Likewise, machine-declaration role labels `app`, `feature` and `shared` describe composition, domains and generic building blocks; they are not filesystem directory names. During migration configure the explicit target directories to those roles without requiring a literal `features/` path.
 
-## Existing code: find it before adding a replacement
+## Existing code: find its current owner
 
-| Current location | Responsibility and handling |
+| Current location | Responsibility |
 |---|---|
-| `src/main.tsx` | Current app assembly and legacy authentication presentation; inspect before changing page assembly. Extract only within approved scope. |
-| `src/components/wallet/` | Existing wallet-specific presentation, not reusable shared UI. Keep current paths for scoped maintenance; no parallel implementation under a new path. |
-| `src/hooks/use-wallet-auth.ts` | Existing wallet authentication orchestration. Feature-owned despite its current global path. |
-| `src/wallet.ts`, `src/wallet-sdk.ts` | Existing wallet connection/SDK integration. Feature-owned, not generic helpers. |
-| `src/lib/api.ts` | Existing browser authentication API client. Its directory does not make it shared infrastructure. |
-| `src/lib/utils.ts` | Existing generic frontend presentation helper; keep it independent of wallet features. |
-| `src/components/ui/` | Shared primitives such as buttons and dialogs; receive feature behavior through props/callbacks. |
-| `src/style.css`, `src/assets/`, `src/walletgate.png` | Existing global theme/assets and original branding asset. Follow asset preservation rules in the relevant story; an unused file is not permission to delete it. |
-| `server/index.ts` | Current HTTP startup/composition; target `backend/src/bootstrap/server.ts` with a thin `backend/src/index.ts` entry only during the approved migration. |
-| `server/auth.ts`, `server/qr.ts` | Existing authentication/QR backend behavior. Maintain here until the separately approved migration to `backend/src/wallet-auth/`; do not duplicate it in another directory. |
-| `server/config.ts` | Existing backend runtime configuration. Server-only; never import into browser code. |
-| Root package/lock/config files, `index.html`, `.npmrc`, `.gitignore`, `.env.example`, `components.json`, `skills-lock.json` when present | Dependency, entry, tool, environment-template or skill-install configuration. Each necessary edit requires explicit inclusion in task scope. Never place credentials in source or templates. |
-| `.vscode/` | Existing editor configuration, not application source. Changes still need explicit scope. |
-| `data/`, `.env`, local databases | Runtime/local state, not feature source or output to commit. Data operations require their own authorization. |
-| `node_modules/`, `dist/`, `test-results/`, `playwright-report/`, ignored work artifacts/experiments | Dependencies or generated/local outputs, not application source. Do not hand-edit outputs to implement a feature or add them to source commits. Historical tracked artifacts remain subject to approved scope. |
+| `frontend/src/main.tsx` | React mounting only |
+| `frontend/src/bootstrap/app.tsx` | SDK preload, CSP style nonce, theme control and existing hash/page dispatch |
+| `frontend/src/pages/sign-in.tsx` | Sign-in screen assembly; component state/effects preserved |
+| `frontend/src/wallet-auth/components/` | Wallet-specific presentation and phone approval |
+| `frontend/src/wallet-auth/hooks/use-wallet-auth.ts` | Existing authentication orchestration |
+| `frontend/src/wallet-auth/wallet.ts`, `frontend/src/wallet-auth/wallet-sdk.ts` | Wallet configuration and SDK integration |
+| `frontend/src/wallet-auth/api.ts` | Browser authentication HTTP client |
+| `frontend/src/ui/`, `frontend/src/lib/utils.ts` | Generic primitives/helpers independent of domains |
+| `frontend/src/styles/style.css`, `frontend/src/assets/` | Original global theme, branding PNG, icons and attribution |
+| `backend/src/index.ts`, `backend/src/bootstrap/server.ts` | Thin entry and unchanged server composition/startup |
+| `backend/src/wallet-auth/auth.ts`, `backend/src/wallet-auth/qr.ts` | Existing SIWE/session and QR behavior |
+| `backend/src/infrastructure/config.ts` | Generic server-only runtime configuration |
+| `frontend/index.html`; root package/lock/tool files | Browser entry; root dependency/build/test configuration |
+| `tests/app/`, `tests/e2e/`, `tests/structure/` | Application, browser and ownership/scope regression tests |
+| `.vscode/`, `.agents/`, `.github/`, `docs/`, `backlog/`, `work/` | Editor, workflow, CI and documentation; each edit requires declared scope |
+| `data/`, `.env`, local databases | Runtime/local state; untouched by migration |
+| `node_modules/`, `dist/`, `test-results/`, `playwright-report/` | Dependencies/generated outputs, not source |
 
-This table is the human-readable orientation map; `config/project-structure.json` supplies executable ownership and `config/dependency-baseline.json` records exact existing violations. Keep them consistent through human-reviewed changes, without copying another directory tree. Existing paths are retained; no new reverse dependency is justified by legacy placement. If current reality differs, identify the mismatch and propose the smallest update rather than silently relocating code. The initial inventory includes tracked root files, all tracked top-level directories, 16 production modules and five baselined private-feature imports; runtime/local outputs remain non-source areas.
+`config/project-structure.json` supplies executable ownership; `config/dependency-baseline.json` records the same five legacy relationships. This guide is the human-readable orientation map, not a separate lifecycle record.
+
+### Historical paths
+
+Before US-001-04, root `src/main.tsx` combined mounting, theme/dispatch and sign-in. `src/components/wallet/`, `src/hooks/use-wallet-auth.ts`, `src/wallet.ts`, `src/wallet-sdk.ts` and `src/lib/api.ts` held wallet behavior. `src/components/ui/`, `src/lib/utils.ts`, `src/style.css`, `src/assets/` and `src/walletgate.png` held generic presentation/assets. Root `server/index.ts`, `server/auth.ts`, `server/qr.ts`, `server/config.ts` and `index.html` held server/entry code. Earlier evidence and approvals retain these historical paths and original results. Consult `work/US-001-04/mapping.json` for exact move endpoints; do not restore duplicate code at historical locations.
 
 ## Dependency principles
 
@@ -139,18 +145,18 @@ This table is the human-readable orientation map; `config/project-structure.json
 - Product-specific assembly belongs in frontend `pages/`/`bootstrap/` or backend `bootstrap/`, not a generic `app/` folder. A header showing wallet identity can combine reusable UI with a wallet domain's exported component. Calling it a shared header does not make a wallet dependency generic.
 - Browser code calls backend HTTP endpoints through a frontend API client. It must not import server implementation, database handles, secrets or server configuration, even from a public interface.
 - Cross-runtime contracts contain only safe types/schemas and runtime-neutral validation where needed. They cannot import frontend or backend feature implementations. Shared frontend helpers and backend infrastructure remain separate; similar names alone do not justify sharing.
-- Existing dependency violations are individually recorded in the finite baseline; no blanket exemption or automatic regeneration is provided. The five initial entries preserve existing app/server assembly imports without moving code. They are candidate bootstrap policy requiring human review, not agent-authenticated approvals of permanent exceptions. Removed violations may remain as reported stale entries until a reviewed cleanup; they need not be reintroduced.
+- Existing dependency violations are individually recorded in the finite baseline; no blanket exemption or automatic regeneration is provided. The five entries preserve the same composition-to-domain relationships at their adopted paths, with old→new provenance. They are candidate bootstrap policy requiring human review, not agent-authenticated approvals of permanent exceptions. Removed violations may remain as reported stale entries until a reviewed cleanup; they need not be reintroduced.
 
 ## Choose where to add or update code
 
 | Change | Placement decision |
 |---|---|
 | Fix existing wallet connection/signing | Inspect the existing wallet modules/controller/components above and update the owner; avoid a duplicate implementation. |
-| Add UI for a new approved domain | The specifically named frontend domain (`wallet-auth/`, `authorization/`, or `applications/`), with its components, hooks and browser API calls as needed. Use current owners until the migration is delivered. |
-| Add a reusable button/dialog | Current `src/components/ui/`, then target `frontend/src/ui/` after migration; no domain imports. Require actual reuse rationale and explicit scope for generic-code changes. |
+| Add UI for a new approved domain | The specifically named frontend domain (`wallet-auth/`, `authorization/`, or `applications/`), with its components, hooks and browser API calls as needed. Use the current owners above. |
+| Add a reusable button/dialog | `frontend/src/ui/`; no domain imports. Require actual reuse rationale and explicit scope for generic-code changes. |
 | Add a domain-specific helper | Its named domain, not generic `lib/` merely because it is a function. |
-| Assemble a screen | Target frontend `pages/`; `pages/sign-in.tsx` assembles wallet authentication. Until migration, inspect the existing composition in `src/main.tsx`. |
-| Configure providers/navigation/startup | Target frontend or backend `bootstrap/`; consume domains through their public interfaces. Preserve current startup/dispatch until the approved mechanical extraction. |
+| Assemble a screen | Frontend `pages/`; `pages/sign-in.tsx` assembles wallet authentication. |
+| Configure providers/navigation/startup | Frontend or backend `bootstrap/`; consume domains through their public interfaces. Preserve the existing startup and hash dispatch behavior. |
 | Add a backend endpoint | Its specifically named backend domain (`wallet-auth/`, `oidc/`, or `applications/`); mount through `bootstrap/server.ts`. No generic `features/` or parallel root API bucket. |
 | Add a browser API call | The calling frontend domain's `api.ts`; no database or server implementation imports. |
 | Share a request/response schema across runtimes | A narrowly scoped runtime-neutral contract in the declared shared contract area, if needed and approved. |

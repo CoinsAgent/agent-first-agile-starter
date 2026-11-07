@@ -1,41 +1,123 @@
 {
   "version": 1,
-  "description": "Transition configuration for US-001-04: check existing src/server and any code introduced at the selected frontend/backend destinations. Do not move code or change the active @/ alias before approved migration. Role app means composition, feature means a named domain, and shared means domain-independent code; these labels do not require app/ or features/ directories.",
-  "source_roots": ["src", "server", "frontend/src", "backend/src", "shared"],
-  "aliases": {"@/": "src"},
+  "description": "Adopted US-001-04 layout: frontend/backend explicit responsibilities. app = composition, feature = domain, shared = generic independent code. Future domains are declarations only, not scaffolding.",
+  "source_roots": [
+    "frontend/src",
+    "backend/src",
+    "shared"
+  ],
+  "aliases": {
+    "@/": "frontend/src"
+  },
   "owners": [
-    {"path": "src/main.tsx", "kind": "file", "role": "app", "runtime": "browser"},
-    {"path": "src/components/ui", "kind": "directory", "role": "shared", "runtime": "browser"},
-    {"path": "src/lib/utils.ts", "kind": "file", "role": "shared", "runtime": "browser"},
-    {"path": "src/assets", "kind": "directory", "role": "shared", "runtime": "browser"},
-    {"path": "src/style.css", "kind": "file", "role": "shared", "runtime": "browser"},
-    {"path": "src/walletgate.png", "kind": "file", "role": "shared", "runtime": "browser"},
-    {"path": "src/components/wallet", "kind": "directory", "role": "feature", "feature": "wallet-browser", "runtime": "browser"},
-    {"path": "src/hooks/use-wallet-auth.ts", "kind": "file", "role": "feature", "feature": "wallet-browser", "runtime": "browser"},
-    {"path": "src/lib/api.ts", "kind": "file", "role": "feature", "feature": "wallet-browser", "runtime": "browser"},
-    {"path": "src/wallet.ts", "kind": "file", "role": "feature", "feature": "wallet-browser", "runtime": "browser"},
-    {"path": "src/wallet-sdk.ts", "kind": "file", "role": "feature", "feature": "wallet-browser", "runtime": "browser"},
-    {"path": "server/index.ts", "kind": "file", "role": "app", "runtime": "server"},
-    {"path": "server/config.ts", "kind": "file", "role": "shared", "runtime": "server"},
-    {"path": "server/auth.ts", "kind": "file", "role": "feature", "feature": "wallet-server", "runtime": "server"},
-    {"path": "server/qr.ts", "kind": "file", "role": "feature", "feature": "wallet-server", "runtime": "server"},
-    {"path": "shared/contracts", "kind": "directory", "role": "shared", "runtime": "neutral"},
-    {"path": "frontend/src/main.tsx", "kind": "file", "role": "app", "runtime": "browser"},
-    {"path": "frontend/src/bootstrap", "kind": "directory", "role": "app", "runtime": "browser"},
-    {"path": "frontend/src/pages", "kind": "directory", "role": "app", "runtime": "browser"},
-    {"path": "frontend/src/wallet-auth", "kind": "directory", "role": "feature", "feature": "wallet-browser", "runtime": "browser"},
-    {"path": "frontend/src/authorization", "kind": "directory", "role": "feature", "feature": "authorization-browser", "runtime": "browser"},
-    {"path": "frontend/src/applications", "kind": "directory", "role": "feature", "feature": "applications-browser", "runtime": "browser"},
-    {"path": "frontend/src/ui", "kind": "directory", "role": "shared", "runtime": "browser"},
-    {"path": "frontend/src/lib", "kind": "directory", "role": "shared", "runtime": "browser"},
-    {"path": "frontend/src/assets", "kind": "directory", "role": "shared", "runtime": "browser"},
-    {"path": "frontend/src/styles", "kind": "directory", "role": "shared", "runtime": "browser"},
-    {"path": "backend/src/index.ts", "kind": "file", "role": "app", "runtime": "server"},
-    {"path": "backend/src/bootstrap", "kind": "directory", "role": "app", "runtime": "server"},
-    {"path": "backend/src/wallet-auth", "kind": "directory", "role": "feature", "feature": "wallet-server", "runtime": "server"},
-    {"path": "backend/src/oidc", "kind": "directory", "role": "feature", "feature": "oidc-server", "runtime": "server"},
-    {"path": "backend/src/applications", "kind": "directory", "role": "feature", "feature": "applications-server", "runtime": "server"},
-    {"path": "backend/src/infrastructure", "kind": "directory", "role": "shared", "runtime": "server"}
+    {
+      "path": "shared/contracts",
+      "kind": "directory",
+      "role": "shared",
+      "runtime": "neutral"
+    },
+    {
+      "path": "frontend/src/main.tsx",
+      "kind": "file",
+      "role": "app",
+      "runtime": "browser"
+    },
+    {
+      "path": "frontend/src/bootstrap",
+      "kind": "directory",
+      "role": "app",
+      "runtime": "browser"
+    },
+    {
+      "path": "frontend/src/pages",
+      "kind": "directory",
+      "role": "app",
+      "runtime": "browser"
+    },
+    {
+      "path": "frontend/src/wallet-auth",
+      "kind": "directory",
+      "role": "feature",
+      "feature": "wallet-browser",
+      "runtime": "browser"
+    },
+    {
+      "path": "frontend/src/authorization",
+      "kind": "directory",
+      "role": "feature",
+      "feature": "authorization-browser",
+      "runtime": "browser"
+    },
+    {
+      "path": "frontend/src/applications",
+      "kind": "directory",
+      "role": "feature",
+      "feature": "applications-browser",
+      "runtime": "browser"
+    },
+    {
+      "path": "frontend/src/ui",
+      "kind": "directory",
+      "role": "shared",
+      "runtime": "browser"
+    },
+    {
+      "path": "frontend/src/lib",
+      "kind": "directory",
+      "role": "shared",
+      "runtime": "browser"
+    },
+    {
+      "path": "frontend/src/assets",
+      "kind": "directory",
+      "role": "shared",
+      "runtime": "browser"
+    },
+    {
+      "path": "frontend/src/styles",
+      "kind": "directory",
+      "role": "shared",
+      "runtime": "browser"
+    },
+    {
+      "path": "backend/src/index.ts",
+      "kind": "file",
+      "role": "app",
+      "runtime": "server"
+    },
+    {
+      "path": "backend/src/bootstrap",
+      "kind": "directory",
+      "role": "app",
+      "runtime": "server"
+    },
+    {
+      "path": "backend/src/wallet-auth",
+      "kind": "directory",
+      "role": "feature",
+      "feature": "wallet-server",
+      "runtime": "server"
+    },
+    {
+      "path": "backend/src/oidc",
+      "kind": "directory",
+      "role": "feature",
+      "feature": "oidc-server",
+      "runtime": "server"
+    },
+    {
+      "path": "backend/src/applications",
+      "kind": "directory",
+      "role": "feature",
+      "feature": "applications-server",
+      "runtime": "server"
+    },
+    {
+      "path": "backend/src/infrastructure",
+      "kind": "directory",
+      "role": "shared",
+      "runtime": "server"
+    }
   ],
   "feature_roots": [],
   "public_interfaces": [
@@ -47,10 +129,8 @@
     "backend/src/applications/index.ts"
   ],
   "repository_areas": {
-    "src": "Frontend source; precise ownership is declared above",
-    "server": "Backend source; precise ownership is declared above",
-    "frontend": "Selected React destination: bootstrap/pages for composition, named domains, generic ui/lib/assets/styles; create only approved real files",
-    "backend": "Selected Node.js destination: bootstrap, named wallet-auth/oidc/applications domains, generic infrastructure; create only approved real files",
+    "frontend": "React mounting/bootstrap/pages, wallet-auth domain and generic ui/lib/assets/styles",
+    "backend": "Node.js entry/bootstrap, wallet-auth domain and generic infrastructure",
     "shared": "Proposed runtime-neutral contracts",
     "tests": "Harness, application and browser tests; production dependency rules do not forbid test access to internals",
     "scripts": "Automation and verification",
@@ -63,6 +143,27 @@
     "work": "Per-story execution plans/evidence; historical tracked artifacts",
     "root_files": "Package/lock, tool and entry configuration, environment templates, README, license/ignore files and AGENTS instructions; individual files still require approved scope"
   },
-  "root_files": [".env.example", ".gitignore", ".npmrc", "AGENTS.md", "README.md", "components.json", "index.html", "package-lock.json", "package.json", "playwright.config.ts", "tsconfig.json", "vite.config.ts", "vitest.config.ts", "skills-lock.json"],
-  "non_source": ["node_modules", "dist", "data", "test-results", "playwright-report", ".env"]
+  "root_files": [
+    ".env.example",
+    ".gitignore",
+    ".npmrc",
+    "AGENTS.md",
+    "README.md",
+    "components.json",
+    "package-lock.json",
+    "package.json",
+    "playwright.config.ts",
+    "tsconfig.json",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "skills-lock.json"
+  ],
+  "non_source": [
+    "node_modules",
+    "dist",
+    "data",
+    "test-results",
+    "playwright-report",
+    ".env"
+  ]
 }
