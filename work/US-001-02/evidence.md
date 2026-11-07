@@ -1,5 +1,9 @@
 # Evidence — US-001-02
 
+Status: PASS
+
+Current result: revised local engineering checks passed; published-commit CI is pending. Earlier observations below are historical and superseded where explicitly identified.
+
 ## Scope and environment
 
 Implement only the approved structure/scope harness plan. Existing application source remains in place. Human approval of the plan and paths is recorded in the conversation and plan; no host approval is inferred from local metadata.
@@ -164,7 +168,7 @@ The former App/scope-authorization requirements are superseded by the explicit h
 Document verification: `python3 scripts/check_harness.py` exited 0 (8 story files); `git diff --check` exited 0. These are document/format checks, not a new product-suite result.
 
 
-## Revised acceptance assessment — current delivery follow-up
+## Acceptance matrix
 
 Base: `38d85b6ec44f71468fe5200491ae12cb3fa1a204` (merged PR #2). Branch: `codex/us-001-02-process-qa`. This section supersedes the historical App/reviewer blockers above under the human's explicit workflow revision. No human acceptance is asserted.
 
@@ -184,3 +188,16 @@ Fresh review: checked process/context diff, removed stale App/pre-edit approval 
 Local full-run log: `/tmp/us-001-02-process-qa/work/US-001-02/artifacts/revised-verify.log` (ignored artifact). An initial attempt to redirect output before the artifacts directory existed failed before running the verification command; directory creation fixed the setup without changing checks. CI for the new commit must run before claiming G2 satisfied.
 
 Observed local final result: `bash scripts/verify.sh` exited 0: 33 Python tests, 29 structure fixtures, 83 application tests, 68 Playwright tests (51.6s), plus lock-source validation, lint, types and build. Status is QA_PASSED as a local technical candidate; CI for this revision is pending. Human approval/acceptance metadata is unchanged.
+
+
+## Verification
+
+The complete local product run passed (33 Python, 29 structure, 83 application, 68 browser tests; lint/types/build). The actual committed scope check passed for base `38d85b6ec44f71468fe5200491ae12cb3fa1a204` to `560278f`. After switching to QA_PASSED, the metadata checker correctly rejected the older evidence format: it lacked Status: PASS and four required sections. This follow-up adds the actual local result and required sections; it does not change checks. Rerun the full verification in QA_PASSED state and require current-commit CI before reporting G2 complete.
+
+## Review
+
+Fresh self-review of the full process/context diff found no application/checker/CI changes and no human metadata edits. Fixed outdated host-protection descriptions and removed pre-edit authorization requirements as explicitly requested. US-001-03 is published only as DRAFT context, not delivered. The branch contains only declared paths. Human review/merge and business acceptance remain pending.
+
+## Known limitations
+
+Static import coverage is bounded as documented in PROJECT_STRUCTURE. Scope manifests and checks may be edited on the branch and rely on human final review. Browser tests use simulated providers/relays where specified, not a claim of physical-device compatibility. Legacy approval diagnostics are optional. Local Status: PASS does not establish CI success, merge approval or human acceptance.
