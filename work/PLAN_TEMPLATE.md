@@ -34,7 +34,9 @@
 
 ## Verification commands
 
-- `bash scripts/verify.sh` (requires a real `scripts/project-verify.sh` once implementation starts)
+- Focused relevant checks during development; ordinary debugging remains IN_PROGRESS
+- `bash scripts/verify.sh` before every QA_PASSED transition (requires real stack-specific checks)
+- No pre-approval PR/CI or duplicate post-merge full run; monitor published CI without continuous polling
 
 ## Risks / dependency / human decisions
 
@@ -48,5 +50,7 @@
 - [ ] Independent review performed if appropriate
 - [ ] Evidence is recorded for current commit
 - [ ] Complete branch diff and actual paths are presented for human review
-- [ ] Merge authorization and host requirements are satisfied before merging
-- [ ] Business acceptance remains separate
+- [ ] Human finished-result approval precedes PR/CI publication
+- [ ] Required current PR checks and renewed human review precede human merge
+- [ ] Confirmed human merge is recorded as local acceptance with provenance
+- [ ] Local acceptance record is preserved for recovery and the next approved PR

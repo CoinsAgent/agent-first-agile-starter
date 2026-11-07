@@ -201,3 +201,8 @@ Fresh self-review of the full process/context diff found no application/checker/
 ## Known limitations
 
 Static import coverage is bounded as documented in PROJECT_STRUCTURE. Scope manifests and checks may be edited on the branch and rely on human final review. Browser tests use simulated providers/relays where specified, not a claim of physical-device compatibility. Legacy approval diagnostics are optional. Local Status: PASS does not establish CI success, merge approval or human acceptance.
+
+
+## Explicit human acceptance record
+
+On 2026-11-07 the human instructed “Accept US-001-02”. Recorded ACCEPTED, accepted_by CoinsAgent and accepted_at 2026-11-07 in the story using the established human identity and explicit decision. PR #3 merged as `04629ff6565e25cd3871af58186d0a5fd8b921d0`. This acceptance-only follow-up does not change implementation or invalidate previous technical evidence; local verification is limited to metadata/format and declared diff checks. Hosted required verification will run on publication. US-001-03 remains DRAFT; no release or merge is performed by this record update.

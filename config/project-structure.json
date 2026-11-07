@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "description": "Transition configuration for US-001-03: check existing src/server and any code introduced at the selected frontend/backend destinations. Do not move code or change the active @/ alias before approved migration. Role app means composition, feature means a named domain, and shared means domain-independent code; these labels do not require app/ or features/ directories.",
+  "description": "Transition configuration for US-001-04: check existing src/server and any code introduced at the selected frontend/backend destinations. Do not move code or change the active @/ alias before approved migration. Role app means composition, feature means a named domain, and shared means domain-independent code; these labels do not require app/ or features/ directories.",
   "source_roots": ["src", "server", "frontend/src", "backend/src", "shared"],
   "aliases": {"@/": "src"},
   "owners": [

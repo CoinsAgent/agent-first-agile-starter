@@ -111,6 +111,18 @@ Until both real environments are observed, AC-09 remains incomplete and the
 story cannot be reported as QA_PASSED. Successful local checks also do not
 establish CI success for a future commit or human business acceptance.
 
+## Delivery verification cadence
+
+Use focused checks during development and the full `bash scripts/verify.sh`
+before every agent transition to `QA_PASSED`. Keep ordinary debugging
+`IN_PROGRESS`; `BLOCKED` means progress cannot continue. Human approval of the
+finished local result starts PR/CI; required checks still precede human merge.
+PR creation/code updates trigger CI, without duplicate full verification on
+pushes or merge. Human merge means acceptance, recorded locally with observed
+merge provenance and included in the next approved PR. Main may show the earlier
+QA status until that later merge; recover local records before the next WIP
+check. See [PROCESS](PROCESS.md) for the full review and recovery rules.
+
 ## Implementation references
 
 The installed versions are pinned by package-lock.json. The integration uses
