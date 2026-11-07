@@ -66,5 +66,3 @@ Codex recognizes `AGENTS.md` and repository-local `.agents/skills/*/SKILL.md`. A
 - https://developers.openai.com/codex/skills/
 - https://developers.openai.com/cookbook/examples/codex/iterating-development-workflows-with-codex
 - https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
-
-<!-- US-001-02 temporary negative scope probe: deliberately outside the proposed paths; revert after CI rejects it. -->
