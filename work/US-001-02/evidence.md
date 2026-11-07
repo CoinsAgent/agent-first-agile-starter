@@ -1,0 +1,128 @@
+# Evidence — US-001-02
+
+## Scope and environment
+
+Implement only the approved structure/scope harness plan. Existing application source remains in place. Human approval of the plan and paths is recorded in the conversation and plan; no host approval is inferred from local metadata.
+
+Starting commit: `c165e43`. Initial dirty context changes and unrelated untracked skill files are preserved. No push, merge, deployment or host settings change is authorized/performed by this record.
+
+## Observations before implementation
+
+- GitHub connector reports repository ID 1443930837, public repository, default branch main; CoinsAgent has admin permission.
+- `gh api repos/CoinsAgent/agent-first-agile-starter/branches/main/protection`: HTTP 404, “Branch not protected”.
+- `gh api repos/CoinsAgent/agent-first-agile-starter/rulesets`: empty list.
+- Therefore live protected merging is not configured. Local fixtures cannot establish AC-11. Human-reviewed bootstrap and external setup remain required; no host setting has been changed.
+- Installed TypeScript is 7.0.2. Its standard module exports version data only; parser access exists through its installed `typescript/unstable/sync` and AST APIs. No dependency upgrade is proposed.
+
+## Acceptance and verification
+
+Local implementation completed and checked as below. The story is BLOCKED on the live host gate, not QA_PASSED or ACCEPTED. Local fixtures cannot substitute for authenticated production-host review/merge controls.
+
+## Implemented scope
+
+- `config/project-structure.json`: configurable owners/runtimes, named feature roots, explicit public interfaces, aliases and repository-area/root-file inventory; current layout plus differently named fixture.
+- `config/dependency-baseline.json`: five exact existing private-feature edges, each with a legacy rationale; no wildcard exemption or auto-update command. Initial policy still needs bootstrap human review.
+- `scripts/check_scope.py`: complete explicit base/head diff, rename endpoints, added/removed files, path/schema validation, symlink/submodule rejection and non-ancestor-base failure with branch-update guidance.
+- `scripts/check_dependencies.mjs`: native TypeScript AST analysis of first-party modules; public/private and shared/app/runtime rules, typed imports/re-exports/aliases, literal dynamic/CommonJS forms and finite baseline checking. Candidate Git modules are parsed from safe regular blobs, never imported or checked out.
+- `scripts/verify_scope_approval.py` and `.github/scope-policy.json`: read-only host identity/comment/review retrieval; exact scope/governance binding; separate scope authorization from final current-head review. The CI trusted job uses base/default-branch code and read-only permissions. It is deliberately diagnostic, not a head-bound merge authorization.
+- Scope/approval/dependency fixtures and default verification integration, including optional actual-diff environment inputs. Context guidance documents actual controls and remaining limits.
+- `src/`, `server/`, package manifests/lockfile and application tests were not changed. `git diff --name-only -- src server package.json package-lock.json` produced no paths. Unrelated untracked grill-me skill and skills-lock file were preserved and excluded from the source proposal.
+
+## Actual observed commands and outcomes
+
+Environment: Node v22.22.1, Python 3.14.4, installed TypeScript 7.0.2; existing dependency installation reused. This is not a fresh-install or hosted-CI result.
+
+| Command/check | Observed result |
+|---|---|
+| Initial `python3 -m unittest discover -s tests -p 'test_scope*.py'` before checker implementation | Exit 1: missing checker modules, establishing the fixtures did not pass without implementation. |
+| Final `python3 -m unittest discover -s tests -p 'test_*.py'` | Exit 0: 31 tests (11 existing harness + 20 new scope/approval cases). |
+| `node --test tests/structure/*.test.mjs` | Exit 0: 25 fixtures, including a second layout, backend/public/private rules, type-only/alias/re-export cases, finite baseline, source symlinks and nonexecuted Git snapshots. |
+| `node scripts/check_dependencies.mjs` | Exit 0: 16 production modules, 33 first-party/builtin edges, five exact existing violations, zero new errors and zero stale baseline entries. |
+| Final `bash scripts/verify.sh` after code/review fixes | Exit 0: the 31 Python tests and 25 dependency fixtures above, ownership/dependency analysis, lock-source check, lint, TypeScript, 83 Vitest application tests, build and 68 Playwright tests. Browser suite reported 68 passed in 52.1s. |
+| `python3 scripts/verify_scope_approval.py --pr 0` | Expected exit 1: positive PR number required; no approval inferred and no network request needed. |
+| `python3 -m py_compile scripts/check_scope.py scripts/verify_scope_approval.py` | Exit 0. |
+| YAML parsing of `.github/workflows/ci.yml` with PyYAML BaseLoader | Exit 0; syntax parsed, not evidence that GitHub ran it. |
+| `python3 .../skill-creator/scripts/quick_validate.py .agents/skills/shape-story` and corresponding deliver-story invocation | Exit 0 for each; “Skill is valid!” No behavioral/human approval inferred. |
+| `git diff --check` | Exit 0. |
+
+Earlier integrated verification also passed; the final run above supersedes earlier intermediate fixture failures. A temporary circular AST-serialization error was corrected by passing the parser API a filename rather than a remote source object; a wrong relative path in the runtime-boundary fixture was corrected. The initial repository inventory correctly failed on undeclared existing `.vscode/`, then the declaration/guide were updated to classify it. No required check was disabled to make these pass.
+
+The default local verification run explicitly reports no selected actual Git diff unless all `STRUCTURE_SCOPE_BASE`, `STRUCTURE_SCOPE_HEAD` and `STRUCTURE_SCOPE_FILE` inputs are supplied. It always runs scope/authorization fixtures and the real production dependency check. Actual diff coverage was separately exercised against the complete isolated proposal below.
+
+## Complete proposed source-diff audit
+
+Constructed an isolated local clone from the current committed base and overlaid only the approved scope paths (including existing requested context changes and the explicitly supplied story metadata). Created a **temporary review-fixture commit**, not a commit/branch in the source repository; no push/publication occurred.
+
+- Local review checkout: `/tmp/us-001-02-source-review-ihj72w8m`.
+- Base: `c165e4319b6a122c23c211b1160aba9cc3fa6472`.
+- Candidate review-fixture head: `6625af1bf7ad0f18d311fd1522b53494efc8bcec`.
+- Complete diff: 27 files, all covered by `work/US-001-02/scope.json`; unrelated untracked skill files excluded.
+- `python3 scripts/check_scope.py --root /tmp/us-001-02-source-review-ihj72w8m --base c165e4319b6a122c23c211b1160aba9cc3fa6472 --head 6625af1bf7ad0f18d311fd1522b53494efc8bcec --scope work/US-001-02/scope.json`: exit 0. Scope authentication remains a separate gate.
+- `node scripts/check_dependencies.mjs --root /tmp/us-001-02-source-review-ihj72w8m --ref 6625af1bf7ad0f18d311fd1522b53494efc8bcec --config config/project-structure.json --baseline config/dependency-baseline.json`: exit 0; 16 modules/33 edges, five baseline violations, no new errors.
+
+The audit used checker/configuration paths from the current implementation to test the complete proposal, not an already-installed trusted host revision. Temporary Git objects remain local to that checkout; they are not implementation CI provenance. Subsequent edits only record this evidence, the plan checklist and BLOCKED lifecycle; code/config/test contents remain those checked above. Reproduce by cloning the base locally, overlaying only scope-listed source paths, making a temporary fixture commit and running those two commands; the resulting commit identity may differ with metadata.
+
+## AC coverage and remaining gaps
+
+| AC | Evidence / limitation |
+|---|---|
+| AC-01 | Guide/current-path mapping and executable area/owner inventory checked; production inventory above. Manual placement examples cover component/helper/endpoint/API client/shared UI/tests. |
+| AC-02 | Current layout and differently named frontend/backend/shared fixture pass; ambiguous ownership/overlapping roots or aliases fail. No application relocation. |
+| AC-03 | Pre-edit bootstrap plan/paths approved by the user in conversation. Host-shaped fixtures reject missing/wrong actor/revision. Real PR comment authorization and initial installed trust remain unverified. |
+| AC-04 | Complete proposal audit passes; real temporary Git fixtures cover additions, deletes, multi-commit diffs, rename endpoints/spaces, prefixes, symlinks, missing refs and diverged-base recovery. |
+| AC-05 | Scope fixtures reject unrelated files even though product behavior remains passing. No common-file exemption. |
+| AC-06 | 25 AST dependency fixtures plus real source analysis pass; limitations below apply. |
+| AC-07 | Five exact legacy exceptions; new edges/wildcards/duplicates reject and removed edges need not recur. Initial baseline/policy is not installed human-reviewed trust yet. |
+| AC-08 | Local governance-tampering/identity fixtures pass, including checker/workflow/baseline/package/config/tests/nested instructions. **Incomplete live gate**: no unspoofable exact-head merge binding or authenticated live PR evidence. |
+| AC-09 | Guidance and diagnostics explain ownership/scope and failure recovery. No competing lifecycle file or fabricated GitHub approval. |
+| AC-10 | Actual local command results and isolated full-diff check above; no hosted exact-commit CI for this implementation. |
+| AC-11 | Scope vs final-current-head review fixtures pass. **Blocked**: main unprotected, rulesets empty, trusted exact-head merge gate not installed; no host settings changed. |
+| AC-12 | Context documents route to one structure guide; plan includes placement/scoped paths. New files are actual harness work, not empty product roadmap directories. |
+
+## Independent review
+
+Read-only reviewer `/root/review_structure_controls` inspected code/config/tests/CI against the story and ran targeted checks. No human business approval was delegated. Findings fixed before final full verification:
+
+1. Protect package/lock/tool configs and verification tests in the governance digest so verification commands cannot change after scope authorization unnoticed.
+2. Reject a diff base that is not an ancestor of the candidate, rather than treating independently advanced main files as candidate deletions; add a diverged-branch/update regression.
+3. Use `lstat` before optional-root existence handling, rejecting broken symlinks rather than silently skipping them; add regression.
+4. Bind any nested `AGENTS.md`/`AGENTS.override.md`, including files inside an approved feature directory.
+5. Make each governance-tampering regression authorize its immediate before-state so every single path must independently invalidate authorization, instead of relying on a previously changed digest.
+
+The reviewer confirmed all fixes, 20 scope/approval cases, 25 dependency fixtures, current production analysis and no remaining material local-code finding. Their remaining blockers match the live host gaps below. Test/review results do not establish human acceptance.
+
+## Blocker and next human action
+
+Story remains BLOCKED. Complete human-reviewed bootstrap and select/configure an external host-enforced trusted workflow or separately authorized trusted GitHub App/status publisher that binds the verified PR head and cannot be spoofed by candidate CI. Configure independent human reviews, stale-approval dismissal, required exact-head checks and appropriate bypass policy; verify an actual PR and actual same-commit CI. A simple named status from branch-controlled GitHub Actions or this base-context read-only inspection is insufficient. The guide includes setup/inspection steps and official references.
+
+No permission/settings mutations, new write credentials, external service commitments, source-repository commit/push, PR publication, merge or release were performed. No automatic approval review rejected an action. Decisions to introduce a publisher/App or change host permissions require human authorization under the repository rules. Local filesystem writes and complete runtime/npm/bundler behavior are outside the controls' guarantees; the static-analysis coverage/limits are documented in PROJECT_STRUCTURE.md. Existing user-reported wallet/device results are unaffected and no new physical-device result is claimed.
+
+## Subsequent explicitly requested configuration alignment
+
+The human subsequently requested aligning `config/` with the agreed frontend/backend names and removing generic production `app/`/`features/` directory proposals. This is a local harness configuration update, not application migration or a waiver of the host blocker.
+
+- Removed reserved `src/app`, `src/features`, `server/features` and `server/shared` ownership proposals. The schema's `feature_roots` is now an empty array; role labels `app`, `feature` and `shared` remain logical composition/domain/generic-code classifications, not directory instructions.
+- Declared explicit selected `frontend/src/` and `backend/src/` paths, domain public interfaces and repository-area responsibilities. These paths are checked if real files are introduced through approved work; no frontend/backend source directory or future feature was created.
+- Retained actual `src/`/`server/` source coverage and the current `@/` alias. The five exact current baseline entries are unchanged. Migration must update actual code/tooling/aliases and translate those entries together, not prematurely rename exceptions to nonexistent paths.
+- Added `tests/structure/project-layout.test.mjs`: four real-layout regressions cover the absence of generic directory permission, valid public interfaces at selected destinations, forbidden generic-code→domain imports and forbidden domain→composition/cross-runtime imports.
+- Updated the guide's transition explanation to match executable coverage. No checker implementation, application source, package graph, story approval metadata or host setting changed in this follow-up.
+
+Observed verification for this updated revision:
+
+- `node --test tests/structure/project-layout.test.mjs`: exit 0, four tests.
+- `node scripts/check_dependencies.mjs`: exit 0, still 16 actual modules/33 edges, five exact baseline entries, no new errors or stale entries.
+- `bash scripts/verify.sh`: exit 0; 31 Python tests, **29** dependency/layout fixtures, 83 application tests, 68 browser tests (52.1s), lock-source check, lint, types and build.
+- JSON parsing of both config files and `git diff --check`: exit 0.
+- `git diff --name-only -- src server package.json package-lock.json`: no paths.
+
+The earlier isolated 27-file snapshot/audit is historical evidence for the earlier revision, not a claim that it contains these subsequent config/test/guide updates or the separately drafted US-001-03 materials. No new hosted exact-commit CI, live scope approval or protected-merge evidence is inferred. US-001-02 remains BLOCKED on its recorded host gates; US-001-03 remains DRAFT and unimplemented.
+
+## Remote completion authorized and underway
+
+The user explicitly asked to complete steps 1–4 automatically and set QA_PASSED only if all required gates pass. This authorizes the scoped source commit/push/PR and protection setup; it does not authorize fabricated human reviews, weak substitutes for App trust, bypasses or release.
+
+Read-only remote observations: `gh api user` identifies CoinsAgent (User, ID 287687015); repository owner type is User; `gh api user/installations` returns HTTP 403 because the credential is not authorized to a GitHub App. Official GitHub ruleset documentation limits required trusted workflows to organization/enterprise scope; Check Run creation requires a GitHub App. The user token cannot supply an independent publisher identity.
+
+Actual remote change: PUT main branch protection succeeded. Required one independent approval, dismissed stale approvals, latest-push approval, administrator enforcement, strict product checks from GitHub Actions App 15368, conversation resolution, no force pushes/deletions. No exception/bypass was added. The ordinary `PR path scope` check is added as a separate PR-only job, avoiding confusion with push verification. It validates exact-commit candidate scope but remains PR-controlled and does not satisfy the trusted-source gate.
+
+Isolated preflight initially failed because a node_modules symlink was not matched by the directory ignore pattern. Fixed executor setup only: used a real node_modules directory with package links to existing dependencies; source ignore/checker policy was not weakened. Full preflight then passed (31 Python, 29 dependency/layout, 83 application, 68 browser tests, lint/types/build). Additional scope discovery/ambiguous proposal regressions pass; final local/remote results will be recorded below.

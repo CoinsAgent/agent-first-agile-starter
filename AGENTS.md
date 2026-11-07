@@ -15,6 +15,7 @@ Human-led product decisions → Codex execution → automated verification → h
 - `docs/VISION.md` — human-owned product purpose and outcomes.
 - `docs/PRODUCT_CONTRACT.md` — human-owned rules, constraints and non-goals.
 - `docs/UI_DESIGN_CONTRACT.md` — UI design principles, visual tokens, interaction and accessibility guidance for UI work.
+- `docs/PROJECT_STRUCTURE.md` — authoritative directory skeleton, current ownership mapping, dependency directions and code-placement examples.
 - `backlog/STORY_MAP.md` — proposed journeys, release slices, story links and open decisions; no duplicate story statuses or approvals.
 - `backlog/US-*.md` — story status, approved scope and acceptance criteria.
 - `work/US-*/plan.md` — agent implementation plan.
@@ -22,6 +23,8 @@ Human-led product decisions → Codex execution → automated verification → h
 - `docs/PROCESS.md` — workflow rules, statuses and approvals.
 
 Read only relevant documents for the task. For story execution, read the story, the two product documents and the process. Do not create competing status files.
+
+Before adding or updating code, read `docs/PROJECT_STRUCTURE.md` and inspect the existing owner. Document the intended skeleton before implementing a new area; obtain human agreement on structure changes and the task's writable paths first. Create directories only for real files needed by approved work. Keep feature behavior with its feature, shared code independent of features, and product assembly in the app layer. Maintain existing paths unless a move is explicitly scoped; do not duplicate implementations. Shared/config/test files also need explicit scope. Pause before expanding that scope. `scripts/verify.sh` runs dependency checks and scope/approval fixtures; an actual scope diff also requires explicit base/head and trusted human authorization. Live merge enforcement needs the bootstrap/host setup in the structure guide; local green checks do not establish host protection or restrict filesystem writes.
 
 For UI story shaping, implementation and review, also read `docs/UI_DESIGN_CONTRACT.md` and apply its relevant requirements within approved story scope. Product/security rules and protocol correctness take precedence, followed by accessibility, then aesthetic preferences. Record gaps or deviations; raise conflicts requiring changes to approved scope for human decision. The design contract does not authorize additional features, change story status or establish human acceptance.
 

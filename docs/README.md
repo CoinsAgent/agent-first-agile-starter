@@ -18,6 +18,10 @@ Codex may offer drafts or questions, but never assert a product decision is appr
 
 [UI_DESIGN_CONTRACT.md](UI_DESIGN_CONTRACT.md) is the reference for UI design principles, visual tokens, interaction patterns and accessibility requirements. Read it when shaping, implementing or reviewing UI work. Product/security rules and protocol correctness take precedence, followed by accessibility, then aesthetic preferences. Apply relevant requirements within approved story scope, record verification and deviations in the story's evidence, and raise scope conflicts for human decision. This reference does not make a story READY or establish human acceptance.
 
+## Project structure before implementation
+
+[PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) is the single directory skeleton and code-placement reference. It distinguishes existing paths from proposed destinations, explains feature/shared/app responsibilities, and gives examples for UI, backend endpoints, browser API calls, tests and configuration. Read it before adding or updating code. Document and agree on new-area structure first; create only directories needed by approved real files. PROCESS and the delivery plan govern scope review. The guide documents local checks, exact-diff scope checking and the bootstrap/host requirements; passing local tests does not establish protected merging.
+
 ## From product intent to stories
 
 After reviewing these documents, use `$shape-story` to map journeys, propose a

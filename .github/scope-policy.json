@@ -1,0 +1,8 @@
+{
+  "version": 1,
+  "repository": "CoinsAgent/agent-first-agile-starter",
+  "repository_id": 1443930837,
+  "base_branch": "main",
+  "maintainers": [{"login": "CoinsAgent", "id": 287687015}],
+  "protected": [".github", "config", "scripts", "tests", ".agents/skills", "AGENTS.md", "docs/PROJECT_STRUCTURE.md", "docs/PROCESS.md", "docs/PRODUCT_CONTRACT.md", "docs/UI_DESIGN_CONTRACT.md", "package.json", "package-lock.json", ".npmrc", "tsconfig.json", "vite.config.ts", "vitest.config.ts", "playwright.config.ts"]
+}

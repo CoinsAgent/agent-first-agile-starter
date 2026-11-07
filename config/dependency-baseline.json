@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "violations": [
+    {"importer": "src/main.tsx", "target": "src/hooks/use-wallet-auth.ts", "rule": "private-feature-import", "reason": "Existing app composition imports legacy wallet controller; no migration in US-001-02."},
+    {"importer": "src/main.tsx", "target": "src/components/wallet/wallet-flow.tsx", "rule": "private-feature-import", "reason": "Existing app composition imports legacy wallet view; no migration in US-001-02."},
+    {"importer": "src/main.tsx", "target": "src/components/wallet/mobile-approval.tsx", "rule": "private-feature-import", "reason": "Existing app composition imports legacy phone approval; no migration in US-001-02."},
+    {"importer": "src/main.tsx", "target": "src/wallet-sdk.ts", "rule": "private-feature-import", "reason": "Existing app composition preloads wallet SDK; no migration in US-001-02."},
+    {"importer": "server/index.ts", "target": "server/auth.ts", "rule": "private-feature-import", "reason": "Existing server composition mounts authentication; no migration in US-001-02."}
+  ]
+}

@@ -289,11 +289,21 @@ Prefer existing UI primitives and repo conventions. If absent, keep the new set 
 
 Keep business logic in auth controllers/hooks/services, not inside visual components. Keep wagmi connector state separate from the application authentication state; neither should duplicate the other’s authority.
 
+### 9.3 UI ownership and placement
+
+Read the [Project Structure guide](PROJECT_STRUCTURE.md) before adding or updating UI code. It owns the skeleton and current-path mapping; do not maintain a second directory tree here. Document a new UI area's intended placement before implementation and create directories only for approved real files.
+
+- Shared primitives receive state and behavior through inputs/callbacks; they must not import feature hooks, authentication state or feature public interfaces, including type-only imports.
+- Wallet-specific views and orchestration belong to the wallet feature's current owner or an explicitly approved feature destination. A visually reusable component is not automatically shared if it depends on wallet behavior.
+- Product composition, such as a header combining branding and wallet identity, assembles shared UI and feature public interfaces in the app layer.
+- Reuse existing semantic tokens and asset conventions. Feature-specific styles/assets stay with their declared owner; changes to global tokens, shared primitives or build configuration require explicit scope. Never import server implementation or secrets into UI code.
+- Preserve current paths until a move is explicitly scoped. Structure guidance does not authorize new screens, changed interactions, migration or additional supported wallets.
+
 ## 10. Codex implementation process
 
 **Phase A — Inspect (no behavior changes)**
 
-1. Read `AGENTS.md`, product/security contracts, auth code, installed wagmi/viem/Better Auth versions, local shadcn/ui primitives and Tailwind setup, styling system, existing tests.
+1. Read `AGENTS.md`, product/security contracts, `docs/PROJECT_STRUCTURE.md`, auth code, installed wagmi/viem/Better Auth versions, local shadcn/ui primitives and Tailwind setup, styling system, existing tests. Identify current owners and propose file placement, any new-area skeleton and writable paths for human review before implementation.
 2. Identify current wallet + SIWE + OIDC state transitions and exactly which component owns each transition.
 3. Write a concise gap analysis mapping current screens/SDK support to this contract.
 4. Identify conflicts/unknown SDK APIs before editing.

@@ -24,6 +24,14 @@ Use `shape-story` to map journeys → propose a minimal end-to-end release → s
 - The map supplies breadth and links; story files own status, approved scope and ACs. Do not copy lifecycle statuses or approval metadata into the map. Changes to a map cannot override approved story scope.
 - Multiple DRAFT and READY stories may exist. Deliver one approved story at a time. For targeted refinement, reuse the map and update the relevant story without rebuilding the entire backlog.
 
+## Structure and file-scope planning
+
+Before code changes, read [PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md), inspect the current owners and document the intended skeleton for any new area. Obtain human agreement on structure changes and proposed writable paths before implementation. Create directories only when approved work needs their first real file; do not scaffold the roadmap or move existing code by implication. Read access does not grant write access. Shared code, tests, configuration, dependencies, policy files and execution artifacts require explicit inclusion when needed. Pause before adding paths to an approved scope, and reuse existing authorization for unchanged scope.
+
+Record ownership, current/proposed paths, reasons, dependency impact and required tests in the existing execution plan. The structure guide owns the directory map; the story remains authoritative for status and approved ACs. Document ownership conflicts during shaping instead of silently changing product contracts or approved criteria.
+
+The selected workflow is one draft PR: human scope review before implementation, then final code review after checks. `scripts/verify.sh` runs local dependency checks and scope/authorization fixtures. Check an actual complete Git diff with `scripts/check_scope.py --base <base> --head <head> --scope work/<story>/scope.json`; this does not authenticate approval. The read-only trusted verifier retrieves host scope comments independently and parses candidate source as data. See [bootstrap and host setup](PROJECT_STRUCTURE.md#bootstrap-and-host-setup) before treating any check as live merge enforcement. Local green checks and simulated approvals do not establish host protection. Publication, merge, permission changes and release remain separately authorized actions; lifecycle gates are unchanged.
+
 ## Story states
 
 - `DRAFT` — agent may draft and refine. No product work.
