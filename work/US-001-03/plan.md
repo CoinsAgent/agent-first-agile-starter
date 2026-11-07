@@ -50,9 +50,13 @@ The current default-branch workflow still has old triggers until this change mer
 
 ## Execution checklist
 
-- [ ] Regression tests demonstrate the changed lifecycle and event behavior
-- [ ] Local checks and fresh complete-diff review pass
-- [ ] Evidence records actual commands/results and limitations
+- [x] Regression tests demonstrate the changed lifecycle and event behavior
+- [x] Local checks and fresh complete-diff review pass
+- [x] Evidence records actual commands/results and limitations
 - [ ] QA_PASSED result presented to the human before PR/CI publication
 - [ ] Human merges only after current required CI and review
 - [ ] Post-human-merge acceptance recorded locally and carried into next approved PR
+
+## Completion of local engineering
+
+Full verification passed (43 Python, 29 structure, 83 unit/integration, 68 browser tests plus lint/types/build/dependencies/scope). Independent read-only review found no material defect; three prose clarifications were reviewed afterward. Implementation commit a265247605da8cd8afacd660c3c04310a819f3ba; final record commit contains reviewed prose and QA/evidence bookkeeping only. No paths added beyond the original 26-file declaration. Actual paths match the scope manifest. Human result review precedes all publication/PR/CI; no merge or release is authorized.
