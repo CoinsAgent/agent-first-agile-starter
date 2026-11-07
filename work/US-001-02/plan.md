@@ -114,3 +114,8 @@ The human replaced the two-stage PR scope-approval model with the five-step bran
 ## Revised-criteria verification run
 
 Use isolated branch `codex/us-001-02-process-qa` from merged main to exclude unrelated local changes. Scope is narrowed to the 15 listed process/context/backlog/evidence files, including the still-DRAFT US-001-03 context alignment. No product or checker implementation changes. Verify the full project, inspect the full diff, and use the legacy authorization tests only as regression coverage. Host protection is unchanged.
+
+
+## Acceptance record update
+
+Human explicitly accepted US-001-02 on 2026-11-07. Update only the story's status/acceptance fields and decision note, this plan, evidence and the scope manifest on `codex/accept-us-001-02` from merged main `04629ff6565e25cd3871af58186d0a5fd8b921d0`. Preserve previous verification records. No product changes or new story implementation. Validate metadata and complete diff; publish for review without merging or releasing.

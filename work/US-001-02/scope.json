@@ -3,51 +3,7 @@
   "story": "US-001-02",
   "allowed": [
     {
-      "path": "AGENTS.md",
-      "kind": "file"
-    },
-    {
-      "path": "docs/PROCESS.md",
-      "kind": "file"
-    },
-    {
-      "path": "docs/PROJECT_STRUCTURE.md",
-      "kind": "file"
-    },
-    {
-      "path": "docs/PRODUCT_CONTRACT.md",
-      "kind": "file"
-    },
-    {
-      "path": "docs/UI_DESIGN_CONTRACT.md",
-      "kind": "file"
-    },
-    {
-      "path": "docs/README.md",
-      "kind": "file"
-    },
-    {
-      "path": ".agents/skills/shape-story/SKILL.md",
-      "kind": "file"
-    },
-    {
-      "path": ".agents/skills/deliver-story/SKILL.md",
-      "kind": "file"
-    },
-    {
-      "path": "work/PLAN_TEMPLATE.md",
-      "kind": "file"
-    },
-    {
       "path": "backlog/US-001-02.md",
-      "kind": "file"
-    },
-    {
-      "path": "backlog/US-001-03.md",
-      "kind": "file"
-    },
-    {
-      "path": "backlog/STORY_MAP.md",
       "kind": "file"
     },
     {
