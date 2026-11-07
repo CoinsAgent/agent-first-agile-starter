@@ -59,6 +59,8 @@ Maintain standard OAuth 2.0, OpenID Connect, and ERC-4361 protocol behavior. Thi
 
 Reuse supported Better Auth functionality where possible. Prefer external plugins, hooks, and supported customization over modifying upstream library internals. Any incompatible framework behavior is a **gap to investigate**, not permission to weaken this contract.
 
+Document the intended directory skeleton and ownership before implementing a new area; create directories only when approved work needs real files. Follow the single [Project Structure guide](PROJECT_STRUCTURE.md) for placement and dependency principles. Features own their behavior, shared building blocks remain independent of features, and application composition assembles the parts. Structural work does not authorize changes to identity, authentication, authorization or protocol rules. Existing code moves and additional writable paths require explicit task scope; no migration is implied by the documented skeleton.
+
 ## 4. Current stack and objective
 
 - wagmi: intended wallet discovery/connection frontend.

@@ -3,17 +3,31 @@ name: Harness and product verification
 on:
   push:
   pull_request:
+  pull_request_target:
+    branches: [main]
+    types: [opened, synchronize, reopened, edited, ready_for_review]
+  issue_comment:
+    types: [created, edited, deleted]
+  workflow_dispatch:
+    inputs:
+      pr:
+        description: Pull request number for read-only trusted scope inspection
+        required: true
+        type: string
 
 permissions:
   contents: read
 
 jobs:
   verify:
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
     name: Harness and product verification
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
@@ -27,3 +41,54 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - name: Run harness and required product checks
         run: bash scripts/verify.sh
+
+  path-scope:
+    name: ${{ github.event_name == 'pull_request' && 'PR path scope' || 'Non-PR path scope (not required)' }}
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check complete proposed scope (human authorization is separate)
+        env:
+          SCOPE_BASE: ${{ github.event.pull_request.base.sha }}
+          SCOPE_HEAD: ${{ github.event.pull_request.head.sha }}
+        run: python3 scripts/check_scope.py --base "$SCOPE_BASE" --head "$SCOPE_HEAD" --discover-scope
+
+  trusted-scope:
+    name: Trusted scope inspection (not a merge authorization)
+    if: github.event_name == 'pull_request_target' || github.event_name == 'workflow_dispatch' || (github.event_name == 'issue_comment' && github.event.issue.pull_request)
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
+    steps:
+      # Never checkout a PR head or execute its scripts in this job.
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.repository.default_branch }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Install dependencies from trusted base only
+        run: |
+          node scripts/check-lockfile.mjs
+          npm ci
+      - name: Inspect authenticated scope and candidate dependency graph as data
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python3 scripts/verify_scope_approval.py

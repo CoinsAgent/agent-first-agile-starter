@@ -38,6 +38,19 @@ The shared prove-identity entry point is refined by [US-001-01](US-001-01.md); t
 | Minimal end-to-end release | [Documented local setup](US-001.md), extended by each story | [Wallet-authorized registration](US-002.md) | [Discovery, keys and authorization code flow](US-004.md) | [Independent relying-party example and reproducible walkthrough](US-005.md) |
 | Later | Production deployment, backup/recovery and operational hardening | Additional registration methods | Public/native clients, additional grants | Additional interoperability suites |
 
+### Maintainer and Codex
+
+This reusable starter/harness journey supports controlled development of WalletGate and future projects. It does not extend the WalletGate product contract or require moving existing application code.
+
+
+
+| Proposed slice | Understand the structure | Approve a task boundary | Add/update the right code | Verify and review |
+|---|---|---|---|---|
+| Minimal controlled-change workflow | [Declare project-specific ownership and placement guidance](US-001-02.md) | [Human approves Codex's proposed writable paths](US-001-02.md) | [Feature-local work, public interfaces, explicit scope expansion](US-001-02.md) | [Trusted scope/dependency checks and protected human review](US-001-02.md) |
+| Later | Additional language adapters | Broader multi-task workflows | Separately approved legacy cleanup/migration | Additional audit/reporting tools |
+
+Proposed usable harness outcome: a maintainer adopts the convention without reorganizing existing code, approves one task's scope, and can distinguish a valid change from an unrelated edit or new private-feature dependency. Success requires allowed changes to pass and unauthorized/tampering fixtures to fail; actual host protection remains an external delivery prerequisite. [US-001-02](US-001-02.md) owns the detailed criteria and decisions, including gradual adoption. This is a separate enabling slice, not completion of the WalletGate evaluation release.
+
 ## Proposed minimal release
 
 - Usable end-to-end outcome: on a self-hosted evaluation instance, an owner registers and manages two distinct applications; an end user signs in through either application with SIWE and explicit consent; each application receives the same canonical wallet-address subject through standard OIDC.
@@ -53,6 +66,7 @@ The shared prove-identity entry point is refined by [US-001-01](US-001-01.md); t
 |---|---|---|---|
 | [US-001](US-001.md) — Prove wallet control | Owner/end user obtains a SIWE-authenticated session | Human policy decisions D2–D4 below | Shared authentication boundary and first usable sign-in journey |
 | [US-001-01](US-001-01.md) — Choose a wallet or approve SIWE login by QR | Owner/end user selects a wallet and completes existing SIWE login with a custom dialog, shared CSS/Tailwind tokens and phone approval | US-001; wallet/platform and custom QR security-policy decisions in the story | Human-selected next slice before US-002; custom QR binding/consent implementation and real-device verification are required |
+| [US-001-02](US-001-02.md) — Keep Codex changes within a clear project structure | Maintainer knows where code belongs and controls task write scope | Existing delivery gate resolved; human-approved file scope and trusted review/host configuration | Requested reusable harness slice before further growth; no application migration or authentication changes |
 | [US-002](US-002.md) — Register independent applications | Owner obtains distinct client identities and configuration | US-001; client profile decision D5 | Supplies real clients for third-party sign-in |
 | [US-003](US-003.md) — Manage owned applications | Owner maintains and disables only their applications | US-002 | Demonstrates ongoing owner control and isolation |
 | [US-004](US-004.md) — Authorize wallet sign-in | End user consents and returns an authorization code to an application | US-001–US-003; D5 | Provides standards-based consent and token issuance |
@@ -60,8 +74,9 @@ The shared prove-identity entry point is refined by [US-001-01](US-001-01.md); t
 
 ## Next story to detail
 
+- Current targeted shaping request: [US-001-02](US-001-02.md), detailing the agreed project-structure and controlled-change workflow. Proposed next delivery after the current story's gate is resolved, subject to human priority and READY approval; this does not authorize parallel delivery or supersede approved product criteria.
 - Recommendation: [US-001-01](US-001-01.md), following the user's selected custom shadcn/ui/Tailwind wallet UI and wagmi/viem/Better Auth stack. The human selected this story next, including EIP-6963 selection, custom SIWE QR authentication and Android Chrome handoff. The earlier external-service restriction has been withdrawn; approved custom QR semantics, binding policy and wallet matrix are recorded in the story; phone-reachable configuration and actual compatibility evidence are delivery responsibilities. The human-confirmed custom QR journey authenticates the originating desktop through explicit phone approval when Chrome has no extension; it does not establish a remote wallet connector. Refer to US-001 itself for its authoritative lifecycle and accepted scope.
-- Detailed positive, negative and boundary acceptance criteria are maintained in that story. Other stories have provisional outlines to refine before delivery.
+- Detailed positive, negative and boundary acceptance criteria for the current structure-management request are maintained in US-001-02; the earlier wallet refinement remains governed by US-001-01. Other product stories have provisional outlines to refine before delivery.
 
 ## Open human decisions
 

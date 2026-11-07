@@ -12,6 +12,17 @@
 - Smallest viable implementation:
 - Alternative considered / trade-off:
 
+## Structure and writable paths
+
+- Structure reference: `docs/PROJECT_STRUCTURE.md` (or identify a missing guide)
+- Existing owners and current paths:
+- Intended skeleton for any new area (document first; create only needed directories):
+- Proposed added/updated/deleted paths and rationale (include tests, shared/config and plan/evidence files):
+- Dependency directions and public interfaces affected:
+- Human scope decision reference: [pending; cite the explicit decision, never invent approval metadata]
+- Scope expansion needed: [pause before affected edits; reuse existing authorization for unchanged scope]
+- Available executable controls and remaining gaps:
+
 ## Acceptance tests
 
 | AC ID | Executable test | Layer (unit/integration/E2E) |
