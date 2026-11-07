@@ -104,3 +104,13 @@ The delivery checkout isolates only scope-listed files and removes links/map ent
 Published draft PR #2 at https://github.com/CoinsAgent/agent-first-agile-starter/pull/2 and enabled main review/product/path protections without bypasses. Two new discovery tests bring the Python total to 33. The real negative README probe was rejected by the PR path job and restored in the clean follow-up. The existing credential's Check Run publication attempt was rejected by GitHub with HTTP 403 requiring a GitHub App. A genuine independent human review also remains necessary. Do not mark QA_PASSED unless those host requirements and exact-head CI actually pass; do not substitute a user-authored status or automatic self-review.
 
 The initial implementation's hosted PR CI subsequently passed on ff2131480d15a8d0a9fbc3c3458df109e36775f9 (run 42352818859). Current-head results after restoring the negative probe are tracked in PR #2. Only CoinsAgent appears in the collaborator inventory and is the PR author; no genuine independent review was performed by the agent. The source/App and human-review blockers remain, with all protection requirements preserved.
+
+
+## Process revision — 2026-11-07
+
+The human replaced the two-stage PR scope-approval model with the five-step branch workflow in PROCESS. Current changes on `codex/process-branch-review` align AGENTS, PROCESS, structure/product/UI guidance, documentation index, shaping/delivery skills, plan template, story-map wording and the affected US-001-02/03 criteria. This is an explicitly requested process revision, not application implementation or directory migration. No executable checks, policy files or remote protection are changed. The earlier App/scope-authorization gate is superseded; assess the revised criteria before updating story status. Existing host review restrictions remain a separate merge constraint.
+
+
+## Revised-criteria verification run
+
+Use isolated branch `codex/us-001-02-process-qa` from merged main to exclude unrelated local changes. Scope is narrowed to the 15 listed process/context/backlog/evidence files, including the still-DRAFT US-001-03 context alignment. No product or checker implementation changes. Verify the full project, inspect the full diff, and use the legacy authorization tests only as regression coverage. Host protection is unchanged.

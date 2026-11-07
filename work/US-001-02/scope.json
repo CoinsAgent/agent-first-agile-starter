@@ -3,51 +3,7 @@
   "story": "US-001-02",
   "allowed": [
     {
-      "path": "config/project-structure.json",
-      "kind": "file"
-    },
-    {
-      "path": "config/dependency-baseline.json",
-      "kind": "file"
-    },
-    {
-      "path": ".github/scope-policy.json",
-      "kind": "file"
-    },
-    {
-      "path": "scripts/check_scope.py",
-      "kind": "file"
-    },
-    {
-      "path": "scripts/verify_scope_approval.py",
-      "kind": "file"
-    },
-    {
-      "path": "scripts/check_dependencies.mjs",
-      "kind": "file"
-    },
-    {
-      "path": "tests/test_scope.py",
-      "kind": "file"
-    },
-    {
-      "path": "tests/test_scope_approval.py",
-      "kind": "file"
-    },
-    {
-      "path": "scripts/verify.sh",
-      "kind": "file"
-    },
-    {
-      "path": ".github/workflows/ci.yml",
-      "kind": "file"
-    },
-    {
       "path": "AGENTS.md",
-      "kind": "file"
-    },
-    {
-      "path": "docs/PROJECT_STRUCTURE.md",
       "kind": "file"
     },
     {
@@ -55,7 +11,7 @@
       "kind": "file"
     },
     {
-      "path": "docs/README.md",
+      "path": "docs/PROJECT_STRUCTURE.md",
       "kind": "file"
     },
     {
@@ -64,6 +20,10 @@
     },
     {
       "path": "docs/UI_DESIGN_CONTRACT.md",
+      "kind": "file"
+    },
+    {
+      "path": "docs/README.md",
       "kind": "file"
     },
     {
@@ -83,15 +43,11 @@
       "kind": "file"
     },
     {
+      "path": "backlog/US-001-03.md",
+      "kind": "file"
+    },
+    {
       "path": "backlog/STORY_MAP.md",
-      "kind": "file"
-    },
-    {
-      "path": "backlog/US-001-01.md",
-      "kind": "file"
-    },
-    {
-      "path": "work/US-001-01/evidence.md",
       "kind": "file"
     },
     {
@@ -105,10 +61,6 @@
     {
       "path": "work/US-001-02/scope.json",
       "kind": "file"
-    },
-    {
-      "path": "tests/structure",
-      "kind": "directory"
     }
   ]
 }

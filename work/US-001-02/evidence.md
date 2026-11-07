@@ -147,3 +147,40 @@ main protection is now live, superseding the earlier unprotected-main observatio
 Read-only collaborator inventory returned only CoinsAgent (admin). That account is also PR #2's author, so independent protected review is not presently available through another existing collaborator. No review was fabricated and no review rule or administrator enforcement was relaxed. A human must supply an independent reviewer/author arrangement and register/install the independently trusted App with the necessary check-publishing identity (or explicitly choose another supported host arrangement). User-token Check Run creation was actually rejected with HTTP 403. No new credential was exposed or stored in source.
 
 Step 1 is complete (scoped draft PR); ordinary branch review/product/path protection is configured; real positive and negative path/CI checks have been executed. Step 2's independent trusted publisher and step 3's genuine human bootstrap review remain unresolved, so the full step 4/AC-08/11 engineering gate cannot be marked passed. Status remains BLOCKED, not QA_PASSED. No merge or production release.
+
+### Observed final published-head CI result
+
+After the final evidence-only commit, GitHub PR run 42353162964 completed successfully on exact head `7563237efc6e5ff08991f47e271da2d04fa2281f`: https://github.com/CoinsAgent/agent-first-agile-starter/actions/runs/42353162964 . Actual product job 128345440385 logs confirm 33 Python tests, 29 structure/layout fixtures, 83 application tests and 68 Playwright tests, plus lint/types/build. PR path job 128345440647 succeeded. The trusted inspection job was skipped in this ordinary PR event; it is not counted as a passing independent trusted gate.
+
+The downloaded negative job log from 128344611547 confirms the out-of-scope README rejection. The final base/head diff contains no README, application source or package changes, and exact-head scope discovery passes. PR #2's description was updated with these actual final-head results and unresolved gates. This final observed-result note is a local evidence supplement after the published commit; it does not claim its own contents were present in that CI-tested commit. No further source changes were made and no passing human review/App gate is claimed.
+
+
+## Process/context revision — 2026-11-07
+
+Human requested the five-step branch workflow. Updated process, routing/contracts, structure guidance, skills, template and affected backlog wording on `codex/process-branch-review`. No product code, checker implementation, CI workflow or remote host settings changed in this revision. Existing unrelated workspace changes were retained; this branch starts from the local base and does not imply that previously uncommitted delivery work is newly committed or published.
+
+The former App/scope-authorization requirements are superseded by the explicit human decision. Existing main protection remains a merge constraint. No new QA_PASSED or ACCEPTED claim is made, and historical CI results are not attributed to this documentation revision. Initial `python3 scripts/check_harness.py` failed because the revised story omitted the required Out of scope and Dependencies and risks headings; restored those headings before the final check. Final document checks are recorded below. Full product suites were not rerun for these documentation-only changes.
+
+Document verification: `python3 scripts/check_harness.py` exited 0 (8 story files); `git diff --check` exited 0. These are document/format checks, not a new product-suite result.
+
+
+## Revised acceptance assessment — current delivery follow-up
+
+Base: `38d85b6ec44f71468fe5200491ae12cb3fa1a204` (merged PR #2). Branch: `codex/us-001-02-process-qa`. This section supersedes the historical App/reviewer blockers above under the human's explicit workflow revision. No human acceptance is asserted.
+
+| Criteria | Evidence and current coverage |
+|---|---|
+| AC-01/02 | Structure declaration/guide and both-layout ownership fixtures; no application relocation. |
+| AC-03/05 | Branch plan and exact 15-file scope manifest; technical revision includes publishing still-DRAFT US-001-03 context because the guide/map link to it. Baseline and final verification recorded; no separate path approval gate. |
+| AC-04 | Python scope regression cases cover full diffs, additions/removals/renames, unsafe paths and negative unrelated edits; actual branch diff checked separately after commit. |
+| AC-06/07 | 29 dependency/layout fixtures passed; actual source analysis has 16 modules/33 edges, exactly five existing baseline edges, zero new errors and zero stale entries. Baseline unchanged. |
+| AC-08/09 | Fresh diff review confirms no changes to application code, CI, checkers, dependency declarations or baseline. Guidance states reliance on human review, not independent tamper resistance; legacy verifier remains optional. |
+| AC-10 | Full default verification run and committed full-diff scope check recorded below; previous remote results remain historical. |
+| AC-11 | Live protection readback: required product/path checks, zero required approving reviews, latest-push approval false. No host mutation. Finished branch presented for human review; no merge/acceptance. |
+| AC-12 | AGENTS, PROCESS, structure/product/UI guidance, skills and plan template consistently route placement through the single directory guide and use the revised workflow. |
+
+Fresh review: checked process/context diff, removed stale App/pre-edit approval gates and corrected stale host-review facts. Scope manifest narrowed to this follow-up. Draft migration remains DRAFT and no source migration is performed. Local dependency setup uses a real ignored node_modules directory with links to installed packages, not a new tracked source root. Limits: static dependency analysis and candidate-controlled checks are not independent enforcement; browser automation does not establish physical-wallet/device compatibility. Existing limitations remain.
+
+Local full-run log: `/tmp/us-001-02-process-qa/work/US-001-02/artifacts/revised-verify.log` (ignored artifact). An initial attempt to redirect output before the artifacts directory existed failed before running the verification command; directory creation fixed the setup without changing checks. CI for the new commit must run before claiming G2 satisfied.
+
+Observed local final result: `bash scripts/verify.sh` exited 0: 33 Python tests, 29 structure fixtures, 83 application tests, 68 Playwright tests (51.6s), plus lock-source validation, lint, types and build. Status is QA_PASSED as a local technical candidate; CI for this revision is pending. Human approval/acceptance metadata is unchanged.

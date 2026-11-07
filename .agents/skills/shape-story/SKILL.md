@@ -31,6 +31,6 @@ Keep story `status: DRAFT` and approval/acceptance fields empty in newly created
 
 Present a concise review packet: journey map, proposed minimal release, story list/order, detailed next story, assumptions and smallest set of human decisions. Do not self-approve or start product implementation. Run `bash scripts/verify.sh` after file changes and report its structural scope accurately.
 
-After explicit human approval, instruct the human to record approval metadata and set the selected story to READY through the protected PR flow. Map/release approval does not make every linked story READY. A human—not Codex—must perform the approval transition.
+After explicit human approval, instruct the human to record approval metadata and set the selected story to READY through the agreed human decision channel. A PR is not required for story approval; delivery follows PROCESS's five steps. Map/release approval does not make every linked story READY. A human—not Codex—must perform the approval transition.
 
 Output: a proposed story map, DRAFT stories for the minimal release, detailed ACs for the next story, and open human decisions. For targeted refinement, output only the relevant updates. Never report DRAFT as READY.
