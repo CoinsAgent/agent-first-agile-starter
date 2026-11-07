@@ -134,5 +134,85 @@ class HarnessTests(unittest.TestCase):
         self.assertTrue(any("accepted_by" in e for e in errors))
 
 
+    def write_execution_records(self, story_id="US-001", evidence_status="PASS"):
+        work = self.root / "work" / story_id
+        work.mkdir(parents=True, exist_ok=True)
+        (work / "plan.md").write_text("Approved scope, implementation approach and real checks. " * 4)
+        (self.root / "scripts/project-verify.sh").write_text("#!/bin/sh\npython3 -m unittest discover -s tests\n")
+        (work / "evidence.md").write_text(
+            f"Status: {evidence_status}\n## Acceptance matrix\nLocal fixture results.\n"
+            "## Verification\nObserved commands and results; CI has not been requested.\n"
+            "## Review\nFresh review completed.\n## Known limitations\nFixture only.\n")
+
+    def test_verifying_is_rejected(self):
+        self.write_docs()
+        self.write_execution_records()
+        self.write_story(status="VERIFYING")
+        self.assertTrue(any("unknown status 'VERIFYING'" in e for e in check_repository(self.root)))
+
+    def test_each_current_state_accepts_appropriate_records(self):
+        self.write_docs()
+        self.write_execution_records()
+        for state in ("DRAFT", "READY", "IN_PROGRESS", "BLOCKED", "QA_PASSED", "ACCEPTED"):
+            with self.subTest(state=state):
+                self.write_story(status=state)
+                if state == "ACCEPTED":
+                    p = self.root / "backlog/US-001.md"
+                    p.write_text(p.read_text().replace("accepted_by:\n", "accepted_by: Human merger\n")
+                                 .replace("accepted_at:\n", "accepted_at: 2026-11-07\n"))
+                self.assertEqual(check_repository(self.root), [])
+                self.assertEqual(has_implementation_story(self.root), state not in {"DRAFT", "READY"})
+
+    def test_wip_includes_qa_and_blocked_but_excludes_accepted(self):
+        self.write_docs()
+        self.write_execution_records()
+        self.write_execution_records("US-002")
+        other = self.root / "backlog/US-002.md"
+        other.write_text(STORY.replace("US-001", "US-002").format(
+            status="IN_PROGRESS", approved_by="Owner", approved_at="2026-11-07"))
+        for state in ("IN_PROGRESS", "BLOCKED", "QA_PASSED", "ACCEPTED"):
+            with self.subTest(state=state):
+                self.write_story(status=state)
+                if state == "ACCEPTED":
+                    p = self.root / "backlog/US-001.md"
+                    p.write_text(p.read_text().replace("accepted_by:\n", "accepted_by: Human merger\n")
+                                 .replace("accepted_at:\n", "accepted_at: 2026-11-07\n"))
+                errors = check_repository(self.root)
+                self.assertEqual(any("WIP limit" in e for e in errors), state != "ACCEPTED")
+                if state == "ACCEPTED":
+                    self.assertEqual(errors, [])
+
+    def test_local_qa_passes_without_ci_or_acceptance_metadata(self):
+        self.write_docs()
+        self.write_story(status="QA_PASSED")
+        self.write_execution_records()
+        self.assertEqual(check_repository(self.root), [])
+
+    def test_qa_rejects_incomplete_or_nonpassing_evidence(self):
+        self.write_docs()
+        self.write_story(status="QA_PASSED")
+        for status in ("FAIL", "IN_PROGRESS", "NOT_RUN"):
+            with self.subTest(status=status):
+                self.write_execution_records(evidence_status=status)
+                self.assertTrue(any("evidence status must be PASS" in e for e in check_repository(self.root)))
+        self.write_execution_records()
+        p = self.root / "work/US-001/evidence.md"
+        p.write_text(p.read_text() + "Required browser check: NOT_RUN\n")
+        self.assertTrue(any("unresolved NOT_RUN" in e for e in check_repository(self.root)))
+        self.write_execution_records()
+        p.write_text(p.read_text().replace("## Review", "## Pending review"))
+        self.assertTrue(any("evidence missing section ## Review" in e for e in check_repository(self.root)))
+
+    def test_acceptance_fields_forbidden_before_accepted(self):
+        self.write_docs()
+        self.write_execution_records()
+        for state in ("READY", "IN_PROGRESS", "BLOCKED", "QA_PASSED"):
+            with self.subTest(state=state):
+                self.write_story(status=state)
+                p = self.root / "backlog/US-001.md"
+                p.write_text(p.read_text().replace("accepted_by:\n", "accepted_by: Premature\n"))
+                self.assertTrue(any("acceptance fields must remain blank" in e for e in check_repository(self.root)))
+
+
 if __name__ == "__main__":
     unittest.main()

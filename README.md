@@ -26,9 +26,9 @@ A technology-neutral **Codex-first agile starter**. A human owns the product dir
 2. Run `bash scripts/verify.sh`. It should validate the harness; **it does not claim any application is tested**.
 3. **You** create and approve `docs/VISION.md` and `docs/PRODUCT_CONTRACT.md`. They are deliberately absent from the starter. See `docs/README.md`.
 4. Start Codex in the repository: `codex`. Ask it to use `$shape-story`. Codex maps journeys in `backlog/STORY_MAP.md`, proposes a minimal end-to-end release, splits it into DRAFT stories, and details the next story’s acceptance criteria. Later capabilities remain at map level until needed.
-5. Review the map, proposed release and open product decisions, then the next story’s value, scope and measurable positive, negative and boundary acceptance criteria. Map approval does not make every story READY. **You** edit `approved_by`, `approved_at` and `status: READY` (or approve through a protected PR). Read `docs/PROCESS.md` for requirements.
-6. Ask Codex: `$deliver-story US-001`. Codex determines the stack-specific commands and creates `scripts/project-verify.sh` with **real** validation. The CI job runs these commands whenever a story reaches `IN_PROGRESS` or later.
-7. Review the actual application, acceptance matrix, commands and CI outcome. **You** set `status: ACCEPTED`, `accepted_by`, and `accepted_at` when the user behavior is satisfactory.
+5. Review the map, proposed release and open product decisions, then the next story’s value, scope and measurable positive, negative and boundary acceptance criteria. Map approval does not make every story READY. **You** explicitly approve the story and supply `approved_by` and `approved_at`; record `status: READY` through the agreed review channel. Read `docs/PROCESS.md` for requirements.
+6. Ask Codex: `$deliver-story US-001`. Codex determines the stack-specific commands and creates `scripts/project-verify.sh` with **real** validation. Use focused checks while developing and full local verification before Codex directly sets `QA_PASSED`. Ordinary debugging stays `IN_PROGRESS`; use `BLOCKED` only when progress cannot continue. No PR/hosted CI starts before your approval of the finished result.
+7. Review the actual application/diff, acceptance matrix and local results. Your explicit approval starts PR/CI. After current required CI passes and you review any fixes, **you merge** the PR; that means acceptance. Codex records observed `ACCEPTED` metadata locally and carries it into the next approved PR; main retains the earlier QA status until then.
 8. Refine the map and detail the next story as needed; repeat delivery one vertical slice at a time. Multiple draft stories are allowed; the one-story WIP limit applies to delivery. To recover progress in a new session ask Codex to inspect the repository and summarize the statuses and evidence.
 
 ## Run the checks
@@ -47,7 +47,7 @@ The first command is the same entry point CI uses. Before the first approved imp
 - Python harness checks validate record structure, **not** the truth of approvals or test results.
 - Protect the default branch: require a pull request, your own review, and the CI status `Harness and product verification`. Configure CODEOWNERS if appropriate (`.github/CODEOWNERS.example`). Treat metadata as an audit aid, **never** proof of human authorization.
 - Limit Codex's credentials and operating permissions. Never give it permission to approve its own PR, alter branch protections or deploy to production without explicit consent.
-- Do not confuse `QA_PASSED` (agent-reported local quality; **CI must independently confirm its commit**) with `ACCEPTED` (human business acceptance).
+- `QA_PASSED` means required local checks/review passed; CI is not required to reach it. Human result approval starts PR/CI; current required checks and renewed review precede human merge, which means acceptance. No duplicate full CI runs on merge pushes. Preserve local acceptance records for recovery before evaluating WIP in a later session.
 
 ## Minimal operating commands
 

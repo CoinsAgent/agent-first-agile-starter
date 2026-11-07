@@ -42,9 +42,13 @@ This is a TEMPLATE, not a real READY story.
 During mapping, draft stories may have provisional AC outlines and open decisions.
 Before READY, the selected story needs complete measurable positive, negative
 and boundary criteria and resolved material decisions. Duplicate it as backlog/US-001.md.
-Human: fill approved_by and approved_at (YYYY-MM-DD) and set status READY
-only after reviewing the actual story and the Vision/Contract.
-After business acceptance, fill accepted_by and accepted_at and set ACCEPTED.
-The agent must not forge those decisions. A protected PR review is the
-actual authorization boundary.
+Human: approve the selected story/ACs and supply approved_by and approved_at
+(YYYY-MM-DD); record READY only after reviewing the Vision/Contract.
+Agent: record only explicitly authorized decisions and supplied metadata.
+Full local checks/review permit QA_PASSED; human finished-result approval starts
+PR/CI. After required checks, the human merges; that means business acceptance.
+Record ACCEPTED and observed merger/date locally only after confirmed human
+merge, with PR/merge provenance in evidence. Carry that record into the next
+approved PR; do not open an acceptance-only PR. Main retains earlier QA metadata
+until the later PR merges. Never forge identity or impersonate host review.
 -->

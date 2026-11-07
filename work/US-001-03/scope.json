@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "story": "US-001-03",
+  "allowed": [
+    {
+      "path": ".agents/skills/deliver-story/SKILL.md",
+      "kind": "file"
+    },
+    {
+      "path": ".agents/skills/shape-story/SKILL.md",
+      "kind": "file"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "kind": "file"
+    },
+    {
+      "path": "AGENTS.md",
+      "kind": "file"
+    },
+    {
+      "path": "README.md",
+      "kind": "file"
+    },
+    {
+      "path": "docs/PROCESS.md",
+      "kind": "file"
+    },
+    {
+      "path": "docs/README.md",
+      "kind": "file"
+    },
+    {
+      "path": "docs/PROJECT_STRUCTURE.md",
+      "kind": "file"
+    },
+    {
+      "path": "docs/PRODUCT_CONTRACT.md",
+      "kind": "file"
+    },
+    {
+      "path": "docs/DEVELOPMENT.md",
+      "kind": "file"
+    },
+    {
+      "path": "backlog/STORY_MAP.md",
+      "kind": "file"
+    },
+    {
+      "path": "backlog/STORY_TEMPLATE.md",
+      "kind": "file"
+    },
+    {
+      "path": "backlog/US-001-02.md",
+      "kind": "file"
+    },
+    {
+      "path": "backlog/US-001-03.md",
+      "kind": "file"
+    },
+    {
+      "path": "backlog/US-001-04.md",
+      "kind": "file"
+    },
+    {
+      "path": "config/project-structure.json",
+      "kind": "file"
+    },
+    {
+      "path": "scripts/check_harness.py",
+      "kind": "file"
+    },
+    {
+      "path": "tests/test_harness.py",
+      "kind": "file"
+    },
+    {
+      "path": "tests/test_ci.py",
+      "kind": "file"
+    },
+    {
+      "path": "work/PLAN_TEMPLATE.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/EVIDENCE_TEMPLATE.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-02/plan.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-02/evidence.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-03/plan.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-03/evidence.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-03/scope.json",
+      "kind": "file"
+    }
+  ]
+}
