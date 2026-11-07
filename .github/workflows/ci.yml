@@ -43,7 +43,7 @@ jobs:
         run: bash scripts/verify.sh
 
   path-scope:
-    name: PR path scope
+    name: ${{ github.event_name == 'pull_request' && 'PR path scope' || 'Non-PR path scope (not required)' }}
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     timeout-minutes: 5
