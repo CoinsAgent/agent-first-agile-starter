@@ -303,7 +303,7 @@ Read the [Project Structure guide](PROJECT_STRUCTURE.md) before adding or updati
 
 **Phase A — Inspect (no behavior changes)**
 
-1. Read `AGENTS.md`, product/security contracts, `docs/PROJECT_STRUCTURE.md`, auth code, installed wagmi/viem/Better Auth versions, local shadcn/ui primitives and Tailwind setup, styling system, existing tests. Identify current owners and propose file placement, any new-area skeleton and writable paths for human review before implementation.
+1. Read `AGENTS.md`, product/security contracts, `docs/PROJECT_STRUCTURE.md`, auth code, installed wagmi/viem/Better Auth versions, local shadcn/ui primitives and Tailwind setup, styling system, existing tests. Identify current owners and propose file placement, any new-area skeleton and writable paths in the branch plan before implementation. Follow PROCESS for baseline/final checks and human review of the finished changes; no separate file-path approval is required.
 2. Identify current wallet + SIWE + OIDC state transitions and exactly which component owns each transition.
 3. Write a concise gap analysis mapping current screens/SDK support to this contract.
 4. Identify conflicts/unknown SDK APIs before editing.

@@ -19,8 +19,11 @@
 - Intended skeleton for any new area (document first; create only needed directories):
 - Proposed added/updated/deleted paths and rationale (include tests, shared/config and plan/evidence files):
 - Dependency directions and public interfaces affected:
-- Human scope decision reference: [pending; cite the explicit decision, never invent approval metadata]
-- Scope expansion needed: [pause before affected edits; reuse existing authorization for unchanged scope]
+- Human story approval reference: [cite the actual decision; never invent approval metadata]
+- Branch and base commit:
+- Baseline check results and existing failures:
+- Technical path revisions and reasons: [record before affected edits; no separate path approval]
+- Decisions changing approved outcomes or other human-owned boundaries: [pause for the human]
 - Available executable controls and remaining gaps:
 
 ## Acceptance tests
@@ -44,3 +47,6 @@
 - [ ] Regression checks run
 - [ ] Independent review performed if appropriate
 - [ ] Evidence is recorded for current commit
+- [ ] Complete branch diff and actual paths are presented for human review
+- [ ] Merge authorization and host requirements are satisfied before merging
+- [ ] Business acceptance remains separate

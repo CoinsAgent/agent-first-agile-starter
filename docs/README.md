@@ -12,7 +12,7 @@ Suggested headings: `Who we serve`, `Problem`, `Desired outcomes`, `Success sign
 
 Suggested headings: `Product principles`, `Non-negotiable constraints`, `Trust and privacy boundaries`, `Out of scope`, `Decision authority`.
 
-Codex may offer drafts or questions, but never assert a product decision is approved without the person's explicit approval. Product work cannot become `READY` until both files exist, are meaningful and have been reviewed by a human. Structural checks cannot prove genuine human approval: use Git branch protections and reviews.
+Codex may offer drafts or questions, but never assert a product decision is approved without the person's explicit approval. Product work cannot become `READY` until both files exist, are meaningful and have been reviewed by a human. Structural checks cannot prove genuine human approval: retain the explicit human decision and follow the review channel in PROCESS.
 
 ## UI design principles
 
@@ -20,7 +20,7 @@ Codex may offer drafts or questions, but never assert a product decision is appr
 
 ## Project structure before implementation
 
-[PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) is the single directory skeleton and code-placement reference. It distinguishes existing paths from proposed destinations, explains feature/shared/app responsibilities, and gives examples for UI, backend endpoints, browser API calls, tests and configuration. Read it before adding or updating code. Document and agree on new-area structure first; create only directories needed by approved real files. PROCESS and the delivery plan govern scope review. The guide documents local checks, exact-diff scope checking and the bootstrap/host requirements; passing local tests does not establish protected merging.
+[PROJECT_STRUCTURE.md](PROJECT_STRUCTURE.md) is the single directory skeleton and code-placement reference. It distinguishes existing paths from proposed destinations, explains feature/shared/app responsibilities, and gives examples for UI, backend endpoints, browser API calls, tests and configuration. Read it before adding or updating code. Document new-area structure and branch paths first; create only directories needed by approved real files. PROCESS and the delivery plan govern scope review. The guide documents local checks, exact-diff scope checking and existing host constraints. PROCESS uses story approval → baseline checks → proposed paths and implementation on a new branch → human review → authorized merge, with business acceptance separate. No independent App or pre-edit path approval is required; existing host protection still applies.
 
 ## From product intent to stories
 
