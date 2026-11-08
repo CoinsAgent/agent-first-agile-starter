@@ -2,9 +2,11 @@ import { useEffect, useRef } from 'react';
 import { useWalletAuth } from '../wallet-auth/hooks/use-wallet-auth';
 import { WalletFlow } from '../wallet-auth/components/wallet-flow';
 import { Button } from '../ui/button';
+import type { Session } from '../wallet-auth';
 
-export function SignIn() {
+export function SignIn({ onSession }: { onSession?: (session: Session | null) => void } = {}) {
   const auth = useWalletAuth();
+  useEffect(() => { if (!auth.loading) onSession?.(auth.session); }, [auth.loading, auth.session, onSession]);
   const step = auth.session ? 3 : auth.challenge ? 2 : 1;
   const heading = useRef<HTMLHeadingElement>(null);
   const content = useRef<HTMLDivElement>(null);
@@ -29,6 +31,7 @@ export function SignIn() {
         <p className="address" data-testid="verified-address">{auth.session.address}</p>
         <p className="small muted">Session ends at {new Date(auth.session.expiresAt).toLocaleTimeString()}. Signing out ends it immediately.</p>
         <Button onClick={() => { void auth.logout(); }} disabled={auth.busy}>Sign out</Button>
+        {!onSession && <a className="text-link" href="#applications">My applications</a>}
       </div> : <WalletFlow auth={auth} />}
     </div>
     <p className="privacy-note">No password. No transaction.<br/>Your keys stay in your wallet.</p>

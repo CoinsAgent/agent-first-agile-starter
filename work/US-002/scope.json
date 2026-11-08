@@ -3,54 +3,6 @@
   "story": "US-002",
   "allowed": [
     {
-      "path": "backlog/US-002.md",
-      "kind": "file"
-    },
-    {
-      "path": "backlog/STORY_MAP.md",
-      "kind": "file"
-    },
-    {
-      "path": "backlog/US-003.md",
-      "kind": "file"
-    },
-    {
-      "path": "backlog/US-001-05.md",
-      "kind": "file"
-    },
-    {
-      "path": "work/US-001-05/evidence.md",
-      "kind": "file"
-    },
-    {
-      "path": "work/US-002/plan.md",
-      "kind": "file"
-    },
-    {
-      "path": "work/US-002/evidence.md",
-      "kind": "file"
-    },
-    {
-      "path": "work/US-002/scope.json",
-      "kind": "file"
-    },
-    {
-      "path": "package.json",
-      "kind": "file"
-    },
-    {
-      "path": "package-lock.json",
-      "kind": "file"
-    },
-    {
-      "path": "backend/wallet-auth/auth.ts",
-      "kind": "file"
-    },
-    {
-      "path": "backend/wallet-auth/index.ts",
-      "kind": "file"
-    },
-    {
       "path": "backend/applications/index.ts",
       "kind": "file"
     },
@@ -63,23 +15,27 @@
       "kind": "file"
     },
     {
-      "path": "frontend/applications/index.ts",
+      "path": "backend/wallet-auth/auth.ts",
       "kind": "file"
     },
     {
-      "path": "frontend/applications/applications.tsx",
+      "path": "backlog/STORY_MAP.md",
       "kind": "file"
     },
     {
-      "path": "frontend/pages/applications.tsx",
+      "path": "backlog/US-001-05.md",
       "kind": "file"
     },
     {
-      "path": "frontend/bootstrap/app.tsx",
+      "path": "backlog/US-002.md",
       "kind": "file"
     },
     {
-      "path": "frontend/pages/sign-in.tsx",
+      "path": "backlog/US-003.md",
+      "kind": "file"
+    },
+    {
+      "path": "docs/DEVELOPMENT.md",
       "kind": "file"
     },
     {
@@ -87,7 +43,39 @@
       "kind": "file"
     },
     {
-      "path": "docs/DEVELOPMENT.md",
+      "path": "frontend/applications/applications.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/applications/index.ts",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/applications/style.css",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/bootstrap/app.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/pages/applications.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/pages/sign-in.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/wallet-auth/index.ts",
+      "kind": "file"
+    },
+    {
+      "path": "package-lock.json",
+      "kind": "file"
+    },
+    {
+      "path": "package.json",
       "kind": "file"
     },
     {
@@ -96,6 +84,22 @@
     },
     {
       "path": "tests/e2e/applications.spec.ts",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-05/evidence.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-002/evidence.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-002/plan.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-002/scope.json",
       "kind": "file"
     },
     {

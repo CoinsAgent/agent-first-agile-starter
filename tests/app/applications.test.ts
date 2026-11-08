@@ -11,12 +11,13 @@ const config = { origin, secret: 'test-only-applications-session-secret-01234567
 let gate: Awaited<ReturnType<typeof createWalletGate>>;
 let now: number;
 class Browser {
+  target?: Awaited<ReturnType<typeof createWalletGate>>;
   account = privateKeyToAccount(generatePrivateKey());
   cookies = new Map<string, string>();
   async request(path: string, body?: unknown, options: { method?: string; origin?: string } = {}) {
     const headers = new Headers({ origin: options.origin ?? origin, cookie: [...this.cookies].map(([k, v]) => `${k}=${v}`).join('; ') });
     if (body !== undefined) headers.set('content-type', 'application/json');
-    const response = await gate.handle(new Request(`${origin}${path}`, { method: options.method ?? (body === undefined ? 'GET' : 'POST'), headers, body: body === undefined ? undefined : JSON.stringify(body) }));
+    const response = await (this.target ?? gate).handle(new Request(`${origin}${path}`, { method: options.method ?? (body === undefined ? 'GET' : 'POST'), headers, body: body === undefined ? undefined : JSON.stringify(body) }));
     for (const value of response.headers.getSetCookie()) { const [name, ...parts] = value.split(';')[0].split('='); if (parts.join('=')) this.cookies.set(name, parts.join('=')); else this.cookies.delete(name); }
     return response;
   }
@@ -99,15 +100,15 @@ describe('US-002 validation, limits and atomic submissions', () => {
   });
   it.each([
     [], Array.from({ length: 11 }, (_, i) => `https://app.example/${i}`),
-    ['https://app.example/cb', 'https://app.example/cb'], ['http://app.example/cb'],
+    ['https://app.example/cb', 'https://app.example/cb'], ['http://app.example/cb'], ['http://localhost:4000/cb'], ['http://127.0.0.1:4001/cb'], ['http://[::1]:4002/cb'], ['https://localhost/cb'], ['https://127.0.0.1/cb'], ['https://[::1]/cb'], ['https://app.localhost/cb'], ['https://localhost./cb'], ['https://127.1/cb'],
     ['http://localhost.evil.example/cb'], ['http://127.1/cb'], ['http://2130706433/cb'],
     ['https://*.example/cb'], ['https://app.example/*'], ['https://app.example/#fragment'],
     ['https://app.example/#'], ['https://user:pass@app.example/cb'], ['javascript:alert(1)'],
     ['https://app.example\\evil/cb'], [' https://app.example/cb'], ['https://'],
   ])('rejects invalid redirects', async redirectUris => { const b = new Browser(); await b.login(); expect((await b.create({ redirectUris })).status).toBe(400); expect(count()).toBe(0); });
-  it('accepts ten HTTPS/local redirects, preserving query, port and path', async () => {
+  it('accepts ten HTTPS non-loopback redirects, preserving query, port and path', async () => {
     const b = new Browser(); await b.login();
-    const redirectUris = ['http://localhost:4000/cb', 'http://127.0.0.1:4001/cb', 'http://[::1]:4002/cb', ...Array.from({ length: 7 }, (_, i) => `https://app.example:${4400 + i}/CB?x=${i}`)];
+    const redirectUris = Array.from({ length: 10 }, (_, i) => `https://app.example:${4400 + i}/CB?x=${i}`);
     const response = await b.create({ redirectUris }); expect(response.status).toBe(201);
     expect((await response.json()).application.redirectUris).toEqual(redirectUris);
   });
@@ -160,4 +161,42 @@ describe('US-002 validation, limits and atomic submissions', () => {
       expect((await (await b.request('/api/applications')).json()).applications).toHaveLength(1);
     } finally { rmSync(dir, { recursive: true, force: true }); }
   });
+  it('preserves concurrent QR creation when registration rolls back', async () => {
+    const b = new Browser(); await b.login();
+    gate.db.exec("CREATE TRIGGER fail_submission BEFORE INSERT ON applicationSubmission BEGIN SELECT RAISE(ABORT, 'SimulatedFailure'); END");
+    const spy = vi.spyOn(console, 'error').mockImplementation(() => {});
+    let finish: () => void = () => {};
+    const body = new ReadableStream<Uint8Array>({ start(controller) {
+      finish = () => { controller.enqueue(new TextEncoder().encode(JSON.stringify({ name: 'Rollback case', redirectUris: ['https://app.example/cb'], requestId: randomUUID() }))); controller.close(); };
+    } });
+    const pendingCreate = gate.handle(new Request(`${origin}/api/applications`, { method: 'POST', headers: { origin, 'content-type': 'application/json', cookie: [...b.cookies].map(([k, v]) => `${k}=${v}`).join('; ') }, body, duplex: 'half' } as RequestInit));
+    let qrFinished = false;
+    const qr = b.request('/api/qr/create', {}).then(response => { qrFinished = true; return response; });
+    await new Promise(resolve => setTimeout(resolve, 20)); expect(qrFinished).toBe(true);
+    finish(); expect((await pendingCreate).status).toBe(500); expect((await qr).status).toBe(200);
+    expect(gate.db.prepare('SELECT count(*) AS n FROM qrRequest').get()).toEqual({ n: 1 }); expect(count()).toBe(0);
+    spy.mockRestore();
+  });
+  it('coordinates independent connections for replay, rate and cap boundaries', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'walletgate-concurrent-'));
+    let second: Awaited<ReturnType<typeof createWalletGate>> | undefined;
+    try {
+      gate.close(); const databasePath = join(dir, 'test.sqlite'); gate = await createWalletGate({ ...config, databasePath });
+      second = await createWalletGate({ ...config, databasePath });
+      const a = new Browser(); await a.login(); const b = new Browser(); b.target = second; b.account = a.account; b.cookies = new Map(a.cookies);
+      const requestId = randomUUID();
+      const concurrent = await Promise.all([a.create({ requestId }), b.create({ requestId })]);
+      expect(concurrent.map(r => r.status).sort()).toEqual([200, 201]); expect(count()).toBe(1);
+      const values = await Promise.all(concurrent.map(r => r.json())); expect(values.filter(v => typeof v.clientSecret === 'string')).toHaveLength(1);
+      for (let i = 1; i < 19; i++) { vi.setSystemTime(now + i * 60_000); expect((await a.create()).status).toBe(201); }
+      vi.setSystemTime(now + 20 * 60_000);
+      expect((await Promise.all([a.create(), b.create()])).map(r => r.status).sort()).toEqual([201, 409]); expect(count()).toBe(20);
+      vi.setSystemTime(now + 21 * 60_000);
+      const attempts = await Promise.all(Array.from({ length: 6 }, (_, i) => (i % 2 ? a : b).create({ name: '' })));
+      expect(attempts.filter(r => r.status === 400)).toHaveLength(5); expect(attempts.filter(r => r.status === 429)).toHaveLength(1);
+      second.close(); second = undefined; gate.close(); gate = await createWalletGate({ ...config, databasePath });
+      vi.setSystemTime(now + 22 * 60_000); expect((await a.create()).status).toBe(409); expect(count()).toBe(20);
+    } finally { second?.close(); rmSync(dir, { recursive: true, force: true }); }
+  });
+
 });

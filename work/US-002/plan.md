@@ -66,3 +66,15 @@ Investigate supported provider APIs, asynchronous SQLite transactions and atomic
 Restored baseline passed. Added the exact provider/core 1.7.15 dependencies without altering existing resolved versions. Implemented real provider-backed registration and transactional bookkeeping; 34/35 new integration tests pass, with the approved positive local-HTTP callback case blocked by canonical provider validation. Existing 83 application regressions passed before adding the new suite. No frontend files were created.
 
 The documented intended skeleton remains a plan; currently only backend/applications/{index,registration}.ts and backend/oidc/index.ts are created. Source inspection independently confirms no registration override. Preserve AC-05 and report BLOCKED pending human policy change or further supported-integration direction. No protocol/native-client workaround, plaintext secret, host-setting change or release is authorized.
+
+## Resumed delivery and technical path revision
+
+The human explicitly approved revising callbacks to HTTPS on non-loopback hostnames, including development. Revised the policy and AC-05 with that decision provenance, retained localhost as negative regression coverage, and resumed IN_PROGRESS. This resolves the former provider blocker; it does not authorize PR/CI, acceptance or release.
+
+Declare frontend/applications/style.css for domain-local registration layout and frontend/wallet-auth/index.ts for the existing Session public type before their creation. ApplicationsPage keeps the existing sign-in view mounted to observe server-session expiry; feature drafts remain memory-only and wallet-bound during reauthentication. No new login method or router library.
+
+Technical review corrections: serialize facade requests per SQLite file/connection in the existing wallet-auth owner, because synchronous QR writes must not join/roll back with another request's async registration. Add bounded retry of SQLite busy/locked transaction conflicts; cross-process constraints remain SQLite-owned. Declare no new paths for these fixes. Add regression checks using independent gate connections and concurrent QR/registration failure. Browser credential suite disables traces and automatic DOM error snapshots; screenshots mask raw synthetic secrets.
+
+Queue hardening: pre-read bounded request bodies before entering the database queue so slow senders cannot hold other browsers' DB operations. Carry parse errors into the authorized handler to preserve rate accounting; same-origin/size checks remain. Streaming-request/QR rollback regression also verifies unrelated QR completion is not blocked by the slow body.
+
+Final scope refinement: removed unused proposed file declarations after implementation. Actual changes use the existing reserved applications/oidc owners and public Session type; no config changes, backend wallet public-interface extraction or new router were necessary. The narrowed manifest covers the complete main-to-head diff, including authorized shaping and carried acceptance records.

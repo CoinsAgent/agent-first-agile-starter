@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from 'node:crypto';
 import { mkdirSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import Database from 'better-sqlite3';
 import { betterAuth } from 'better-auth';
 import { APIError, createAuthMiddleware } from 'better-auth/api';
@@ -40,10 +40,18 @@ async function readJson(request: Request): Promise<unknown> {
   }
   return JSON.parse(Buffer.concat(chunks).toString('utf8'));
 }
+// A single SQLite connection also serves synchronous SIWE/QR operations. Serialize
+// facade requests so their writes cannot join another request's async transaction.
+// Share a queue across gates opening the same file in this process; SQLite still
+// provides the cross-process transaction/constraint boundary.
+const databaseQueues = new Map<string, { tail: Promise<void>; references: number }>();
 type Challenge = { message: string; expiresAt: number };
 export async function createWalletGate(config: Config) {
   if (config.databasePath !== ':memory:') mkdirSync(dirname(config.databasePath), { recursive: true, mode: 0o700 });
   const db = new Database(config.databasePath);
+  const queueKey = config.databasePath === ':memory:' ? crypto.randomUUID() : resolve(config.databasePath);
+  const queue = databaseQueues.get(queueKey) ?? { tail: Promise.resolve(), references: 0 };
+  queue.references++; databaseQueues.set(queueKey, queue);
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
   db.exec('CREATE TABLE IF NOT EXISTS walletChallenge (attemptHash TEXT PRIMARY KEY, message TEXT NOT NULL, expiresAt INTEGER NOT NULL)');
@@ -146,14 +154,14 @@ export async function createWalletGate(config: Config) {
       } finally { db.prepare('DELETE FROM walletChallenge WHERE attemptHash = ?').run(hash(binding)); }
     },
   });
-  async function handle(request: Request): Promise<Response> {
+  async function handle(request: Request, readBody = () => readJson(request)): Promise<Response> {
     const url = new URL(request.url);
     if (url.origin !== config.origin) return json({ error: 'Untrusted origin.' }, 403);
     if (request.method === 'POST' && (request.headers.get('origin') !== config.origin || !request.headers.get('content-type')?.startsWith('application/json')))
       return json({ error: 'Use a same-origin JSON request.' }, 403);
     try {
       if (url.pathname === '/api/applications' && request.method === 'POST') {
-        const result = await applications.create(request.headers, () => readJson(request));
+        const result = await applications.create(request.headers, () => readBody());
         return json(result, result.replayed ? 200 : 201);
       }
       if (request.method === 'GET' && (url.pathname === '/api/applications' || /^\/api\/applications\/[^/]+$/.test(url.pathname))) {
@@ -161,13 +169,13 @@ export async function createWalletGate(config: Config) {
         const list = await applications.list(request.headers, id);
         return json(id ? { application: list[0] } : { applications: list });
       }
-      if (url.pathname.startsWith('/api/qr/') && request.method === 'POST') return await qr(request, url.pathname.slice('/api/qr/'.length), await readJson(request));
+      if (url.pathname.startsWith('/api/qr/') && request.method === 'POST') return await qr(request, url.pathname.slice('/api/qr/'.length), await readBody());
       if (url.pathname === '/api/session' && request.method === 'GET') {
         const current = await session(request.headers);
         return current ? json(current) : json({ error: 'Sign in with your wallet.' }, 401);
       }
       if (url.pathname === '/api/challenge' && request.method === 'POST') {
-        const input = z.object({ address: z.string().regex(/^0x[a-fA-F0-9]{40}$/), chainId: z.literal(1) }).strict().parse(await readJson(request));
+        const input = z.object({ address: z.string().regex(/^0x[a-fA-F0-9]{40}$/), chainId: z.literal(1) }).strict().parse(await readBody());
         const address = getAddress(input.address.toLowerCase());
         const nonceResponse = await internal(request, '/siwe/nonce', {});
         if (!nonceResponse.ok) return json({ error: 'Could not start sign-in. Try again.' }, 400);
@@ -186,7 +194,7 @@ export async function createWalletGate(config: Config) {
         return json({ message, address: address.toLowerCase(), expiresAt: new Date(expiresAt).toISOString() }, 200, { 'Set-Cookie': cookie(token, CHALLENGE_MS / 1000) });
       }
       if (url.pathname === '/api/verify' && request.method === 'POST') {
-        const body = await readJson(request);
+        const body = await readBody();
         const response = await internal(request, '/siwe/verify', body);
         const result = json(response.ok ? { success: true } : { error: 'Signature or sign-in attempt is invalid or expired. Start again.' }, response.ok ? 200 : 401);
         for (const value of response.headers.getSetCookie()) result.headers.append('Set-Cookie', value);
@@ -213,5 +221,23 @@ export async function createWalletGate(config: Config) {
       return json({ error: 'Sign-in is unavailable. Try again.' }, 500);
     }
   }
-  return { handle, db, auth, close: () => db.close() };
+  async function queuedHandle(request: Request): Promise<Response> {
+    const url = new URL(request.url);
+    // Read bounded input before joining the database queue: a slow sender must
+    // never hold every other browser's database operations. Preserve parse errors
+    // for the handler, including authenticated rate accounting on invalid input.
+    const needsBody = request.method === 'POST' && url.origin === config.origin &&
+      request.headers.get('origin') === config.origin && request.headers.get('content-type')?.startsWith('application/json') &&
+      (['/api/applications', '/api/challenge', '/api/verify', '/api/logout'].includes(url.pathname) || url.pathname.startsWith('/api/qr/'));
+    const parsed = needsBody ? await readJson(request).then(value => ({ value }), error => ({ error })) : { value: undefined };
+    const operation = queue.tail.then(() => handle(request, async () => {
+      if ('error' in parsed) throw parsed.error;
+      return parsed.value;
+    }));
+    queue.tail = operation.then(() => {}, () => {});
+    return operation;
+  }
+  return { handle: queuedHandle, db, auth, close: () => {
+    db.close(); queue.references--; if (!queue.references) databaseQueues.delete(queueKey);
+  } };
 }

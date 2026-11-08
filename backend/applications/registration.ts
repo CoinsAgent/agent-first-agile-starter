@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto';
 import { getCurrentAdapter, runWithTransaction } from '@better-auth/core/context';
+import { isLoopbackHost } from '@better-auth/core/utils/host';
 import type { DBAdapter } from '@better-auth/core/db/adapter';
 import type { BetterAuthOptions, BetterAuthPlugin } from 'better-auth';
 import { z } from 'zod';
@@ -42,11 +43,8 @@ function redirectValid(value: string) {
   try {
     const url = new URL(value);
     if (!url.hostname || url.username || url.password) return false;
-    if (!/^https?:\/\//.test(value)) return false;
-    if (url.protocol === 'https:') return true;
-    // Check the supplied host as well as URL.hostname: URL normalizes 127.1 and decimal IPs.
-    const authority = value.slice(7).split(/[/?]/)[0];
-    return /^(localhost|127\.0\.0\.1|\[::1\])(?::\d+)?$/.test(authority);
+    if (!value.startsWith('https://') || url.protocol !== 'https:') return false;
+    return !isLoopbackHost(url.hostname);
   } catch { return false; }
 }
 export function validateRegistration(body: unknown): RegistrationInput {
@@ -58,7 +56,7 @@ export function validateRegistration(body: unknown): RegistrationInput {
   const parsed = schema.safeParse(body);
   if (!parsed.success) {
     const field = String(parsed.error.issues[0]?.path[0] ?? 'form');
-    const message = field === 'name' ? 'Enter an application name of 1–100 characters.' : field === 'redirectUris' ? 'Enter 1–10 distinct valid redirect URIs: HTTPS, or HTTP on localhost, 127.0.0.1 or [::1]. No wildcards, fragments or credentials.' : 'Invalid registration fields. Start a new submission.';
+    const message = field === 'name' ? 'Enter an application name of 1–100 characters.' : field === 'redirectUris' ? 'Enter 1–10 distinct valid redirect URIs: HTTPS on a non-loopback hostname, including development. No wildcards, fragments or credentials.' : 'Invalid registration fields. Start a new submission.';
     throw new ApplicationError(400, message, field);
   }
   return parsed.data;
@@ -68,6 +66,17 @@ function project(client: Client, requestId?: string) {
     createdAt: new Date(client.createdAt).toISOString(), profile: 'Confidential web · authorization code · PKCE S256 · openid · client_secret_basic', ...(requestId ? { requestId } : {}) };
 }
 export function createApplications<Options extends BetterAuthOptions>(deps: Dependencies<Options>) {
+  async function transaction<T>(operation: () => Promise<T>): Promise<T> {
+    for (let attempt = 0; ; attempt++) {
+      try { return await runWithTransaction(deps.adapter, operation); }
+      catch (error) {
+        const code = error instanceof Error && 'code' in error ? String(error.code) : '';
+        if (!code.startsWith('SQLITE_BUSY') && code !== 'SQLITE_LOCKED') throw error;
+        if (attempt >= 3) throw new ApplicationError(503, 'Registration is busy. Check your applications and retry the same submission.', undefined, 1);
+        await new Promise(resolve => setTimeout(resolve, 10 * 2 ** attempt));
+      }
+    }
+  }
   async function requireOwner(headers: Headers) {
     const owner = await deps.session(headers);
     if (!owner || Date.parse(owner.expiresAt) <= Date.now()) throw new ApplicationError(401, 'Your session expired. Sign in with your wallet again.');
@@ -75,7 +84,7 @@ export function createApplications<Options extends BetterAuthOptions>(deps: Depe
   }
   async function rate(owner: string) {
     // Fixed one-minute window beginning with the first attempt; persisted independently of validation/creation rollback.
-    const retry = await runWithTransaction(deps.adapter, async () => {
+    const retry = await transaction(async () => {
       const tx = await getCurrentAdapter(deps.adapter);
       const row = await tx.findOne<Rate>({ model: 'applicationRate', where: where('owner', owner) });
       const now = Date.now();
@@ -102,7 +111,7 @@ export function createApplications<Options extends BetterAuthOptions>(deps: Depe
     const input = validateRegistration(await body());
     const key = hash(`${owner.address}:${input.requestId}`);
     const digest = hash(JSON.stringify([input.name, input.redirectUris]));
-    return runWithTransaction(deps.adapter, async () => {
+    return transaction(async () => {
       await requireOwner(headers);
       const tx = await getCurrentAdapter(deps.adapter);
       const prior = await tx.findOne<Submission>({ model: 'applicationSubmission', where: where('key', key) });

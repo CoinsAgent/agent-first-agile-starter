@@ -49,3 +49,15 @@ Read-only researcher registration_facts inspected the exact installed provider a
 The human must choose HTTPS/non-loopback callbacks for this web-client story, or retain HTTP loopback and authorize further supported-integration investigation. Existing AC lines and human approval metadata are preserved. BLOCKED means a concrete human policy decision is required, not ordinary test debugging. No frontend, full QA, final technical review, PR/CI, merge or deployment is claimed.
 
 Final focused checks at the blocked checkpoint: python3 scripts/check_harness.py, git diff --check and node scripts/check_dependencies.mjs all exited 0 (22 source files, 39 edges, zero new dependency errors/stale entries; five pre-existing baseline relationships retained).
+
+## Resumed implementation after explicit human policy approval
+
+The human answered "yes" to the proposed AC revision requiring HTTPS non-loopback callbacks, including development. Story policy/AC-05 and tests were revised with that explicit decision, preserving original READY metadata and all other ACs. Resumed IN_PROGRESS. The prior BLOCKED section is historical.
+
+New web journey: existing SIWE sign-in → My applications → register → one-time result/copy → persistent read-only list. Drafts/results stay in memory and are wallet-bound; reauthentication preserves nonsensitive drafts only for the same verified owner. Generic provider and protocol endpoints remain blocked.
+
+Independent preliminary review identified two real defects: a provider transaction could encompass another browser's raw QR writes on the same connection; independent connections could return an opaque SQLite conflict for an idempotent submission. Corrected using per-file facade serialization (input is bounded/read before queueing) and bounded transaction-conflict retries. Added independent-connection replay/cap/rate/persistence tests and concurrent slow-input/QR/rollback protection. These are technical changes within approved ACs.
+
+Focused results before final checks: 43 new registration integration tests passed; all nine new browser tests passed (12.6s), including real signatures behind simulated wallets, lost-response reconciliation, double-click, same/other-owner reauthentication, both themes, mobile layout, keyboard focus, axe checks and masked screenshots. An initial browser locator was ambiguous because output elements also have status roles; corrected to the explicit status paragraph. The first failure diagnostic captured a synthetic test credential, which was redacted from its log and removed from generated DOM error context; the credential suite now disables automatic DOM snapshots and network traces. No production credential/data was used.
+
+Current full-suite and final-review results remain pending; no QA_PASSED claim yet.
