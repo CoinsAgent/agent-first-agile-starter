@@ -105,6 +105,10 @@
     {
       "path": "work/US-002/artifacts",
       "kind": "directory"
+    },
+    {
+      "path": "work/US-001-05/artifacts",
+      "kind": "directory"
     }
   ]
 }

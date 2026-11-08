@@ -30,8 +30,8 @@ export function SignIn({ onSession }: { onSession?: (session: Session | null) =>
         <p>Your verified Ethereum address</p>
         <p className="address" data-testid="verified-address">{auth.session.address}</p>
         <p className="small muted">Session ends at {new Date(auth.session.expiresAt).toLocaleTimeString()}. Signing out ends it immediately.</p>
-        <Button onClick={() => { void auth.logout(); }} disabled={auth.busy}>Sign out</Button>
-        {!onSession && <a className="text-link" href="#applications">My applications</a>}
+        <div className="application-entry-row"><Button onClick={() => { void auth.logout(); }} disabled={auth.busy}>Sign out</Button>
+        {!onSession && <a className="text-link" href="#applications">My applications</a>}</div>
       </div> : <WalletFlow auth={auth} />}
     </div>
     <p className="privacy-note">No password. No transaction.<br/>Your keys stay in your wallet.</p>
