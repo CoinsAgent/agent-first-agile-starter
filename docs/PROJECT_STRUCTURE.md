@@ -194,3 +194,9 @@ Keep CI credentials out of candidate code, review changes to checkers/configurat
 ## Context ownership
 
 This guide owns directory responsibilities and placement examples. `AGENTS.md` routes Codex here; the Product Contract states maintainability intent; the UI Design Contract covers UI-specific responsibilities; PROCESS and skills govern when to review the structure and task scope. Link here rather than maintaining another full directory tree. Never change product behavior, approved ACs, story status or human approval metadata merely to align directories.
+
+## US-002 application registration area
+
+US-002 activates the documented applications destinations for a web-only owner journey. Intended real files: frontend/applications/index.ts (public UI interface), applications.tsx (registration/list/result behavior), and feature-local styles if required; frontend/pages/applications.tsx assembles it with the existing sign-in view. Bootstrap only selects the page. backend/applications/index.ts exposes registration, with registration.ts owning validation, rate/cap limits, submission identity and persistence coordination. backend/oidc/index.ts provides the internal supported OAuth provider configuration if needed; it does not publish protocol endpoints. backend/wallet-auth/index.ts exposes existing session capabilities when needed. Provider/session operations are injected through domain interfaces; generic infrastructure and shared UI do not import domains.
+
+No empty future directories or consent/token implementation are introduced. Existing wallet authentication remains authoritative, the server facade continues to block generic provider routes, and one root package/database remains the setup boundary. Exact writable paths and technical revisions are declared in work/US-002/plan.md and scope.json before implementation.

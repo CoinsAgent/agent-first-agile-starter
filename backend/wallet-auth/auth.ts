@@ -11,6 +11,8 @@ import { createSiweMessage, parseSiweMessage } from 'viem/siwe';
 import { z } from 'zod';
 import type { Config } from '../infrastructure/config';
 import { createQrAuth } from './qr';
+import { applicationSchema, ApplicationError, createApplications } from '../applications';
+import { registrationProvider } from '../oidc';
 
 export const CHALLENGE_MS = 5 * 60 * 1000;
 export const SESSION_MS = 60 * 60 * 1000;
@@ -61,7 +63,7 @@ export async function createWalletGate(config: Config) {
       },
     },
     advanced: { useSecureCookies: secure, defaultCookieAttributes: { httpOnly: true, sameSite: 'lax', secure } },
-    plugins: [siwe({
+    plugins: [applicationSchema, ...registrationProvider(), siwe({
       domain: new URL(config.origin).host, anonymous: true,
       getNonce: async () => randomBytes(24).toString('hex'),
       verifyMessage: async ({ message, signature, address }) => {
@@ -102,11 +104,23 @@ export async function createWalletGate(config: Config) {
   await migrations.runMigrations();
   // The SIWE plugin uses canonical checksummed addresses; prevent concurrent duplicate wallet identities.
   db.exec('CREATE UNIQUE INDEX IF NOT EXISTS wallet_address_chain_unique ON walletAddress(address, chainId)');
+  // Defense in depth: cap is enforced by SQLite even under independent concurrent connections.
+  db.exec(`CREATE TRIGGER IF NOT EXISTS walletgate_client_cap BEFORE INSERT ON oauthClient
+    WHEN NEW.referenceId IS NOT NULL AND (SELECT count(*) FROM oauthClient WHERE referenceId = NEW.referenceId) >= 20
+    BEGIN SELECT RAISE(ABORT, 'ApplicationLimit'); END`);
   async function session(headers: Headers) {
     const data = await auth.api.getSession({ headers });
-    if (!data || data.session.authMethod !== 'siwe' || !/^0x[0-9a-f]{40}$/.test(data.session.walletAddress ?? '') || data.session.expiresAt.getTime() <= Date.now()) return null;
+    if (!data || data.session.authMethod !== 'siwe' || typeof data.session.walletAddress !== 'string' || !/^0x[0-9a-f]{40}$/.test(data.session.walletAddress ?? '') || data.session.expiresAt.getTime() <= Date.now()) return null;
     return { address: data.session.walletAddress, expiresAt: data.session.expiresAt.toISOString() };
   }
+  const applications = createApplications({
+    adapter: (await auth.$context).adapter, session,
+    create: (headers, input) => auth.api.createOAuthClient({ headers, body: {
+      client_name: input.name, redirect_uris: input.redirectUris, application_type: 'web',
+      token_endpoint_auth_method: 'client_secret_basic', grant_types: ['authorization_code'],
+      response_types: ['code'], scope: 'openid',
+    } }),
+  });
   function internal(request: Request, path: string, body: unknown) {
     return auth.handler(new Request(`${config.origin}/api/auth${path}`, { method: 'POST', headers: request.headers, body: JSON.stringify(body) }));
   }
@@ -138,6 +152,15 @@ export async function createWalletGate(config: Config) {
     if (request.method === 'POST' && (request.headers.get('origin') !== config.origin || !request.headers.get('content-type')?.startsWith('application/json')))
       return json({ error: 'Use a same-origin JSON request.' }, 403);
     try {
+      if (url.pathname === '/api/applications' && request.method === 'POST') {
+        const result = await applications.create(request.headers, () => readJson(request));
+        return json(result, result.replayed ? 200 : 201);
+      }
+      if (request.method === 'GET' && (url.pathname === '/api/applications' || /^\/api\/applications\/[^/]+$/.test(url.pathname))) {
+        const id = url.pathname === '/api/applications' ? undefined : decodeURIComponent(url.pathname.slice('/api/applications/'.length));
+        const list = await applications.list(request.headers, id);
+        return json(id ? { application: list[0] } : { applications: list });
+      }
       if (url.pathname.startsWith('/api/qr/') && request.method === 'POST') return await qr(request, url.pathname.slice('/api/qr/'.length), await readJson(request));
       if (url.pathname === '/api/session' && request.method === 'GET') {
         const current = await session(request.headers);
@@ -182,6 +205,7 @@ export async function createWalletGate(config: Config) {
       // Do not expose Better Auth's generic login, account linking or client-registration routes.
       return json({ error: 'Not found.' }, 404);
     } catch (error) {
+      if (error instanceof ApplicationError) return json({ error: error.message, field: error.field }, error.status, error.retryAfter ? { 'Retry-After': String(error.retryAfter) } : undefined);
       if (error instanceof RequestTooLarge) return json({ error: 'Request too large.' }, 413, { Connection: 'close' });
       if (error instanceof z.ZodError || error instanceof SyntaxError) return json({ error: 'Invalid sign-in request.' }, 400);
       // Do not include signatures, session credentials or upstream errors in responses/logs.
