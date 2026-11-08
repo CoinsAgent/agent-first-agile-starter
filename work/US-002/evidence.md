@@ -1,6 +1,6 @@
 # Verification evidence — US-002
 
-Status: IN_PROGRESS
+Status: PASS
 
 ## Context and provenance
 
@@ -32,8 +32,8 @@ Status: IN_PROGRESS
 
 Final command: `STRUCTURE_SCOPE_BASE=eaca15f STRUCTURE_SCOPE_HEAD=HEAD STRUCTURE_SCOPE_FILE=work/US-002/scope.json bash scripts/verify.sh`.
 
-- Tested implementation SHA: `da188d79027120ab7668420e8dc6763b0bcce0ee` on `codex/us-002-registration`.
-- Exit code: 0. Log: `artifacts/final-qa.log`.
+- Tested implementation SHA: `0122477a387366d2ad740f414dda743a377a367c` on `codex/us-002-registration`.
+- Exit code: 0. Latest correction log: `artifacts/copy-square-full-verify.log`; original delivery log: `artifacts/final-qa.log`.
 - 43 Python/harness tests, 41 structure fixtures, 130 application tests (including 47 registration tests), and 78 Playwright tests passed. Zero required checks were skipped. Lint, TypeScript, build/SDK hashes, public-registry lockfile validation, actual dependency graph and complete main-to-head scope also passed.
 - Existing auth/QR/browser assertions were preserved; failures from earlier revisions are recorded below with fixes rather than represented as passing runs.
 - `python3 scripts/check_scope.py --base eaca15f --head HEAD --scope work/US-002/scope.json` exited 0 for the tested committed diff. Complete diff reviewed: 25 changed source/document/record endpoints, all declared. Ignored capture output is separately declared.
@@ -121,3 +121,16 @@ After local QA, the human instructed "stop the old server and deploy again" for 
 - Rollback: stop the service, restore the retained previous 05-release.conf, daemon-reload and restart. No automatic database restore was performed or is implied; keep the consistent backup for operator recovery.
 
 Deployment succeeded. The separate human review/PR/CI/merge/acceptance workflow remains pending.
+
+## Human-requested square copy controls and deployment
+
+The human requested "remove copy client id and secret button, just a square beside the client id and client secret contents. click square means copy". Replaced the two full-width visible-text buttons with adjacent native square icon buttons. Accessible names remain Copy client ID/Copy client secret, clipboard callbacks/status feedback are unchanged, touch targets are 44×44px, focus remains visible, and wrapping credentials fit the 320px viewport. No authentication, server behavior or secret lifecycle was changed.
+
+- Returned QA_PASSED to IN_PROGRESS for the correction; all approved AC lines and original human metadata are unchanged. Restored QA_PASSED only after the full checks below.
+- Added focused browser assertions for both clipboard values, keyboard activation, square size, adjacent placement and absence of visible button text. Existing light/dark axe/mobile/zoom and secret-redaction checks remain. Focused suite: 10/10 passed (13.3s), log artifacts/copy-square-browser.log; parent visually inspected redacted mobile capture.
+- Independent read-only reviewer registration_facts inspected the three affected source/test files: no concern, no secret-handling changes or scope creep, accessible controls/focus/44px targets retained. No files changed or tests claimed by the reviewer.
+- Full exact-revision command with complete scope selected exited 0 at 0122477a387366d2ad740f414dda743a377a367c: 43 harness tests, 41 structure fixtures, 130 application tests and 78 browser tests (1.0m), plus lint, types, build, lockfile/dependency and committed scope checks. Log artifacts/copy-square-full-verify.log. No assertions weakened or required checks skipped.
+- Independently archived and built that exact source in /home/ubuntu/walletgate-releases/0122477a387366d2ad740f414dda743a377a367c, with copied dependencies (artifacts/copy-square-release-build.log), then updated the existing authorized port-3000 deployment. Previous e94bb2e process stopped; consistent private SQLite backup retained at /home/ubuntu/walletgate-backups/us-002-20261108T150802Z/walletgate.sqlite. Existing database, runtime.env/session secret, trusted origin, port and HTTPS routing preserved; database quick_check passed. Rollback drop-in: artifacts/copy-square-previous-release-dropin.conf; previous release retained.
+- Service active PID 2928850, local HTTP200, verified cwd/config; public HTTPS200 with valid TLS and three matching JS/CSS fingerprints. Unauthenticated session/applications401 and hidden provider routes404 remain. Artifacts: copy-square-deployment-result.json and copy-square-public-release-check.json.
+- Actual Chromium verified the public registration auth gate and the new credential-row/credential-copy CSS at 2026-11-08T15:08:34.787Z (artifacts/copy-square-deployed-browser.json). No client creation or real-wallet proof was performed against production; clipboard/authenticated UI checks used disposable local test data.
+- Final QA/deployment record commit changes only status/evidence/plan and receives focused metadata/whitespace/scope checks. No PR/CI, merge or acceptance is implied by this refinement/deployment.
