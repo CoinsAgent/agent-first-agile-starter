@@ -87,3 +87,13 @@ Existing walletgate.service had served f7f5bc78eb2287969f6a6582ab177b9b6a931730.
 Observed verification at 2026-11-08T10:19:32Z: local port 3000 with trusted Host returns 200; public https://walletgate.beeswarm.dev/ returns 200 with valid TLS verification. Three referenced JS/CSS assets exactly match release dist bytes; unauthenticated /api/session returns 401 (artifacts/public-release-check.json). Headless Chromium loaded the public HTTPS page and found the sign-in heading and MetaMask control; screenshot artifacts/released-public-desktop.png. This verifies public rendering, not real-wallet sign-in.
 
 Rollback if needed: remove only the newly added 05-release.conf drop-in, daemon-reload and restart walletgate.service to restore its unchanged base unit and retained f7f5bc7 release. The deployment command included rollback on restart/local health failure; rollback was not needed. No database/secret migration, DNS/certificate change, GitHub publication, host-protection change or acceptance metadata edit occurred.
+
+## Confirmed human acceptance — 2026-11-08
+
+The human explicitly instructed "US-001-05 accept" in this conversation. This entry supersedes the earlier pending-acceptance checkpoints without rewriting their historical observations.
+
+- GitHub PR #7: https://github.com/CoinsAgent/agent-first-agile-starter/pull/7. get_pr_info and gh api confirm merged=true, head 0e2371ad1b741f7c85cf9fb797493fb4d8deee03, merge eaca15f7e01ac31e25c0fe58f48b60d8975f1a62, merged_by CoinsAgent, merged_at 2026-11-08T10:30:35Z.
+- gh pr checks 7 --repo CoinsAgent/agent-first-agile-starter exited 0: Harness and product verification PASS (1m40s), PR path scope PASS (4s), run https://github.com/CoinsAgent/agent-first-agile-starter/actions/runs/42471574888.
+- Status ACCEPTED and observed merger/date recorded in story front matter; original READY approval is preserved.
+- Only backlog/US-001-05.md and this evidence file are changed. Preserve locally on codex/accept-us-001-05, then declare and carry both paths into the next approved PR. No dedicated acceptance PR, push, CI trigger or deployment is requested.
+- Acceptance-record validation: python3 scripts/check_harness.py exited 0 (10 story files valid); git diff --check exited 0; complete two-file diff reviewed. Application tests were not rerun for these metadata/evidence-only edits.

@@ -1,6 +1,6 @@
-import { createHash, randomBytes } from 'node:crypto';
+import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { mkdirSync } from 'node:fs';
-import { dirname } from 'node:path';
+import { dirname, resolve } from 'node:path';
 import Database from 'better-sqlite3';
 import { betterAuth } from 'better-auth';
 import { APIError, createAuthMiddleware } from 'better-auth/api';
@@ -11,6 +11,8 @@ import { createSiweMessage, parseSiweMessage } from 'viem/siwe';
 import { z } from 'zod';
 import type { Config } from '../infrastructure/config';
 import { createQrAuth } from './qr';
+import { applicationSchema, ApplicationError, createApplications } from '../applications';
+import { registrationProvider } from '../oidc';
 
 export const CHALLENGE_MS = 5 * 60 * 1000;
 export const SESSION_MS = 60 * 60 * 1000;
@@ -38,10 +40,35 @@ async function readJson(request: Request): Promise<unknown> {
   }
   return JSON.parse(Buffer.concat(chunks).toString('utf8'));
 }
+// SIWE/QR requests may overlap (cancellation must interrupt verification), but
+// registration transactions need exclusive access to their SQLite connection.
+// Existing requests share access; a registration waits until they finish.
+type DatabaseQueue = { readers: number; writer: boolean; readersWaiting: (() => void)[]; writersWaiting: (() => void)[]; references: number };
+const databaseQueues = new Map<string, DatabaseQueue>();
+function acquireDatabase(queue: DatabaseQueue, exclusive: boolean): Promise<() => void> {
+  return new Promise(resolve => {
+    const advance = () => {
+      if (queue.writer) return;
+      // Allow waiting ordinary operations together, preserving QR cancellation.
+      for (const enter of queue.readersWaiting.splice(0)) enter();
+      if (queue.readers === 0) queue.writersWaiting.shift()?.();
+    };
+    const enter = () => {
+      if (exclusive) queue.writer = true; else queue.readers++;
+      resolve(() => { if (exclusive) queue.writer = false; else queue.readers--; advance(); });
+    };
+    if (exclusive) { queue.writersWaiting.push(enter); if (!queue.writer && queue.readers === 0) queue.writersWaiting.shift()?.(); }
+    else if (queue.writer) queue.readersWaiting.push(enter);
+    else enter();
+  });
+}
 type Challenge = { message: string; expiresAt: number };
 export async function createWalletGate(config: Config) {
   if (config.databasePath !== ':memory:') mkdirSync(dirname(config.databasePath), { recursive: true, mode: 0o700 });
   const db = new Database(config.databasePath);
+  const queueKey = config.databasePath === ':memory:' ? randomUUID() : resolve(config.databasePath);
+  const queue = databaseQueues.get(queueKey) ?? { readers: 0, writer: false, readersWaiting: [], writersWaiting: [], references: 0 };
+  queue.references++; databaseQueues.set(queueKey, queue);
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
   db.exec('CREATE TABLE IF NOT EXISTS walletChallenge (attemptHash TEXT PRIMARY KEY, message TEXT NOT NULL, expiresAt INTEGER NOT NULL)');
@@ -61,7 +88,7 @@ export async function createWalletGate(config: Config) {
       },
     },
     advanced: { useSecureCookies: secure, defaultCookieAttributes: { httpOnly: true, sameSite: 'lax', secure } },
-    plugins: [siwe({
+    plugins: [applicationSchema, ...registrationProvider(), siwe({
       domain: new URL(config.origin).host, anonymous: true,
       getNonce: async () => randomBytes(24).toString('hex'),
       verifyMessage: async ({ message, signature, address }) => {
@@ -102,11 +129,23 @@ export async function createWalletGate(config: Config) {
   await migrations.runMigrations();
   // The SIWE plugin uses canonical checksummed addresses; prevent concurrent duplicate wallet identities.
   db.exec('CREATE UNIQUE INDEX IF NOT EXISTS wallet_address_chain_unique ON walletAddress(address, chainId)');
+  // Defense in depth: cap is enforced by SQLite even under independent concurrent connections.
+  db.exec(`CREATE TRIGGER IF NOT EXISTS walletgate_client_cap BEFORE INSERT ON oauthClient
+    WHEN NEW.referenceId IS NOT NULL AND (SELECT count(*) FROM oauthClient WHERE referenceId = NEW.referenceId) >= 20
+    BEGIN SELECT RAISE(ABORT, 'ApplicationLimit'); END`);
   async function session(headers: Headers) {
     const data = await auth.api.getSession({ headers });
-    if (!data || data.session.authMethod !== 'siwe' || !/^0x[0-9a-f]{40}$/.test(data.session.walletAddress ?? '') || data.session.expiresAt.getTime() <= Date.now()) return null;
+    if (!data || data.session.authMethod !== 'siwe' || typeof data.session.walletAddress !== 'string' || !/^0x[0-9a-f]{40}$/.test(data.session.walletAddress ?? '') || data.session.expiresAt.getTime() <= Date.now()) return null;
     return { address: data.session.walletAddress, expiresAt: data.session.expiresAt.toISOString() };
   }
+  const applications = createApplications({
+    adapter: (await auth.$context).adapter, session,
+    create: (headers, input) => auth.api.createOAuthClient({ headers, body: {
+      client_name: input.name, redirect_uris: input.redirectUris, application_type: 'web',
+      token_endpoint_auth_method: 'client_secret_basic', grant_types: ['authorization_code'],
+      response_types: ['code'], scope: 'openid',
+    } }),
+  });
   function internal(request: Request, path: string, body: unknown) {
     return auth.handler(new Request(`${config.origin}/api/auth${path}`, { method: 'POST', headers: request.headers, body: JSON.stringify(body) }));
   }
@@ -132,19 +171,28 @@ export async function createWalletGate(config: Config) {
       } finally { db.prepare('DELETE FROM walletChallenge WHERE attemptHash = ?').run(hash(binding)); }
     },
   });
-  async function handle(request: Request): Promise<Response> {
+  async function handle(request: Request, readBody = () => readJson(request)): Promise<Response> {
     const url = new URL(request.url);
     if (url.origin !== config.origin) return json({ error: 'Untrusted origin.' }, 403);
     if (request.method === 'POST' && (request.headers.get('origin') !== config.origin || !request.headers.get('content-type')?.startsWith('application/json')))
       return json({ error: 'Use a same-origin JSON request.' }, 403);
     try {
-      if (url.pathname.startsWith('/api/qr/') && request.method === 'POST') return await qr(request, url.pathname.slice('/api/qr/'.length), await readJson(request));
+      if (url.pathname === '/api/applications' && request.method === 'POST') {
+        const result = await applications.create(request.headers, () => readBody());
+        return json(result, result.replayed ? 200 : 201);
+      }
+      if (request.method === 'GET' && (url.pathname === '/api/applications' || /^\/api\/applications\/[^/]+$/.test(url.pathname))) {
+        const id = url.pathname === '/api/applications' ? undefined : decodeURIComponent(url.pathname.slice('/api/applications/'.length));
+        const list = await applications.list(request.headers, id);
+        return json(id ? { application: list[0] } : { applications: list });
+      }
+      if (url.pathname.startsWith('/api/qr/') && request.method === 'POST') return await qr(request, url.pathname.slice('/api/qr/'.length), await readBody());
       if (url.pathname === '/api/session' && request.method === 'GET') {
         const current = await session(request.headers);
         return current ? json(current) : json({ error: 'Sign in with your wallet.' }, 401);
       }
       if (url.pathname === '/api/challenge' && request.method === 'POST') {
-        const input = z.object({ address: z.string().regex(/^0x[a-fA-F0-9]{40}$/), chainId: z.literal(1) }).strict().parse(await readJson(request));
+        const input = z.object({ address: z.string().regex(/^0x[a-fA-F0-9]{40}$/), chainId: z.literal(1) }).strict().parse(await readBody());
         const address = getAddress(input.address.toLowerCase());
         const nonceResponse = await internal(request, '/siwe/nonce', {});
         if (!nonceResponse.ok) return json({ error: 'Could not start sign-in. Try again.' }, 400);
@@ -163,7 +211,7 @@ export async function createWalletGate(config: Config) {
         return json({ message, address: address.toLowerCase(), expiresAt: new Date(expiresAt).toISOString() }, 200, { 'Set-Cookie': cookie(token, CHALLENGE_MS / 1000) });
       }
       if (url.pathname === '/api/verify' && request.method === 'POST') {
-        const body = await readJson(request);
+        const body = await readBody();
         const response = await internal(request, '/siwe/verify', body);
         const result = json(response.ok ? { success: true } : { error: 'Signature or sign-in attempt is invalid or expired. Start again.' }, response.ok ? 200 : 401);
         for (const value of response.headers.getSetCookie()) result.headers.append('Set-Cookie', value);
@@ -182,6 +230,7 @@ export async function createWalletGate(config: Config) {
       // Do not expose Better Auth's generic login, account linking or client-registration routes.
       return json({ error: 'Not found.' }, 404);
     } catch (error) {
+      if (error instanceof ApplicationError) return json({ error: error.message, field: error.field }, error.status, error.retryAfter ? { 'Retry-After': String(error.retryAfter) } : undefined);
       if (error instanceof RequestTooLarge) return json({ error: 'Request too large.' }, 413, { Connection: 'close' });
       if (error instanceof z.ZodError || error instanceof SyntaxError) return json({ error: 'Invalid sign-in request.' }, 400);
       // Do not include signatures, session credentials or upstream errors in responses/logs.
@@ -189,5 +238,22 @@ export async function createWalletGate(config: Config) {
       return json({ error: 'Sign-in is unavailable. Try again.' }, 500);
     }
   }
-  return { handle, db, auth, close: () => db.close() };
+  async function queuedHandle(request: Request): Promise<Response> {
+    const url = new URL(request.url);
+    // Read bounded input before joining the database queue: a slow sender must
+    // never hold every other browser's database operations. Preserve parse errors
+    // for the handler, including authenticated rate accounting on invalid input.
+    const needsBody = request.method === 'POST' && url.origin === config.origin &&
+      request.headers.get('origin') === config.origin && request.headers.get('content-type')?.startsWith('application/json') &&
+      (['/api/applications', '/api/challenge', '/api/verify', '/api/logout'].includes(url.pathname) || url.pathname.startsWith('/api/qr/'));
+    const parsed = needsBody ? await readJson(request).then(value => ({ value }), error => ({ error })) : { value: undefined };
+    const release = await acquireDatabase(queue, request.method === 'POST' && url.pathname === '/api/applications');
+    try { return await handle(request, async () => {
+      if ('error' in parsed) throw parsed.error;
+      return parsed.value;
+    }); } finally { release(); }
+  }
+  return { handle: queuedHandle, db, auth, close: () => {
+    db.close(); queue.references--; if (!queue.references) databaseQueues.delete(queueKey);
+  } };
 }
