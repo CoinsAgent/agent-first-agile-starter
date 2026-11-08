@@ -4,6 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { spawn } from 'node:child_process';
 import { once } from 'node:events';
+import net from 'node:net';
 import { fileURLToPath } from 'node:url';
 
 const root = fileURLToPath(new URL('../../', import.meta.url));
@@ -17,8 +18,17 @@ if (!fs.existsSync(envFile)) {
 }
 try {
   for (const [command, port] of [['dev', 3215], ['start', 3216]]) {
+    // Fail on occupied ports before launching; Express can invoke the existing
+    // app's listen callback on EADDRINUSE, making its log marker alone insufficient.
+    const probe = net.createServer();
+    await new Promise((resolve, reject) => {
+      probe.once('error', reject);
+      probe.listen(port, '0.0.0.0', resolve);
+    });
+    await new Promise((resolve, reject) => probe.close(error => error ? reject(error) : resolve()));
     const origin = `http://localhost:${port}`;
-    const output = fs.openSync(path.join(artifactDir, `root-${command}.log`), 'w');
+    const logPath = path.join(artifactDir, `root-${command}.log`);
+    const output = fs.openSync(logPath, 'w');
     const child = spawn('npm', ['run', command], {
       cwd: root, detached: true, stdio: ['ignore', output, output],
       env: { ...process.env, PORT: String(port), TRUSTED_ORIGIN: origin, DATABASE_PATH: ':memory:', BETTER_AUTH_SECRET: 'test-only-us00105-smoke-secret-0987654321', WALLET_RPC_URL: '' },
@@ -27,14 +37,21 @@ try {
     const closed = once(child, 'close');
     try {
       let response;
+      let ready = false;
       for (let attempt = 0; attempt < 100; attempt++) {
         assert.equal(child.exitCode, null, `${command} exited before readiness`);
         try { response = await fetch(origin, { signal: AbortSignal.timeout(1000) }); }
         catch { /* Startup is bounded below. */ }
-        if (response?.ok) break;
+        // An HTTP listener alone could belong to a pre-existing process.
+        if (response?.ok && fs.readFileSync(logPath, 'utf8').includes(`WalletGate listening on ${origin}`)) {
+          assert.equal(child.exitCode, null, `${command} exited during readiness`);
+          ready = true;
+          break;
+        }
+        if (response) await response.body?.cancel();
         await new Promise(resolve => setTimeout(resolve, 100));
       }
-      assert.ok(response?.ok, `${command} failed to become ready`);
+      assert.ok(ready, `${command} failed to become ready with its own startup marker`);
       const html = await response.text();
       assert.match(html, /WalletGate — Your wallet\. Your way in\./);
       assert.doesNotMatch(html, /\/src\/main\.tsx/);

@@ -84,8 +84,8 @@ Proposed usable harness outcome: a maintainer adopts the convention without reor
 
 ## Next story to detail
 
-- Current targeted request: [US-001-05](US-001-05.md), removing only the intermediate src directories from frontend and backend. Its detailed criteria cover file preservation, root commands/build/start, ownership and negative layout checks, and unchanged authentication/UI behavior. Recommend this single maintenance slice before US-002; the human decides priority and READY approval.
-- [US-001-04](US-001-04.md) supplies the current layout; this follow-up proposes a later change without rewriting its scope/history. The [structure guide](../docs/PROJECT_STRUCTURE.md#adopted-skeleton) distinguishes the proposed target from current paths.
+- Current targeted request: [US-001-05](US-001-05.md), removing only the intermediate src directories from frontend and backend. Its detailed criteria cover file preservation, root commands/build/start, ownership and negative layout checks, and unchanged authentication/UI behavior. The human selected this maintenance slice before US-002; the linked story owns its approval and delivery record.
+- [US-001-04](US-001-04.md) supplies the predecessor layout; this follow-up removes its intermediate src level without rewriting that story's scope/history. The [structure guide](../docs/PROJECT_STRUCTURE.md#adopted-skeleton) documents current placement and historical paths.
 - Subsequent product refinement remains [US-002](US-002.md), wallet-authorized application registration. Its client-profile/registration decisions remain unresolved; this structural request does not approve them.
 - Story files remain authoritative for all lifecycle and approval records. No map update authorizes implementation or parallel delivery.
 

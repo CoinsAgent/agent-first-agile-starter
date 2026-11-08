@@ -52,10 +52,18 @@ Review complete diff, actual vs declared paths, exact source bytes/owners/baseli
 ## Execution checklist
 
 - [x] Baseline observed
-- [ ] Relocation and controls complete
+- [x] Relocation and controls complete
 - [ ] All required checks pass
-- [ ] Fresh technical review complete
+- [x] Fresh technical review complete
 - [ ] Current evidence and local QA status recorded
 - [ ] Present full branch for human finished-result review before PR/CI
 
 Baseline observed: exit 0; 43 Python, 36 structure, 83 application and 68 browser tests, plus lock sources/lint/types/build. No baseline failures.
+
+## Review and verification follow-up
+
+First post-move full suite passed on implementation 84642ba: 43 Python, 41 structure, 83 application, 68 browser tests (54.0s), plus lint/types/build and dependency checks. Red layout checks intentionally failed 16/16 before the move; green fixture suite passes 41/41. First red log was initially redirected to a work-root filename then immediately moved into the declared ignored artifacts directory; no undeclared path remains in the diff.
+
+Independent read-only reviewer review_us00105 found no source/tooling/policy defect; corrected two stale story/map narrative statements without changing ACs. Reviewer found possible smoke false positive with existing listeners. Own-log readiness plus live-child check added; the first port-conflict negative check then revealed Express can invoke the existing listen callback on EADDRINUSE. Added exclusive-bind preflight, preserving product code. Negative fixture now exits nonzero with EADDRINUSE; positive dev/start smoke reruns pass. Reviewer rechecked final helper and narrative fixes, no remaining material finding. The bind-close/spawn interval remains a local concurrency limitation, documented in evidence.
+
+No technical scope expansion was needed; all helper/test/log paths were predeclared. Final exact-implementation full verification with complete-diff scope follows the review correction before QA.
