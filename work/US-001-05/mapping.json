@@ -1,0 +1,140 @@
+{
+  "base": "ca2c864472d207aa4365249d3cfe2c33292beaa0",
+  "moves": [
+    {
+      "from": "backend/src/bootstrap/server.ts",
+      "to": "backend/bootstrap/server.ts",
+      "sha256": "6727aad2af1cc69d623924a68f6c433951c04e3a9bd00dfff4828c3e820f5b3c"
+    },
+    {
+      "from": "backend/src/index.ts",
+      "to": "backend/index.ts",
+      "sha256": "23e9e5fada40da1e2de906121eb8f576f7ae663b0da6b6b820e7c0ed6a8b39e9"
+    },
+    {
+      "from": "backend/src/infrastructure/config.ts",
+      "to": "backend/infrastructure/config.ts",
+      "sha256": "d74af4857b9a7b0fdf84f218ea69eb5a0ba50e93c6c7ab61f0a6a0aa64f0f923"
+    },
+    {
+      "from": "backend/src/wallet-auth/auth.ts",
+      "to": "backend/wallet-auth/auth.ts",
+      "sha256": "5ce53412c21283881d35131233d983dce58f2a8da4c151c911d7a672f30ffc35"
+    },
+    {
+      "from": "backend/src/wallet-auth/qr.ts",
+      "to": "backend/wallet-auth/qr.ts",
+      "sha256": "33133e9d270613cbfd2e9fe93a68b3d92439dbd64a3c8f913ea86a276cd31679"
+    },
+    {
+      "from": "frontend/src/assets/walletgate.png",
+      "to": "frontend/assets/walletgate.png",
+      "sha256": "755af121dc3a98a8f8eb2e84898f7e89570c66581a547bda04a1b16f7c7af3d8"
+    },
+    {
+      "from": "frontend/src/assets/wallets/NOTICE.md",
+      "to": "frontend/assets/wallets/NOTICE.md",
+      "sha256": "be997c40e3cb9fe2e14c9e72a6243001fd7702a21bc36455e9547bc17d2273ef"
+    },
+    {
+      "from": "frontend/src/assets/wallets/coinbase.svg",
+      "to": "frontend/assets/wallets/coinbase.svg",
+      "sha256": "74b55347075cbbb2a0292cca0f94459d531afd23586ecfd2fcc670236c590439"
+    },
+    {
+      "from": "frontend/src/assets/wallets/metamask.svg",
+      "to": "frontend/assets/wallets/metamask.svg",
+      "sha256": "892c7dfab8c4ca5682878dda3f42f55a75195d7d365e4adb0832845f3a0a2135"
+    },
+    {
+      "from": "frontend/src/assets/wallets/rabby.svg",
+      "to": "frontend/assets/wallets/rabby.svg",
+      "sha256": "dcae4de88ebfa10cffa1fe28df13d7c8c0b40736ef2b704f1f2fc348e777e443"
+    },
+    {
+      "from": "frontend/src/assets/wallets/rainbow.svg",
+      "to": "frontend/assets/wallets/rainbow.svg",
+      "sha256": "5291dafe28cd6feba0c9ab6d28b5861ce72c7a517647fb25055aa67ce820e3ce"
+    },
+    {
+      "from": "frontend/src/assets/wallets/trust.svg",
+      "to": "frontend/assets/wallets/trust.svg",
+      "sha256": "3e99b0e4a9f77b026affd8b5eabefc015e648d8a9532879c888a61b4b584e615"
+    },
+    {
+      "from": "frontend/src/bootstrap/app.tsx",
+      "to": "frontend/bootstrap/app.tsx",
+      "sha256": "446ecb5c0f9373a769ff3a87cbfd0df0750975ee5f30182aeacb85a8842321de"
+    },
+    {
+      "from": "frontend/src/lib/utils.ts",
+      "to": "frontend/lib/utils.ts",
+      "sha256": "0c97f5ec0478867d5369a4369f811e1b779c7f2548f671ef252f1503a6392d9d"
+    },
+    {
+      "from": "frontend/src/main.tsx",
+      "to": "frontend/main.tsx",
+      "sha256": "ffe7e82befbd5000bda4a33b4facde48f16aec17e4e40e3e979e19adbc74942b"
+    },
+    {
+      "from": "frontend/src/pages/sign-in.tsx",
+      "to": "frontend/pages/sign-in.tsx",
+      "sha256": "d63399b33f58ede35480587df451fd364ca2037ae5b8854a2011edeec57f8fdf"
+    },
+    {
+      "from": "frontend/src/styles/style.css",
+      "to": "frontend/styles/style.css",
+      "sha256": "a5663f1217c9f29e24e049a76b601dc062c6a970e6832662d906c88f72d24887"
+    },
+    {
+      "from": "frontend/src/ui/button.tsx",
+      "to": "frontend/ui/button.tsx",
+      "sha256": "629f5bc808e7c64660c8504b34054336da71923a62361774e453d455cca9a586"
+    },
+    {
+      "from": "frontend/src/ui/dialog.tsx",
+      "to": "frontend/ui/dialog.tsx",
+      "sha256": "02e784572dda22cddbc0181a56c8546244dec0c0d9def14cfa9d43320f06cab5"
+    },
+    {
+      "from": "frontend/src/wallet-auth/api.ts",
+      "to": "frontend/wallet-auth/api.ts",
+      "sha256": "1d0ebb449d5220438cbd87b3e34a9d2b4898cb5ad0e1303b608db4f4717295e9"
+    },
+    {
+      "from": "frontend/src/wallet-auth/components/mobile-approval.tsx",
+      "to": "frontend/wallet-auth/components/mobile-approval.tsx",
+      "sha256": "88914a7a5e47791948f9afba628acdd7cf333e19c9f5ba1df5b570477370100a"
+    },
+    {
+      "from": "frontend/src/wallet-auth/components/qr-auth-panel.tsx",
+      "to": "frontend/wallet-auth/components/qr-auth-panel.tsx",
+      "sha256": "2e870abdbf5d5bbd406ce9ea9eecc8a3191761610b871521f3c113212e1f6f21"
+    },
+    {
+      "from": "frontend/src/wallet-auth/components/wallet-flow.tsx",
+      "to": "frontend/wallet-auth/components/wallet-flow.tsx",
+      "sha256": "7d07aca71879498f833a71457ea0c7d18adfb0121149d29f18523aaa4a22022d"
+    },
+    {
+      "from": "frontend/src/wallet-auth/components/wallet-shortcuts.ts",
+      "to": "frontend/wallet-auth/components/wallet-shortcuts.ts",
+      "sha256": "597d85184439fc38cc833368147d76cc4b1f73151645d83266caaba63c7ff5b4"
+    },
+    {
+      "from": "frontend/src/wallet-auth/hooks/use-wallet-auth.ts",
+      "to": "frontend/wallet-auth/hooks/use-wallet-auth.ts",
+      "sha256": "0ffaa1b6087a08bca9b209d6d7a5ea02ee720165a5b2f369fc72ad6ac8e856e1"
+    },
+    {
+      "from": "frontend/src/wallet-auth/wallet-sdk.ts",
+      "to": "frontend/wallet-auth/wallet-sdk.ts",
+      "sha256": "8db84e70eb8d4a7ef6f1404f782711b517b9455de3b364f68866c798774f7ef9"
+    },
+    {
+      "from": "frontend/src/wallet-auth/wallet.ts",
+      "to": "frontend/wallet-auth/wallet.ts",
+      "sha256": "5d983d6241975074b4573e1f3c0feb4450e7ef45901860ea32317624d81b6a06"
+    }
+  ]
+}

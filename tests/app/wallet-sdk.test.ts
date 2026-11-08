@@ -4,7 +4,7 @@ import { mainnet } from 'wagmi/chains';
 const mocks = vi.hoisted(() => ({ metamask: vi.fn(), coinbase: vi.fn() }));
 vi.mock('@metamask/connect-evm', () => ({ createEVMClient: mocks.metamask }));
 vi.mock('@coinbase/wallet-sdk', () => ({ createCoinbaseWalletSDK: mocks.coinbase }));
-import { walletSdk, preloadWalletSdks, cancelWalletSdk, retryableSdkImport } from '../../frontend/src/wallet-auth/wallet-sdk';
+import { walletSdk, preloadWalletSdks, cancelWalletSdk, retryableSdkImport } from '../../frontend/wallet-auth/wallet-sdk';
 const address = '0x0000000000000000000000000000000000000001';
 function setup(wallet: 'metamask' | 'coinbase') {
   const request = vi.fn(async ({method}: {method:string}) => method === 'eth_chainId' ? '0x1' : [address]);

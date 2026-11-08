@@ -10,7 +10,7 @@ import { API } from 'typescript/unstable/sync';
 import { SyntaxKind } from 'typescript/unstable/ast';
 
 const codeExtensions = ['.ts', '.tsx', '.mts', '.cts', '.js', '.jsx', '.mjs', '.cjs'];
-const dataExtensions = new Set(['.css', '.svg', '.png', '.jpg', '.jpeg', '.webp', '.ico', '.md', '.json', '.txt', '.woff', '.woff2']);
+const dataExtensions = new Set(['.html', '.css', '.svg', '.png', '.jpg', '.jpeg', '.webp', '.ico', '.md', '.json', '.txt', '.woff', '.woff2']);
 const builtin = new Set(builtinModules.flatMap(n => [n, `node:${n}`]));
 const roles = new Set(['app', 'feature', 'shared']);
 const runtimes = new Set(['browser', 'server', 'neutral']);

@@ -138,7 +138,7 @@ MetaMask documents its [per-site network selection](https://support.metamask.io/
 
 ## US-001-01: wallet choice and custom SIWE phone approval
 
-This slice uses the existing React/Vite + wagmi 3 + viem + Better Auth application, with local shadcn/ui components (Radix Dialog variant), Tailwind v4 tokens, and the supplied `frontend/src/assets/walletgate.png`. Install with `npm ci`; run the existing `npm run build` and `npm start` commands. No wallet-connection vendor account or project ID is needed. Neither a vendor wallet UI kit nor WalletConnect is configured.
+This slice uses the existing React/Vite + wagmi 3 + viem + Better Auth application, with local shadcn/ui components (Radix Dialog variant), Tailwind v4 tokens, and the supplied `frontend/assets/walletgate.png`. Install with `npm ci`; run the existing `npm run build` and `npm start` commands. No wallet-connection vendor account or project ID is needed. Neither a vendor wallet UI kit nor WalletConnect is configured.
 
 ### Supported journeys and state
 
@@ -154,7 +154,7 @@ The server issues normal SIWE nonces for phone challenges, verifies the exact ex
 
 ### Theme and network configuration
 
-- `frontend/src/styles/style.css` owns CSS variables for both themes and maps them to shadcn/Tailwind semantic utilities. The light accent is adjusted from the initial contract palette to `#5c50e8` because the original accent on the muted QR panel failed 4.5:1 text contrast. The dark accent remains `#8b85ff`. Borders were strengthened to meet rendered-control contrast requirements. System changes update the page/dialog without recreating challenges or QR requests.
+- `frontend/styles/style.css` owns CSS variables for both themes and maps them to shadcn/Tailwind semantic utilities. The light accent is adjusted from the initial contract palette to `#5c50e8` because the original accent on the muted QR panel failed 4.5:1 text contrast. The dark accent remains `#8b85ff`. Borders were strengthened to meet rendered-control contrast requirements. System changes update the page/dialog without recreating challenges or QR requests.
 - The server retains a strict same-origin CSP; per-response style nonces permit only the trusted Radix runtime style sheets. No `unsafe-inline` is enabled. The HTML is non-cacheable so the nonce in its metadata matches its CSP header.
 - **RPC:** the EOA-only SIWE flow uses the selected wallet for signing/network selection and local cryptographic proof verification on the server. It requests no balances, ENS or other chain reads. wagmi's unused transport is an explicit same-origin unconfigured endpoint rather than a public RPC fallback. A later onchain feature must configure its own RPC endpoint, credentials and CSP explicitly; `/api/rpc-not-configured` is not a functioning RPC.
 - **ENS:** no name/avatar enrichment is enabled. The verified lowercase address remains the identity.
@@ -179,7 +179,7 @@ Full verification: `bash scripts/verify.sh` (Oxlint, TypeScript, API tests, prod
 
 ### Wallet-icon shortcuts
 
-The former Continue with wallet button is replaced in the same card position by five locally bundled brand icons in order: MetaMask, Coinbase Wallet, Rabby, Rainbow and Trust Wallet. Each accessible icon probes only its corresponding injected connector. A detected provider connects and enters SIWE review; absence opens the existing custom QR approval dialog. Another installed wallet is never silently selected. The QR screen continues to identify MetaMask Android as its approved phone route; these shortcuts do not establish new mobile-wallet compatibility. Static icon provenance/license is in `frontend/src/assets/wallets/NOTICE.md`; no wallet UI-kit runtime is included.
+The former Continue with wallet button is replaced in the same card position by five locally bundled brand icons in order: MetaMask, Coinbase Wallet, Rabby, Rainbow and Trust Wallet. Each accessible icon probes only its corresponding injected connector. A detected provider connects and enters SIWE review; absence opens the existing custom QR approval dialog. Another installed wallet is never silently selected. The QR screen continues to identify MetaMask Android as its approved phone route; these shortcuts do not establish new mobile-wallet compatibility. Static icon provenance/license is in `frontend/assets/wallets/NOTICE.md`; no wallet UI-kit runtime is included.
 
 ## Native wallet SDK icon fallbacks
 
@@ -212,10 +212,10 @@ MetaMask and Coinbase icon clicks no longer show a WalletGate “Continue with X
 ## Adopted source layout (US-001-04)
 
 Run all npm commands above from the repository root. React mounts from
-`frontend/src/main.tsx`; composition is in `bootstrap/` and `pages/`, wallet
+`frontend/main.tsx`; composition is in `bootstrap/` and `pages/`, wallet
 behavior in `wallet-auth/`, generic primitives/helpers in `ui/` and `lib/`,
 and theme/assets in `styles/` and `assets/`. Node starts at
-`backend/src/index.ts` → `bootstrap/server.ts`, with wallet behavior in
+`backend/index.ts` → `bootstrap/server.ts`, with wallet behavior in
 `wallet-auth/` and configuration in `infrastructure/`. See the single
 [structure guide](PROJECT_STRUCTURE.md) for ownership and future destinations.
 

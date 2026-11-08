@@ -1,15 +1,21 @@
 {
   "version": 1,
-  "description": "Adopted US-001-04 layout: frontend/backend explicit responsibilities. app = composition, feature = domain, shared = generic independent code. Future domains are declarations only, not scaffolding.",
+  "description": "Adopted US-001-05 layout: source directly under frontend/backend, with unchanged explicit responsibilities. app = composition, feature = domain, shared = generic independent code. Future domains remain declarations only.",
   "source_roots": [
-    "frontend/src",
-    "backend/src",
+    "frontend",
+    "backend",
     "shared"
   ],
   "aliases": {
-    "@/": "frontend/src"
+    "@/": "frontend"
   },
   "owners": [
+    {
+      "path": "frontend/index.html",
+      "kind": "file",
+      "role": "app",
+      "runtime": "browser"
+    },
     {
       "path": "shared/contracts",
       "kind": "directory",
@@ -17,103 +23,103 @@
       "runtime": "neutral"
     },
     {
-      "path": "frontend/src/main.tsx",
+      "path": "frontend/main.tsx",
       "kind": "file",
       "role": "app",
       "runtime": "browser"
     },
     {
-      "path": "frontend/src/bootstrap",
+      "path": "frontend/bootstrap",
       "kind": "directory",
       "role": "app",
       "runtime": "browser"
     },
     {
-      "path": "frontend/src/pages",
+      "path": "frontend/pages",
       "kind": "directory",
       "role": "app",
       "runtime": "browser"
     },
     {
-      "path": "frontend/src/wallet-auth",
+      "path": "frontend/wallet-auth",
       "kind": "directory",
       "role": "feature",
       "feature": "wallet-browser",
       "runtime": "browser"
     },
     {
-      "path": "frontend/src/authorization",
+      "path": "frontend/authorization",
       "kind": "directory",
       "role": "feature",
       "feature": "authorization-browser",
       "runtime": "browser"
     },
     {
-      "path": "frontend/src/applications",
+      "path": "frontend/applications",
       "kind": "directory",
       "role": "feature",
       "feature": "applications-browser",
       "runtime": "browser"
     },
     {
-      "path": "frontend/src/ui",
+      "path": "frontend/ui",
       "kind": "directory",
       "role": "shared",
       "runtime": "browser"
     },
     {
-      "path": "frontend/src/lib",
+      "path": "frontend/lib",
       "kind": "directory",
       "role": "shared",
       "runtime": "browser"
     },
     {
-      "path": "frontend/src/assets",
+      "path": "frontend/assets",
       "kind": "directory",
       "role": "shared",
       "runtime": "browser"
     },
     {
-      "path": "frontend/src/styles",
+      "path": "frontend/styles",
       "kind": "directory",
       "role": "shared",
       "runtime": "browser"
     },
     {
-      "path": "backend/src/index.ts",
+      "path": "backend/index.ts",
       "kind": "file",
       "role": "app",
       "runtime": "server"
     },
     {
-      "path": "backend/src/bootstrap",
+      "path": "backend/bootstrap",
       "kind": "directory",
       "role": "app",
       "runtime": "server"
     },
     {
-      "path": "backend/src/wallet-auth",
+      "path": "backend/wallet-auth",
       "kind": "directory",
       "role": "feature",
       "feature": "wallet-server",
       "runtime": "server"
     },
     {
-      "path": "backend/src/oidc",
+      "path": "backend/oidc",
       "kind": "directory",
       "role": "feature",
       "feature": "oidc-server",
       "runtime": "server"
     },
     {
-      "path": "backend/src/applications",
+      "path": "backend/applications",
       "kind": "directory",
       "role": "feature",
       "feature": "applications-server",
       "runtime": "server"
     },
     {
-      "path": "backend/src/infrastructure",
+      "path": "backend/infrastructure",
       "kind": "directory",
       "role": "shared",
       "runtime": "server"
@@ -121,12 +127,12 @@
   ],
   "feature_roots": [],
   "public_interfaces": [
-    "frontend/src/wallet-auth/index.ts",
-    "frontend/src/authorization/index.ts",
-    "frontend/src/applications/index.ts",
-    "backend/src/wallet-auth/index.ts",
-    "backend/src/oidc/index.ts",
-    "backend/src/applications/index.ts"
+    "frontend/wallet-auth/index.ts",
+    "frontend/authorization/index.ts",
+    "frontend/applications/index.ts",
+    "backend/wallet-auth/index.ts",
+    "backend/oidc/index.ts",
+    "backend/applications/index.ts"
   ],
   "repository_areas": {
     "frontend": "React mounting/bootstrap/pages, wallet-auth domain and generic ui/lib/assets/styles",

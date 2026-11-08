@@ -2,34 +2,34 @@
   "version": 1,
   "violations": [
     {
-      "importer": "frontend/src/pages/sign-in.tsx",
-      "target": "frontend/src/wallet-auth/hooks/use-wallet-auth.ts",
+      "importer": "frontend/pages/sign-in.tsx",
+      "target": "frontend/wallet-auth/hooks/use-wallet-auth.ts",
       "rule": "private-feature-import",
-      "reason": "Exact US-001-04 translation of src/main.tsx -> src/hooks/use-wallet-auth.ts; same existing private-feature-import relationship, no new exception."
+      "reason": "US-001-05 removes only src level from frontend/src/pages/sign-in.tsx -> frontend/src/wallet-auth/hooks/use-wallet-auth.ts; unchanged relationship. Previous provenance: Exact US-001-04 translation of src/main.tsx -> src/hooks/use-wallet-auth.ts; same existing private-feature-import relationship, no new exception."
     },
     {
-      "importer": "frontend/src/pages/sign-in.tsx",
-      "target": "frontend/src/wallet-auth/components/wallet-flow.tsx",
+      "importer": "frontend/pages/sign-in.tsx",
+      "target": "frontend/wallet-auth/components/wallet-flow.tsx",
       "rule": "private-feature-import",
-      "reason": "Exact US-001-04 translation of src/main.tsx -> src/components/wallet/wallet-flow.tsx; same existing private-feature-import relationship, no new exception."
+      "reason": "US-001-05 removes only src level from frontend/src/pages/sign-in.tsx -> frontend/src/wallet-auth/components/wallet-flow.tsx; unchanged relationship. Previous provenance: Exact US-001-04 translation of src/main.tsx -> src/components/wallet/wallet-flow.tsx; same existing private-feature-import relationship, no new exception."
     },
     {
-      "importer": "frontend/src/bootstrap/app.tsx",
-      "target": "frontend/src/wallet-auth/components/mobile-approval.tsx",
+      "importer": "frontend/bootstrap/app.tsx",
+      "target": "frontend/wallet-auth/components/mobile-approval.tsx",
       "rule": "private-feature-import",
-      "reason": "Exact US-001-04 translation of src/main.tsx -> src/components/wallet/mobile-approval.tsx; same existing private-feature-import relationship, no new exception."
+      "reason": "US-001-05 removes only src level from frontend/src/bootstrap/app.tsx -> frontend/src/wallet-auth/components/mobile-approval.tsx; unchanged relationship. Previous provenance: Exact US-001-04 translation of src/main.tsx -> src/components/wallet/mobile-approval.tsx; same existing private-feature-import relationship, no new exception."
     },
     {
-      "importer": "frontend/src/bootstrap/app.tsx",
-      "target": "frontend/src/wallet-auth/wallet-sdk.ts",
+      "importer": "frontend/bootstrap/app.tsx",
+      "target": "frontend/wallet-auth/wallet-sdk.ts",
       "rule": "private-feature-import",
-      "reason": "Exact US-001-04 translation of src/main.tsx -> src/wallet-sdk.ts; same existing private-feature-import relationship, no new exception."
+      "reason": "US-001-05 removes only src level from frontend/src/bootstrap/app.tsx -> frontend/src/wallet-auth/wallet-sdk.ts; unchanged relationship. Previous provenance: Exact US-001-04 translation of src/main.tsx -> src/wallet-sdk.ts; same existing private-feature-import relationship, no new exception."
     },
     {
-      "importer": "backend/src/bootstrap/server.ts",
-      "target": "backend/src/wallet-auth/auth.ts",
+      "importer": "backend/bootstrap/server.ts",
+      "target": "backend/wallet-auth/auth.ts",
       "rule": "private-feature-import",
-      "reason": "Exact US-001-04 translation of server/index.ts -> server/auth.ts; same existing private-feature-import relationship, no new exception."
+      "reason": "US-001-05 removes only src level from backend/src/bootstrap/server.ts -> backend/src/wallet-auth/auth.ts; unchanged relationship. Previous provenance: Exact US-001-04 translation of server/index.ts -> server/auth.ts; same existing private-feature-import relationship, no new exception."
     }
   ]
 }
