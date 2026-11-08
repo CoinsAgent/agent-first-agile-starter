@@ -8,7 +8,7 @@ Status: PASS
 - Human explicitly approved READY and delivery, web-only scope. Accepted US-001-05 record retained from 0e78698.
 - Initial checkout lacked node_modules. bash scripts/verify.sh exited 1 during structure fixtures (TypeScript dependency unavailable); baseline log artifacts/baseline-initial.log. Independent local copy of existing dependencies is being prepared; baseline will be rerun.
 - Runtime: Node v22.22.1, npm 9.2.0.
-- CI: explicitly authorized by the human after finished-result review; see PR/CI authorization below. Hosted results are retained in artifacts/pr-ci-result.json when available.
+- CI: both required checks passed on published head d1583a350b8d26e1bd9abe42566bd201324b5c5a in run https://github.com/CoinsAgent/agent-first-agile-starter/actions/runs/42493715715. Human merge and acceptance provenance is recorded below; raw hosted metadata is retained in artifacts/pr-ci-result.json.
 
 ## Acceptance matrix
 
@@ -47,16 +47,16 @@ Read-only reviewer `registration_facts` independently inspected the complete sco
 ## Known limitations
 
 - Browser wallets/signatures are simulated with real EIP-191 proofs; no new physical-wallet compatibility claim.
-- No fresh `npm ci` was performed: baseline dependencies were copied independently from the existing local installation, and matching provider/core dependencies were installed using the public registry/committed lockfile. Installation audit reported zero findings; no production security/readiness claim.
+- Local verification reused an independent baseline dependency copy and matching provider/core installation. Hosted CI subsequently completed a fresh npm ci and browser installation successfully on the exact published head. No production security/readiness claim follows from installation or CI success.
 - Registration requires HTTPS non-loopback callbacks, including development, per the explicit human revision. Working OIDC endpoints, CLI and management mutations remain future scope.
 - New readers can enter while an exclusive registration waits: sustained ordinary traffic may delay registration. This is an evaluation throughput/fairness limit; production abuse protection is not claimed.
 - Lost secrets require a replacement registration and consume the permanent 20-application allowance; no recovery/reset/rotation is implemented.
 - Automated axe, keyboard, narrow CSS viewport and Chromium page-scale checks do not constitute a complete human screen-reader or every-browser accessibility audit.
-- The human has explicitly approved opening the finished-result PR and running CI. Merge/business acceptance remains pending. Deployment was authorized separately; see the release record below.
+- The human approved PR/CI and subsequently merged the passing PR, constituting acceptance under PROCESS. Deployment was authorized separately; see the release record below.
 
 ## Human acceptance
 
-Human finished-result approval and PR/CI authorization received. PENDING passing required current-head checks and actual human merge. No acceptance metadata is changed.
+ACCEPTED through confirmed human merge after passing required current-head checks. Observed identity/date and merge/check provenance are recorded in the final section below; earlier pending checkpoints remain historical.
 
 Baseline restored: independent local dependency copy, bash scripts/verify.sh exited 0: 43 harness tests, 41 structure fixtures, 83 application tests, 68 browser tests (51.4s), lint/types/build and dependency checks. Log artifacts/baseline.log. No product code changed before the baseline completed.
 
@@ -140,3 +140,11 @@ The human requested "remove copy client id and secret button, just a square besi
 After reviewing the completed/deployed web-only story and square-copy refinement, the human instructed "open the PR and run CI." This explicitly authorizes publishing codex/us-002-registration and opening the story PR against main. The reviewed local result was 4decb2b194f8e7930b5b226b82a81a5101277d07; its product code is identical to full-suite-tested 0122477a387366d2ad740f414dda743a377a367c, with only lifecycle/evidence records afterward. This authorization note is another record-only change.
 
 Fresh origin/main is eaca15f7e01ac31e25c0fe58f48b60d8975f1a62 and is already an ancestor of this branch. The complete diff retains 25 declared paths, the authorized draft/READY refinement and confirmed US-001-05 acceptance record. No existing PR for this head was found before publication. Opening the PR starts the two existing required jobs automatically; no workflow/protection change or manual duplicate dispatch is needed. Actual hosted URL/head/job results will be retained in ignored artifacts/pr-ci-result.json and reported to the human, without a source-only evidence push that starts redundant CI. Human merge and ACCEPTED remain pending; no agent merge is authorized.
+
+## Hosted CI and confirmed human acceptance
+
+- Human finished-result approval: "open the PR and run CI." Published branch/head d1583a350b8d26e1bd9abe42566bd201324b5c5a; opened PR #8 at https://github.com/CoinsAgent/agent-first-agile-starter/pull/8.
+- Workflow run 42493715715 completed successfully: https://github.com/CoinsAgent/agent-first-agile-starter/actions/runs/42493715715. Host API confirms the run head equals the published PR revision. Both required jobs succeeded: PR path scope (job 128771349297, completed 2026-11-08T15:13:39Z) and Harness and product verification (job 128771349469, completed 2026-11-08T15:15:38Z), including fresh npm ci, browser installation and full verification. Observed results retained in artifacts/pr-ci-result.json.
+- GitHub then reported merged=true; gh api confirmed merged_by=CoinsAgent, merger_type=User, merged_at=2026-11-08T15:16:47Z, merge commit ad5ed3442f1b8661da5b98a3935c14842e4c8b31. The agent performed no merge action. The host-observed human merge establishes acceptance under the explicitly approved PROCESS rule.
+- Record story ACCEPTED, accepted_by CoinsAgent and accepted_at 2026-11-08 locally on codex/accept-us-002, based on merged origin/main. Preserve this acceptance-only commit for recovery and carry the story/evidence paths into the next approved PR; do not push a dedicated acceptance-only PR or trigger duplicate post-merge CI. Main retains its earlier QA_PASSED record until the later approved PR merges. Original READY approval/ACs are unchanged.
+- Acceptance recording changes only backlog/US-002.md and this evidence file. Focused metadata and whitespace validation follow; product code is unchanged from the CI-verified merged result. No further deployment, release or host-setting change is implied by recording acceptance.
