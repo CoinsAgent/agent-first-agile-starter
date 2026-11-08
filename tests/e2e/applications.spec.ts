@@ -85,6 +85,26 @@ test('a lost creation response reconciles to one application without retrieving 
   expect((await (await page.request.get('/api/applications')).json()).applications).toHaveLength(1);
 });
 
+test('rate limiting after a lost response preserves the original submission identity', async ({ page }) => {
+  await loginApi(page); await page.goto('/#applications'); await openForm(page); await fill(page);
+  const identities: string[] = []; let phase = 0;
+  await page.route('**/api/applications', async route => {
+    if (route.request().method() !== 'POST') { await route.continue(); return; }
+    identities.push(route.request().postDataJSON().requestId);
+    if (phase++ === 0) { await route.fetch(); await route.abort('failed'); }
+    else if (phase === 2) await route.fulfill({ status: 429, contentType: 'application/json', body: JSON.stringify({ error: 'Too many attempts. Retry later.' }) });
+    else await route.continue();
+  });
+  await submit(page); await expect(page.getByRole('alert')).toContainText('uncertain');
+  await page.getByRole('button', { name: 'Retry same submission', exact: true }).click();
+  await expect(page.getByRole('alert')).toContainText('Too many attempts');
+  await page.getByRole('button', { name: 'Retry same submission', exact: true }).click();
+  await expect(page.getByRole('heading', { name: 'Application registered', exact: true })).toBeVisible();
+  expect(new Set(identities).size).toBe(1); expect(identities.length).toBe(3);
+  expect(await page.locator('#client-secret').count() === 0).toBe(true);
+  expect((await (await page.request.get('/api/applications')).json()).applications).toHaveLength(1);
+});
+
 test('double click while pending sends only one creation request', async ({ page }) => {
   await loginApi(page); await page.goto('/#applications'); await openForm(page); await fill(page);
   let creates = 0; let release: () => void = () => {};
@@ -130,6 +150,7 @@ for (const theme of ['light', 'dark'] as const) test(`${theme} registration/list
   const id = await page.locator('#client-id').textContent();
   await page.getByRole('button', { name: /Switch to (light|dark) mode/ }).click();
   await expect(page.locator('#client-id')).toHaveText(id!);
+  await page.getByRole('button', { name: /Switch to (light|dark) mode/ }).click();
   await page.screenshot({ path: `work/US-002/artifacts/result-mobile-${theme}.png`, fullPage: true, mask: [page.locator('#client-secret')] });
   await page.getByRole('button', { name: 'Return to applications', exact: true }).click();
   expect((await axe()).violations).toEqual([]);

@@ -1,4 +1,4 @@
-import { createHash, randomBytes } from 'node:crypto';
+import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { mkdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import Database from 'better-sqlite3';
@@ -40,17 +40,34 @@ async function readJson(request: Request): Promise<unknown> {
   }
   return JSON.parse(Buffer.concat(chunks).toString('utf8'));
 }
-// A single SQLite connection also serves synchronous SIWE/QR operations. Serialize
-// facade requests so their writes cannot join another request's async transaction.
-// Share a queue across gates opening the same file in this process; SQLite still
-// provides the cross-process transaction/constraint boundary.
-const databaseQueues = new Map<string, { tail: Promise<void>; references: number }>();
+// SIWE/QR requests may overlap (cancellation must interrupt verification), but
+// registration transactions need exclusive access to their SQLite connection.
+// Existing requests share access; a registration waits until they finish.
+type DatabaseQueue = { readers: number; writer: boolean; readersWaiting: (() => void)[]; writersWaiting: (() => void)[]; references: number };
+const databaseQueues = new Map<string, DatabaseQueue>();
+function acquireDatabase(queue: DatabaseQueue, exclusive: boolean): Promise<() => void> {
+  return new Promise(resolve => {
+    const advance = () => {
+      if (queue.writer) return;
+      // Allow waiting ordinary operations together, preserving QR cancellation.
+      for (const enter of queue.readersWaiting.splice(0)) enter();
+      if (queue.readers === 0) queue.writersWaiting.shift()?.();
+    };
+    const enter = () => {
+      if (exclusive) queue.writer = true; else queue.readers++;
+      resolve(() => { if (exclusive) queue.writer = false; else queue.readers--; advance(); });
+    };
+    if (exclusive) { queue.writersWaiting.push(enter); if (!queue.writer && queue.readers === 0) queue.writersWaiting.shift()?.(); }
+    else if (queue.writer) queue.readersWaiting.push(enter);
+    else enter();
+  });
+}
 type Challenge = { message: string; expiresAt: number };
 export async function createWalletGate(config: Config) {
   if (config.databasePath !== ':memory:') mkdirSync(dirname(config.databasePath), { recursive: true, mode: 0o700 });
   const db = new Database(config.databasePath);
-  const queueKey = config.databasePath === ':memory:' ? crypto.randomUUID() : resolve(config.databasePath);
-  const queue = databaseQueues.get(queueKey) ?? { tail: Promise.resolve(), references: 0 };
+  const queueKey = config.databasePath === ':memory:' ? randomUUID() : resolve(config.databasePath);
+  const queue = databaseQueues.get(queueKey) ?? { readers: 0, writer: false, readersWaiting: [], writersWaiting: [], references: 0 };
   queue.references++; databaseQueues.set(queueKey, queue);
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
@@ -230,12 +247,11 @@ export async function createWalletGate(config: Config) {
       request.headers.get('origin') === config.origin && request.headers.get('content-type')?.startsWith('application/json') &&
       (['/api/applications', '/api/challenge', '/api/verify', '/api/logout'].includes(url.pathname) || url.pathname.startsWith('/api/qr/'));
     const parsed = needsBody ? await readJson(request).then(value => ({ value }), error => ({ error })) : { value: undefined };
-    const operation = queue.tail.then(() => handle(request, async () => {
+    const release = await acquireDatabase(queue, request.method === 'POST' && url.pathname === '/api/applications');
+    try { return await handle(request, async () => {
       if ('error' in parsed) throw parsed.error;
       return parsed.value;
-    }));
-    queue.tail = operation.then(() => {}, () => {});
-    return operation;
+    }); } finally { release(); }
   }
   return { handle: queuedHandle, db, auth, close: () => {
     db.close(); queue.references--; if (!queue.references) databaseQueues.delete(queueKey);

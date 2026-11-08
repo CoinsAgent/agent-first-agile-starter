@@ -83,7 +83,7 @@ export function Applications({ session, onReauthenticate }: { session: Session |
     } catch (e) {
       if (!valid()) return;
       if (!(e instanceof RequestError) || e.status >= 500) { setUncertain(true); setError('The result is uncertain. Check your applications before retrying this same submission.'); }
-      else { if (e.status !== 401) pending.current = null; handleError(e); }
+      else { if (!uncertain && e.status !== 401 && e.status !== 429) pending.current = null; handleError(e); }
       setStatus('');
     } finally { if (valid()) { submitting.current = false; setBusy(false); } }
   }

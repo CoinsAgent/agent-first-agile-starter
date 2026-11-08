@@ -55,10 +55,10 @@ Investigate supported provider APIs, asynchronous SQLite transactions and atomic
 
 ## Execution checklist
 
-- [ ] Baseline restored and recorded
-- [ ] Implementation and meaningful negative/acceptance checks
+- [x] Baseline restored and recorded
+- [x] Implementation and meaningful negative/acceptance checks
 - [ ] Full local verification and committed scope
-- [ ] Independent review findings resolved
+- [x] Independent review findings resolved
 - [ ] Evidence and QA_PASSED presented for human review
 
 ## Execution checkpoint and blocking decision
@@ -78,3 +78,5 @@ Technical review corrections: serialize facade requests per SQLite file/connecti
 Queue hardening: pre-read bounded request bodies before entering the database queue so slow senders cannot hold other browsers' DB operations. Carry parse errors into the authorized handler to preserve rate accounting; same-origin/size checks remain. Streaming-request/QR rollback regression also verifies unrelated QR completion is not blocked by the slow body.
 
 Final scope refinement: removed unused proposed file declarations after implementation. Actual changes use the existing reserved applications/oidc owners and public Session type; no config changes, backend wallet public-interface extraction or new router were necessary. The narrowed manifest covers the complete main-to-head diff, including authorized shaping and carried acceptance records.
+
+Full-suite regression exposed that serializing every facade request prevented an existing cancel-versus-in-flight-QR-approval case. Correct the gate to shared access for ordinary requests and exclusive access only for registration transactions; preserve the unchanged QR race assertions. New readers may join while a registration waits, so cancellation can complete; this evaluation gate prioritizes existing protocol behavior over write fairness. Final review also found that a 429 after an uncertain creation could discard its request identity; preserve it through rate/transient recovery and add browser lost-response→429→same-ID retry coverage.

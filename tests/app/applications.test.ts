@@ -1,4 +1,7 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { spawn } from 'node:child_process';
+import { createInterface } from 'node:readline';
+import { once } from 'node:events';
 import { randomUUID, createHash } from 'node:crypto';
 import { mkdtempSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
@@ -198,5 +201,37 @@ describe('US-002 validation, limits and atomic submissions', () => {
       vi.setSystemTime(now + 22 * 60_000); expect((await a.create()).status).toBe(409); expect(count()).toBe(20);
     } finally { second?.close(); rmSync(dir, { recursive: true, force: true }); }
   });
+
+  it('reconciles a same-submission race across independent Node processes', async () => {
+    const dir = mkdtempSync(join(tmpdir(), 'walletgate-process-race-'));
+    const script = `
+      import { createInterface } from 'node:readline';
+      import { createWalletGate } from './backend/wallet-auth/auth.ts';
+      const lines = createInterface({ input: process.stdin });
+      const iterator = lines[Symbol.asyncIterator]();
+      const input = JSON.parse((await iterator.next()).value);
+      const gate = await createWalletGate(input.config);
+      console.log(JSON.stringify({ ready: true }));
+      await iterator.next();
+      const response = await gate.handle(new Request(input.config.origin + '/api/applications', { method: 'POST', headers: { origin: input.config.origin, 'content-type': 'application/json', cookie: input.cookie }, body: JSON.stringify(input.body) }));
+      const result = await response.json();
+      console.log(JSON.stringify({ status: response.status, secret: typeof result.clientSecret === 'string' }));
+      gate.close(); lines.close();
+    `;
+    const child = spawn(process.execPath, ['--import', 'tsx', '--input-type=module', '-e', script], { cwd: process.cwd(), stdio: ['pipe', 'pipe', 'ignore'] });
+    const lines = createInterface({ input: child.stdout });
+    try {
+      gate.close(); const databasePath = join(dir, 'test.sqlite'); gate = await createWalletGate({ ...config, databasePath });
+      const b = new Browser(); await b.login(); const requestId = randomUUID();
+      child.stdin.write(JSON.stringify({ config: { ...config, databasePath }, cookie: [...b.cookies].map(([k, v]) => `${k}=${v}`).join('; '), body: { name: 'My application', redirectUris: ['https://app.example/callback?source=wallet'], requestId } }) + '\n');
+      expect(JSON.parse(String((await once(lines, 'line'))[0])).ready).toBe(true);
+      const resultLine = once(lines, 'line'); child.stdin.write('go\n');
+      const parent = await b.create({ requestId }); const parentBody = await parent.json();
+      const remote = JSON.parse(String((await resultLine)[0]));
+      expect([parent.status, remote.status].sort()).toEqual([200, 201]);
+      expect(Number(typeof parentBody.clientSecret === 'string') + Number(remote.secret)).toBe(1);
+      expect(count()).toBe(1);
+    } finally { lines.close(); child.kill(); rmSync(dir, { recursive: true, force: true }); }
+  }, 20_000);
 
 });

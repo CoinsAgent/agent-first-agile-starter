@@ -1,6 +1,6 @@
 # Verification evidence — US-002
 
-Status: BLOCKED
+Status: IN_PROGRESS
 
 ## Context and provenance
 
@@ -61,3 +61,11 @@ Independent preliminary review identified two real defects: a provider transacti
 Focused results before final checks: 43 new registration integration tests passed; all nine new browser tests passed (12.6s), including real signatures behind simulated wallets, lost-response reconciliation, double-click, same/other-owner reauthentication, both themes, mobile layout, keyboard focus, axe checks and masked screenshots. An initial browser locator was ambiguous because output elements also have status roles; corrected to the explicit status paragraph. The first failure diagnostic captured a synthetic test credential, which was redacted from its log and removed from generated DOM error context; the credential suite now disables automatic DOM snapshots and network traces. No production credential/data was used.
 
 Current full-suite and final-review results remain pending; no QA_PASSED claim yet.
+
+## Final implementation review checkpoint
+
+The initial full verification at 15ca1bb failed an unchanged existing QR race assertion (128 passed, one failed): serializing all requests prevented cancel from interrupting approval. Replaced total serialization with shared access for ordinary auth/QR operations and exclusive access for registration. Existing QR assertions are unchanged and now pass. New readers may join while a writer waits; sustained reader traffic can delay registration. This evaluation-only throughput limitation is recorded, not described as production abuse resistance.
+
+Final read-only reviewer registration_facts found no remaining blocking finding after re-review. They executed application+QR tests: 70/70 passed, plus git diff --check. Earlier issues (cross-request rollback, independent-connection conflict and lost-response→429 identity loss) were corrected with regression coverage. The reviewer is not a human business approver and did not claim a full-suite or browser result.
+
+New integration suite now passes 47/47 (artifacts/registration-final-races.log), including the real independent Node-process race using a disposable SQLite file and generated test wallet, one persisted client and exactly one secret-bearing response. Reviewed prior all-application run passed 129/129 before the final additional process-race test. All final code will be committed before the full exact-revision run.
