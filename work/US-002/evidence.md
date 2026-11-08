@@ -1,6 +1,6 @@
 # Verification evidence — US-002
 
-Status: IN_PROGRESS
+Status: PASS
 
 ## Context and provenance
 
@@ -12,19 +12,47 @@ Status: IN_PROGRESS
 
 ## Acceptance matrix
 
-AC-01–13: NOT_RUN; mapping is in plan.md.
+| AC | Actual executable coverage | Result |
+|---|---|---|
+| AC-01 | applications.test.ts independent client/persistent logout+login; applications.spec.ts full SIWE→register twice→return journey; existing auth/QR regressions | PASS |
+| AC-02 | missing/unproven/expired session at exact boundary, owner override, foreign owner and CSRF tests; same/other-wallet browser reauthentication | PASS |
+| AC-03 | real provider persisted fixed scopes/grant/auth method, strict override rejection and blocked provider/protocol/mutation routes | PASS |
+| AC-04 | trimmed/empty/Unicode 1/100/101 names, duplicate names; 0/1/10/11 and duplicate redirects; untrusted name browser rendering | PASS |
+| AC-05 | authorized HTTPS/non-loopback policy; HTTP/local/loopback/fragment/credentials/wildcard/malformed rejection matrix and exact query/port/path preservation | PASS |
+| AC-06 | actual generated secret hash vs response, distinct credentials, list/read/replay non-disclosure; copy, memory-only result, navigation/reload and redacted screenshots | PASS |
+| AC-07 | owner-only list/detail and foreign guessed IDs; unauthenticated denial; disabled mutation routes; persistent owner-list browser checks | PASS |
+| AC-08 | five-attempt fixed-window boundary including invalid attempts, independent wallets; 20/21 cap, concurrent separate connections and persistence after restart | PASS |
+| AC-09 | same-key concurrent/retry, lost response, injected post-provider rollback, independent connections and independent Node process; browser double-click and lost-response→429→same-ID recovery | PASS |
+| AC-10 | actual server-session logout/expiry rejection, same-wallet retained memory draft/no autosubmit and other-wallet clearing; network/field error recovery | PASS |
+| AC-11 | light/dark form/list/result axe checks (WCAG 2.2 AA tags), 320px/no overflow, page scale 200%, reduced motion, keyboard/focus, theme override/system changes; existing responsive regressions | PASS |
+| AC-12 | real 1.7.15 provider/core integration and migrations on disposable/restarted SQLite; unchanged resolved dependencies, root build/start via browser server and documented setup/limits | PASS |
+| AC-13 | full verify on exact implementation SHA, complete committed scope, dependency graph, independent review and this reproducible record | PASS |
 
 ## Verification
 
-Implementation checks pending. No passing product result is claimed.
+Final command: `STRUCTURE_SCOPE_BASE=eaca15f STRUCTURE_SCOPE_HEAD=HEAD STRUCTURE_SCOPE_FILE=work/US-002/scope.json bash scripts/verify.sh`.
+
+- Tested implementation SHA: `da188d79027120ab7668420e8dc6763b0bcce0ee` on `codex/us-002-registration`.
+- Exit code: 0. Log: `artifacts/final-qa.log`.
+- 43 Python/harness tests, 41 structure fixtures, 130 application tests (including 47 registration tests), and 78 Playwright tests passed. Zero required checks were skipped. Lint, TypeScript, build/SDK hashes, public-registry lockfile validation, actual dependency graph and complete main-to-head scope also passed.
+- Existing auth/QR/browser assertions were preserved; failures from earlier revisions are recorded below with fixes rather than represented as passing runs.
+- `python3 scripts/check_scope.py --base eaca15f --head HEAD --scope work/US-002/scope.json` exited 0 for the tested committed diff. Complete diff reviewed: 25 changed source/document/record endpoints, all declared. Ignored capture output is separately declared.
+- Parent audit confirmed only explicitly authorized AC-05 changed from READY; all other AC lines and original approval metadata are preserved, acceptance remains empty. Existing resolved package versions are unchanged.
+- Final QA record commit updates only story status/result, this evidence and plan completion. It is not represented as another full-suite-tested code SHA; focused metadata/whitespace/scope validation checks that record separately.
 
 ## Review
 
-Independent technical review pending.
+Read-only reviewer `registration_facts` independently inspected the complete scope and execution-critical revisions. Material findings and their regression fixes are documented below: transaction isolation with existing QR, independent-connection replay, uncertain-request identity after 429, and preserving the existing cancel/approval race. Final verdict: no remaining blocking findings. Reviewer ran application+QR tests (70/70) and whitespace checks; parent ran the full final suite and inspected redacted mobile/desktop captures. The final adjacent navigation change was independently inspected and its 14 focused browser checks and full suite passed. This is technical review, not human acceptance.
 
 ## Known limitations
 
-Provider compatibility/atomic creation mechanism under investigation. Existing browser wallet coverage is simulated; no new physical-wallet claim.
+- Browser wallets/signatures are simulated with real EIP-191 proofs; no new physical-wallet compatibility claim.
+- No fresh `npm ci` was performed: baseline dependencies were copied independently from the existing local installation, and matching provider/core dependencies were installed using the public registry/committed lockfile. Installation audit reported zero findings; no production security/readiness claim.
+- Registration requires HTTPS non-loopback callbacks, including development, per the explicit human revision. Working OIDC endpoints, CLI and management mutations remain future scope.
+- New readers can enter while an exclusive registration waits: sustained ordinary traffic may delay registration. This is an evaluation throughput/fairness limit; production abuse protection is not claimed.
+- Lost secrets require a replacement registration and consume the permanent 20-application allowance; no recovery/reset/rotation is implemented.
+- Automated axe, keyboard, narrow CSS viewport and Chromium page-scale checks do not constitute a complete human screen-reader or every-browser accessibility audit.
+- Hosted CI, finished-result approval, merge/business acceptance and deployment have not occurred for this story.
 
 ## Human acceptance
 
@@ -73,3 +101,7 @@ New integration suite now passes 47/47 (artifacts/registration-final-races.log),
 Full run at 6394873 passed 43 harness tests, 41 structure fixtures and 130 application tests, then failed two existing light/dark 320px success-card height checks (76/78 browser tests passed). New navigation added a vertical row; corrected its layout beside Sign out. Existing assertions are preserved. This run is not passing QA. Final rerun follows the navigation correction.
 
 Navigation correction verified: focused application+inline-sign-in browser run exited 0, 14/14 passed (20.5s). Reviewer inspected the layout-only change and reported no new concern; prior security verdict remains unchanged. Log artifacts/navigation-regressions.log. The final full run will use a new log rather than overwrite the earlier failed-run evidence.
+
+## Final local engineering result
+
+All approved criteria passed the required local engineering checks and independent review at the tested SHA above. Record QA_PASSED for human finished-result review. No PR, hosted CI, merge or deployment was performed. Historical blocked/failing checkpoints below the primary matrix remain provenance, not the current result.
