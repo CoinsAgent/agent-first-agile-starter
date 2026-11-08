@@ -1,12 +1,12 @@
 # Verification evidence — US-001-05
 
-Status: IN_PROGRESS
+Status: PASS
 
 ## Context and provenance
 
 - Story: backlog/US-001-05.md; approved in chat by "make 05 ready" after the grilling decisions, then explicit "$deliver-story 05".
 - Branch/worktree: codex/us-001-05-layout in /home/ubuntu/us-001-05-delivery.
-- Approved shaping base: ca2c864; implementation 84642ba. Complete PR-diff base: fetched main 0d5dde0125d5175b455854aa6e3b6458cfb12437.
+- Approved shaping base: ca2c864; initial implementation 84642ba; final reviewed/tested implementation: 96dcc353e36199d4a70fdf0da89fe683555f5094. Complete PR-diff base: fetched main 0d5dde0125d5175b455854aa6e3b6458cfb12437.
 - Runtime: Node v22.22.1, npm 9.2.0, Python 3.14.4; existing ignored dependency installation reused. No fresh npm install is claimed.
 - CI: not requested; no push/PR/host mutation/merge performed. Local-first PROCESS/AC-08 governs; VERIFYING is not a supported state.
 - Retained US-001-04 acceptance record carried forward on this branch through d70b40d/7947450, with its three exact paths declared. Its human PR #6 merge/check provenance is preserved, not a new approval claim.
@@ -22,7 +22,7 @@ Status: IN_PROGRESS
 | AC-05 | PASS: 83 application and 68 browser tests; assertions unchanged except source imports and screenshot output paths | artifacts/verify.log; Android dark-390 and desktop light review captures visually inspected |
 | AC-06 | PASS: active guide/setup/tools use new locations; remaining old prefixes are explicit history/baseline provenance or negative inputs | complete diff and targeted rg search; prior story/evidence records preserved |
 | AC-07 | PASS: dependency manifest/lockfile versions unchanged; all source bytes unchanged; dev/start use isolated in-memory databases; no existing .env/data altered | preservation helper; root command smoke logs |
-| AC-08 | Full first suite/scope/review passed; final exact-implementation rerun pending after smoke-helper correction | artifacts/verify.log; final-verification.log will record rerun; independent review below |
+| AC-08 | PASS: full final exact-implementation suite, complete scope and independent review passed after smoke-helper correction | artifacts/final-verification.log; independent review below |
 
 ## Verification
 
@@ -34,7 +34,7 @@ Status: IN_PROGRESS
 6. Port-conflict negative scenario: start an unrelated local HTTP server on 0.0.0.0:3215, run the smoke helper as a child, assert nonzero exit and EADDRINUSE, then close the unrelated fixture. Final scenario passed; artifacts/smoke-port-conflict.log. Initial assertion failed because a startup-log-only check did not prevent reaching the unrelated listener; fixed by exclusive-bind preflight and repeated both positive commands. This is a verification-helper fix; product startup code remains identical.
 7. python3 scripts/check_scope.py --base 0d5dde0125d5175b455854aa6e3b6458cfb12437 --head HEAD --discover-scope exited 0 for implementation. Only the selected story's scope manifest changes; all complete-diff endpoints, planning/shaping and retained predecessor record paths declared.
 8. node scripts/check_dependencies.mjs --ref <full implementation SHA> exited 0: 19 code modules, 36 edges, same five legacy violations, zero errors and zero stale entries. HTML is owned/classified data, not parsed code; unknown HTML is rejected by a fixture.
-9. python3 scripts/check_harness.py and git diff --check exited 0. Final QA metadata checks follow the final suite.
+9. python3 scripts/check_harness.py and git diff --check exited 0. Final QA metadata checks and complete committed-diff scope are repeated after the status/evidence-only record update.
 
 Reproduce required final checks from this worktree:
 
@@ -57,7 +57,7 @@ All 27 moves are 100% Git renames. Application tests retain assertions; seven br
 
 ## Known limitations
 
-- Final full verification is still pending at this checkpoint. No QA_PASSED, hosted CI or human acceptance claimed yet.
+- QA_PASSED records local engineering verification only. Hosted CI and human acceptance remain pending explicit finished-result approval and actual human merge.
 - Existing dependencies reused; local results do not prove fresh installation or hosted execution. CI starts only after explicit approval of the finished result.
 - Browser wallets/relays are simulated. Physical-device retesting is not required for this migration absent a relevant regression; no new compatibility claim.
 - Local smoke reserves/checks each fixed port before launch but releases it to let the app bind. A small bind-close/spawn race remains against concurrent external launches; it is not an exclusive process-ownership proof.
@@ -67,3 +67,11 @@ All 27 moves are 100% Git renames. Application tests retain assertions; seven br
 ## Human acceptance
 
 PENDING human finished-result review and PR/CI authorization, then required checks and actual human merge. No approval/acceptance identity or merge is invented.
+
+## Final local engineering result
+
+Final reviewed/tested implementation: 96dcc353e36199d4a70fdf0da89fe683555f5094. The exact-revision command above with full-diff scope selected exited 0: 43 Python/harness tests, 41 structure fixtures, 83 application tests and 68 Playwright tests (50.8s), plus lockfile-source validation, lint, types, build/SDK hashes, actual dependency graph and complete committed scope. Log: artifacts/final-verification.log. All required local checks completed; zero skipped structure cases and no weakened assertions. Earlier first-run results remain accurately labeled above.
+
+Post-review positive smoke checks passed both root commands, and the exclusive-port-conflict negative scenario passed. Independent reviewer confirmed the final helper and narrative corrections; no unresolved material finding. Parent audit confirmed all eight approved AC lines byte-identical to READY base ca2c864, and all application/browser assertions unchanged after normalizing only approved import and screenshot destination changes. All 88 complete-diff file endpoints are declared, with zero unused file declarations; the ignored artifact directory is separately declared.
+
+Record QA_PASSED only after these actual results. The final record commit changes only this evidence, the plan completion notes and story status; it is not falsely described as another full-suite-tested SHA. Focused metadata/whitespace/complete-scope checks validate that record commit separately. No code, dependency, approved scope, CI workflow, host protection, publication or acceptance changes follow the tested implementation.

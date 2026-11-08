@@ -53,9 +53,9 @@ Review complete diff, actual vs declared paths, exact source bytes/owners/baseli
 
 - [x] Baseline observed
 - [x] Relocation and controls complete
-- [ ] All required checks pass
+- [x] All required checks pass
 - [x] Fresh technical review complete
-- [ ] Current evidence and local QA status recorded
+- [x] Current evidence and local QA status recorded
 - [ ] Present full branch for human finished-result review before PR/CI
 
 Baseline observed: exit 0; 43 Python, 36 structure, 83 application and 68 browser tests, plus lock sources/lint/types/build. No baseline failures.
@@ -67,3 +67,5 @@ First post-move full suite passed on implementation 84642ba: 43 Python, 41 struc
 Independent read-only reviewer review_us00105 found no source/tooling/policy defect; corrected two stale story/map narrative statements without changing ACs. Reviewer found possible smoke false positive with existing listeners. Own-log readiness plus live-child check added; the first port-conflict negative check then revealed Express can invoke the existing listen callback on EADDRINUSE. Added exclusive-bind preflight, preserving product code. Negative fixture now exits nonzero with EADDRINUSE; positive dev/start smoke reruns pass. Reviewer rechecked final helper and narrative fixes, no remaining material finding. The bind-close/spawn interval remains a local concurrency limitation, documented in evidence.
 
 No technical scope expansion was needed; all helper/test/log paths were predeclared. Final exact-implementation full verification with complete-diff scope follows the review correction before QA.
+
+Final reviewed implementation 96dcc353e36199d4a70fdf0da89fe683555f5094 passed the full scope-selected suite: 43 Python, 41 structure, 83 application and 68 browser tests (50.8s), plus lock sources/lint/types/build. Preservation, positive root-command smoke, negative occupied-port scenario, dependency snapshots and complete-diff checks passed. All eight approved ACs and application/browser assertions preserved. Record QA_PASSED with evidence; human finished-result review/PR-CI authorization and later human merge remain pending.
