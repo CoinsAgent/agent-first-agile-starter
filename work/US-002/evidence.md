@@ -8,7 +8,7 @@ Status: PASS
 - Human explicitly approved READY and delivery, web-only scope. Accepted US-001-05 record retained from 0e78698.
 - Initial checkout lacked node_modules. bash scripts/verify.sh exited 1 during structure fixtures (TypeScript dependency unavailable); baseline log artifacts/baseline-initial.log. Independent local copy of existing dependencies is being prepared; baseline will be rerun.
 - Runtime: Node v22.22.1, npm 9.2.0.
-- CI: not requested; no PR or release authorized by this delivery.
+- CI: explicitly authorized by the human after finished-result review; see PR/CI authorization below. Hosted results are retained in artifacts/pr-ci-result.json when available.
 
 ## Acceptance matrix
 
@@ -52,11 +52,11 @@ Read-only reviewer `registration_facts` independently inspected the complete sco
 - New readers can enter while an exclusive registration waits: sustained ordinary traffic may delay registration. This is an evaluation throughput/fairness limit; production abuse protection is not claimed.
 - Lost secrets require a replacement registration and consume the permanent 20-application allowance; no recovery/reset/rotation is implemented.
 - Automated axe, keyboard, narrow CSS viewport and Chromium page-scale checks do not constitute a complete human screen-reader or every-browser accessibility audit.
-- Hosted CI, finished-result PR/CI approval and merge/business acceptance remain pending. Deployment was subsequently authorized separately; see the release record below.
+- The human has explicitly approved opening the finished-result PR and running CI. Merge/business acceptance remains pending. Deployment was authorized separately; see the release record below.
 
 ## Human acceptance
 
-PENDING finished-result review, authorized PR/CI and actual human merge. No acceptance metadata is changed.
+Human finished-result approval and PR/CI authorization received. PENDING passing required current-head checks and actual human merge. No acceptance metadata is changed.
 
 Baseline restored: independent local dependency copy, bash scripts/verify.sh exited 0: 43 harness tests, 41 structure fixtures, 83 application tests, 68 browser tests (51.4s), lint/types/build and dependency checks. Log artifacts/baseline.log. No product code changed before the baseline completed.
 
@@ -134,3 +134,9 @@ The human requested "remove copy client id and secret button, just a square besi
 - Service active PID 2928850, local HTTP200, verified cwd/config; public HTTPS200 with valid TLS and three matching JS/CSS fingerprints. Unauthenticated session/applications401 and hidden provider routes404 remain. Artifacts: copy-square-deployment-result.json and copy-square-public-release-check.json.
 - Actual Chromium verified the public registration auth gate and the new credential-row/credential-copy CSS at 2026-11-08T15:08:34.787Z (artifacts/copy-square-deployed-browser.json). No client creation or real-wallet proof was performed against production; clipboard/authenticated UI checks used disposable local test data.
 - Final QA/deployment record commit changes only status/evidence/plan and receives focused metadata/whitespace/scope checks. No PR/CI, merge or acceptance is implied by this refinement/deployment.
+
+## Explicit finished-result approval and PR/CI authorization
+
+After reviewing the completed/deployed web-only story and square-copy refinement, the human instructed "open the PR and run CI." This explicitly authorizes publishing codex/us-002-registration and opening the story PR against main. The reviewed local result was 4decb2b194f8e7930b5b226b82a81a5101277d07; its product code is identical to full-suite-tested 0122477a387366d2ad740f414dda743a377a367c, with only lifecycle/evidence records afterward. This authorization note is another record-only change.
+
+Fresh origin/main is eaca15f7e01ac31e25c0fe58f48b60d8975f1a62 and is already an ancestor of this branch. The complete diff retains 25 declared paths, the authorized draft/READY refinement and confirmed US-001-05 acceptance record. No existing PR for this head was found before publication. Opening the PR starts the two existing required jobs automatically; no workflow/protection change or manual duplicate dispatch is needed. Actual hosted URL/head/job results will be retained in ignored artifacts/pr-ci-result.json and reported to the human, without a source-only evidence push that starts redundant CI. Human merge and ACCEPTED remain pending; no agent merge is authorized.
