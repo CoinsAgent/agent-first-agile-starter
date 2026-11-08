@@ -194,3 +194,29 @@ Keep CI credentials out of candidate code, review changes to checkers/configurat
 ## Context ownership
 
 This guide owns directory responsibilities and placement examples. `AGENTS.md` routes Codex here; the Product Contract states maintainability intent; the UI Design Contract covers UI-specific responsibilities; PROCESS and skills govern when to review the structure and task scope. Link here rather than maintaining another full directory tree. Never change product behavior, approved ACs, story status or human approval metadata merely to align directories.
+
+## Proposed follow-up: remove only the src level
+
+[US-001-05](../backlog/US-001-05.md) is the separately shaped follow-up requested on 2026-11-08. The current tree, existing-code mapping and executable declarations above remain authoritative until that story is approved and delivered. This section proposes placement only; no source move, active alias/configuration change or new directory is authorized by drafting it. US-001-04's accepted criteria/history stay unchanged.
+
+Proposed mechanical mapping: `frontend/src/<path>` → `frontend/<path>` and `backend/src/<path>` → `backend/<path>`. Keep `frontend/index.html` in place and point its entry to `frontend/main.tsx` during delivery. Resolve `@/` to `frontend/`. Retain one root package/lockfile, root tests and `dist/` output. Translate the same owners/public-interface declarations and five exact baseline edges; ownership/dependency rules do not change.
+
+```text
+frontend/
+  index.html
+  main.tsx
+  bootstrap/app.tsx
+  pages/sign-in.tsx
+  wallet-auth/          Existing components, hooks, API and wallet/SDK modules
+  ui/                   Generic primitives
+  lib/                  Generic helpers
+  assets/               Existing branding, wallet icons and attribution
+  styles/style.css
+backend/
+  index.ts
+  bootstrap/server.ts
+  wallet-auth/          Existing auth.ts and qr.ts
+  infrastructure/config.ts
+```
+
+Future frontend `authorization/` and `applications/`, backend `oidc/` and `applications/`, and runtime-neutral `shared/contracts/` retain their documented responsibilities. Create none until approved work requires real files. There is no additional flattening or production app/features container. A future delivery updates the current tree/mapping, imports/tooling/tests and setup guidance together and records exact source/destination paths before editing. Retired src prefixes remain only where explicitly historical or used as negative-test input.
