@@ -1,0 +1,338 @@
+{
+  "version": 1,
+  "story": "US-001-04",
+  "allowed": [
+    {
+      "path": "backend/src/bootstrap/server.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/src/index.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/src/infrastructure/config.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/src/wallet-auth/auth.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/src/wallet-auth/qr.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backlog/US-001-04.md",
+      "kind": "file"
+    },
+    {
+      "path": "components.json",
+      "kind": "file"
+    },
+    {
+      "path": "config/dependency-baseline.json",
+      "kind": "file"
+    },
+    {
+      "path": "config/project-structure.json",
+      "kind": "file"
+    },
+    {
+      "path": "docs/DEVELOPMENT.md",
+      "kind": "file"
+    },
+    {
+      "path": "docs/PROJECT_STRUCTURE.md",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/index.html",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/assets/walletgate.png",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/assets/wallets/NOTICE.md",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/assets/wallets/coinbase.svg",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/assets/wallets/metamask.svg",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/assets/wallets/rabby.svg",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/assets/wallets/rainbow.svg",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/assets/wallets/trust.svg",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/bootstrap/app.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/lib/utils.ts",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/main.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/pages/sign-in.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/styles/style.css",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/ui/button.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/ui/dialog.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/wallet-auth/api.ts",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/wallet-auth/components/mobile-approval.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/wallet-auth/components/qr-auth-panel.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/wallet-auth/components/wallet-flow.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/wallet-auth/components/wallet-shortcuts.ts",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/wallet-auth/hooks/use-wallet-auth.ts",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/wallet-auth/wallet-sdk.ts",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/wallet-auth/wallet.ts",
+      "kind": "file"
+    },
+    {
+      "path": "index.html",
+      "kind": "file"
+    },
+    {
+      "path": "package.json",
+      "kind": "file"
+    },
+    {
+      "path": "playwright.config.ts",
+      "kind": "file"
+    },
+    {
+      "path": "server/auth.ts",
+      "kind": "file"
+    },
+    {
+      "path": "server/config.ts",
+      "kind": "file"
+    },
+    {
+      "path": "server/index.ts",
+      "kind": "file"
+    },
+    {
+      "path": "server/qr.ts",
+      "kind": "file"
+    },
+    {
+      "path": "src/assets/wallets/NOTICE.md",
+      "kind": "file"
+    },
+    {
+      "path": "src/assets/wallets/coinbase.svg",
+      "kind": "file"
+    },
+    {
+      "path": "src/assets/wallets/metamask.svg",
+      "kind": "file"
+    },
+    {
+      "path": "src/assets/wallets/rabby.svg",
+      "kind": "file"
+    },
+    {
+      "path": "src/assets/wallets/rainbow.svg",
+      "kind": "file"
+    },
+    {
+      "path": "src/assets/wallets/trust.svg",
+      "kind": "file"
+    },
+    {
+      "path": "src/components/ui/button.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "src/components/ui/dialog.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "src/components/wallet/mobile-approval.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "src/components/wallet/qr-auth-panel.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "src/components/wallet/wallet-flow.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "src/components/wallet/wallet-shortcuts.ts",
+      "kind": "file"
+    },
+    {
+      "path": "src/hooks/use-wallet-auth.ts",
+      "kind": "file"
+    },
+    {
+      "path": "src/lib/api.ts",
+      "kind": "file"
+    },
+    {
+      "path": "src/lib/utils.ts",
+      "kind": "file"
+    },
+    {
+      "path": "src/main.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "src/style.css",
+      "kind": "file"
+    },
+    {
+      "path": "src/wallet-sdk.ts",
+      "kind": "file"
+    },
+    {
+      "path": "src/wallet.ts",
+      "kind": "file"
+    },
+    {
+      "path": "src/walletgate.png",
+      "kind": "file"
+    },
+    {
+      "path": "tests/app/auth.test.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/app/qr.test.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/app/wallet-sdk.test.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/structure/migrated-layout.test.mjs",
+      "kind": "file"
+    },
+    {
+      "path": "tsconfig.json",
+      "kind": "file"
+    },
+    {
+      "path": "vite.config.ts",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-04/evidence.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-04/mapping.json",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-04/plan.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-04/scope.json",
+      "kind": "file"
+    },
+    {
+      "path": "tests/structure/project-layout.test.mjs",
+      "kind": "file"
+    },
+    {
+      "path": "tests/e2e/step-one-layout.spec.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/e2e/theme-layout.spec.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/e2e/android-layout.spec.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/e2e/login.spec.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/e2e/wallet-dialog.spec.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/e2e/inline-sign-in.spec.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/e2e/wallet-shortcuts.spec.ts",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-04/artifacts",
+      "kind": "directory"
+    },
+    {
+      "path": "backlog/US-001-03.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-03/plan.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-03/evidence.md",
+      "kind": "file"
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import QRCode from 'qrcode';
-import { api, errorMessage, type QrRequest, type Session } from '../../lib/api';
-import { Button } from '../ui/button';
+import { api, errorMessage, type QrRequest, type Session } from '../api';
+import { Button } from '../../ui/button';
 // Serialize creation across StrictMode mounts and rapid panel reopens. The first
 // response must install its HttpOnly owner cookie before another create is sent.
 let creationQueue: Promise<unknown> = Promise.resolve();

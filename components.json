@@ -3,6 +3,6 @@
   "style": "new-york",
   "rsc": false,
   "tsx": true,
-  "tailwind": { "config": "", "css": "src/style.css", "baseColor": "slate", "cssVariables": true },
-  "aliases": { "components": "@/components", "ui": "@/components/ui", "utils": "@/lib/utils", "lib": "@/lib", "hooks": "@/hooks" }
+  "tailwind": { "config": "", "css": "frontend/src/styles/style.css", "baseColor": "slate", "cssVariables": true },
+  "aliases": { "components": "@/ui", "ui": "@/ui", "utils": "@/lib/utils", "lib": "@/lib", "hooks": "@/wallet-auth/hooks" }
 }

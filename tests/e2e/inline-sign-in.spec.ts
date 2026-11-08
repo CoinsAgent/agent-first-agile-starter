@@ -24,7 +24,7 @@ for (const theme of ['light', 'dark'] as const) for (const width of [320, 1440])
     if(width>=768) expect(reviewSize?.height).toBe(initial?.height);
     else expect(reviewSize!.height).toBeLessThanOrEqual(560);
     expect((await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze()).violations).toEqual([]);
-    await page.screenshot({ path: `work/US-001-01/artifacts/card-review-${theme}-${width}.png`, fullPage: true });
+    await page.screenshot({ path: `work/US-001-04/artifacts/card-review-${theme}-${width}.png`, fullPage: true });
     await card.getByRole('button', { name: 'Sign message & continue' }).click();
     await expect(page.getByRole('heading', { name: '3 Signed in', exact: true })).toBeFocused();
     await expect(card.getByTestId('verified-address')).toHaveText(wallet.address.toLowerCase());
@@ -41,7 +41,7 @@ for (const theme of ['light', 'dark'] as const) for (const width of [320, 1440])
     expect(page.url()).toBe(url);
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
     expect((await new AxeBuilder({ page }).withTags(['wcag2a', 'wcag2aa', 'wcag21aa', 'wcag22aa']).analyze()).violations).toEqual([]);
-    await page.screenshot({ path: `work/US-001-01/artifacts/card-success-${theme}-${width}.png`, fullPage: true });
+    await page.screenshot({ path: `work/US-001-04/artifacts/card-success-${theme}-${width}.png`, fullPage: true });
     await card.getByRole('button', { name: 'Sign out' }).click();
     await expect(page.getByRole('button', { name: 'Sign in with MetaMask', exact: true })).toBeVisible();
     expect((await card.boundingBox())?.height).toBe(initial?.height);

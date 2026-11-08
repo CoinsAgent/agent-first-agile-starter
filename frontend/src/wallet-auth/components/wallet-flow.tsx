@@ -1,10 +1,10 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { cancelWalletSdk, sdkIds } from '../../wallet-sdk';
+import { cancelWalletSdk, sdkIds } from '../wallet-sdk';
 import type { Connector } from 'wagmi';
-import type { WalletAuth } from '../../hooks/use-wallet-auth';
-import type { Session } from '../../lib/api';
-import { Button } from '../ui/button';
-import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogTrigger } from '../ui/dialog';
+import type { WalletAuth } from '../hooks/use-wallet-auth';
+import type { Session } from '../api';
+import { Button } from '../../ui/button';
+import { Dialog, DialogContent, DialogTitle, DialogDescription, DialogTrigger } from '../../ui/dialog';
 import { QrAuthPanel } from './qr-auth-panel';
 import { walletShortcuts, shortcutConnector, type WalletShortcut } from './wallet-shortcuts';
 

@@ -3,8 +3,8 @@ import { randomBytes } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import { toNodeHandler } from 'better-auth/node';
 import { resolve } from 'node:path';
-import { readConfig } from './config';
-import { createWalletGate } from './auth';
+import { readConfig } from '../infrastructure/config';
+import { createWalletGate } from '../wallet-auth/auth';
 
 const config = readConfig(process.env);
 const gate = await createWalletGate(config);

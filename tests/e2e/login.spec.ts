@@ -98,14 +98,14 @@ test('narrow viewport keeps the message and controls usable (simulated viewport 
   await provider(page); await review(page);
   await expect(page.getByRole('button',{name:'Sign message & continue'})).toBeVisible();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-  await page.screenshot({path:'work/US-001-01/artifacts/mobile-simulation.png',fullPage:true});
+  await page.screenshot({path:'work/US-001-04/artifacts/mobile-simulation.png',fullPage:true});
 });
 
 test('desktop sign-in screen has no page errors or horizontal overflow', async ({page}) => {
   const errors:string[]=[]; page.on('pageerror',e=>errors.push(e.message));
   await page.goto('/'); await expect(page.getByRole('button',{name:'Sign in with MetaMask',exact:true})).toBeVisible();
   expect(await page.evaluate(()=>document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
-  await page.screenshot({path:'work/US-001-01/artifacts/desktop.png',fullPage:true});
+  await page.screenshot({path:'work/US-001-04/artifacts/desktop.png',fullPage:true});
   expect(errors).toEqual([]);
 });
 

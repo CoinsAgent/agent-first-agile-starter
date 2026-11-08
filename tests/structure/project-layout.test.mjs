@@ -25,12 +25,12 @@ function fixture(t) {
   return { root, write };
 }
 
-test('transition declaration preserves legacy coverage and rejects generic app/features destinations', () => {
+test('adopted declaration covers migrated owners and rejects generic app/features destinations', () => {
   validateConfig(config);
-  assert.equal(ownerOf('src/main.tsx', config).role, 'app');
-  assert.equal(ownerOf('server/auth.ts', config).feature, 'wallet-server');
-  assert.equal(config.aliases['@/'], 'src');
-  for (const name of ['src/app/new.ts', 'src/features/unnamed/index.ts', 'server/features/unnamed/index.ts',
+  assert.equal(ownerOf('frontend/src/main.tsx', config).role, 'app');
+  assert.equal(ownerOf('backend/src/wallet-auth/auth.ts', config).feature, 'wallet-server');
+  assert.equal(config.aliases['@/'], 'frontend/src');
+  for (const name of ['src/main.tsx', 'server/auth.ts', 'src/app/new.ts', 'src/features/unnamed/index.ts', 'server/features/unnamed/index.ts',
     'frontend/src/app/new.ts', 'frontend/src/features/unnamed/index.ts', 'backend/src/app/new.ts', 'backend/src/features/unnamed/index.ts']) {
     assert.throws(() => ownerOf(name, config), /unowned production path/, name);
   }
