@@ -14,6 +14,13 @@ async function request<T>(path: string, body?: unknown): Promise<T> {
   if (!response.ok) throw new RequestError(response.status, data.error ?? 'The request could not complete.', data.field);
   return data as T;
 }
+function CopySquare({ label, onCopy }: { label: string; onCopy: () => void }) {
+  return <button type="button" className="credential-copy" aria-label={label} title={label} onClick={onCopy}>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      <rect x="8" y="8" width="12" height="12" rx="1.5" /><path d="M16 8V4H4v12h4" />
+    </svg>
+  </button>;
+}
 export function Applications({ session, onReauthenticate }: { session: Session | null; onReauthenticate: () => void }) {
   const [items, setItems] = useState<Application[]>([]);
   const [name, setName] = useState('');
@@ -127,12 +134,16 @@ export function Applications({ session, onReauthenticate }: { session: Session |
     {result ? <div className="application-panel">
       <h2>{result.application.name}</h2>
       <p className="small">{result.application.profile}</p>
-      <label htmlFor="client-id">Client ID</label><output id="client-id" className="credential">{result.application.clientId}</output>
-      <Button variant="secondary" onClick={() => { void copy(result.application.clientId, 'Client ID'); }}>Copy client ID</Button>
+      <label htmlFor="client-id">Client ID</label>
+      <div className="credential-row"><output id="client-id" className="credential">{result.application.clientId}</output>
+        <CopySquare label="Copy client ID" onCopy={() => { void copy(result.application.clientId, 'Client ID'); }} />
+      </div>
       {result.clientSecret ? <>
         <p className="secret-warning">Save this secret now. Leaving or refreshing this result removes it permanently. WalletGate cannot show it again.</p>
-        <label htmlFor="client-secret">Client secret (shown once)</label><output id="client-secret" className="credential">{result.clientSecret}</output>
-        <Button variant="secondary" onClick={() => { void copy(result.clientSecret!, 'Client secret'); }}>Copy client secret</Button>
+        <label htmlFor="client-secret">Client secret (shown once)</label>
+        <div className="credential-row"><output id="client-secret" className="credential">{result.clientSecret}</output>
+          <CopySquare label="Copy client secret" onCopy={() => { void copy(result.clientSecret!, 'Client secret'); }} />
+        </div>
       </> : <p>The one-time client secret is unavailable. Register a replacement application if you did not save it.</p>}
       <h3>Registered redirect URIs</h3><ul className="redirect-list">{result.application.redirectUris.map(uri => <li key={uri}>{uri}</li>)}</ul>
       <Button onClick={() => { setResult(null); setStatus(''); }}>Return to applications</Button>

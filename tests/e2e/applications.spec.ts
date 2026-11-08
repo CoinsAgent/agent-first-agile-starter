@@ -44,7 +44,11 @@ test('web owner signs in, registers independently, saves once, and returns to th
   const stored = await page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }));
   expect(stored.includes(secret!)).toBe(false); expect(page.url().includes(secret!)).toBe(false);
   await page.context().grantPermissions(['clipboard-write', 'clipboard-read']);
-  await page.getByRole('button', { name: 'Copy client secret', exact: true }).click();
+  await page.getByRole('button', { name: 'Copy client ID', exact: true }).click();
+  await expect(page.locator('.applications p[role="status"]')).toContainText('Client ID copied.');
+  expect(await page.evaluate(() => navigator.clipboard.readText()) === firstId).toBe(true);
+  await page.getByRole('button', { name: 'Copy client secret', exact: true }).focus();
+  await page.keyboard.press('Enter');
   await expect(page.locator('.applications p[role="status"]')).toContainText('Client secret copied.');
   expect(await page.evaluate(() => navigator.clipboard.readText()) === secret).toBe(true);
   await page.getByRole('button', { name: 'Return to applications', exact: true }).click();
@@ -146,6 +150,14 @@ for (const theme of ['light', 'dark'] as const) test(`${theme} registration/list
   await expect(page.getByLabel('Redirect URIs', { exact: true })).toBeFocused();
   await submit(page); await expect(page.locator('#client-secret')).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Application registered', exact: true })).toBeFocused();
+  for (const [id, label] of [['client-id', 'Copy client ID'], ['client-secret', 'Copy client secret']]) {
+    const button = page.getByRole('button', { name: label, exact: true });
+    const square = await button.boundingBox(); const value = await page.locator(`#${id}`).boundingBox();
+    expect(square!.width).toBe(44); expect(square!.height).toBe(44);
+    expect(square!.x).toBeGreaterThanOrEqual(value!.x + value!.width);
+    expect(square!.y).toBeLessThan(value!.y + value!.height);
+    expect(await button.textContent()).toBe('');
+  }
   expect((await axe()).violations).toEqual([]);
   const id = await page.locator('#client-id').textContent();
   await page.getByRole('button', { name: /Switch to (light|dark) mode/ }).click();

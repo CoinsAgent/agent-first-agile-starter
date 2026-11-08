@@ -1,6 +1,6 @@
 # Verification evidence — US-002
 
-Status: PASS
+Status: IN_PROGRESS
 
 ## Context and provenance
 
