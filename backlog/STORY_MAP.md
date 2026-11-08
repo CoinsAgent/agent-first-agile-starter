@@ -17,7 +17,7 @@ files own lifecycle status, approved ACs and approval metadata.
 
 | Proposed slice | Prove wallet control | Register applications | Maintain applications |
 |---|---|---|---|
-| Minimal end-to-end release | [Connect, sign SIWE, enter owner session](US-001.md) | [Create two independent clients and obtain configuration](US-002.md) | [List, edit redirects and disable owned clients](US-003.md) |
+| Minimal end-to-end release | [Connect, sign SIWE, enter owner session](US-001.md) | [Register independent clients, save credentials and view my applications](US-002.md) | [Edit redirects and disable clients from my owner list](US-003.md) |
 | Later | Broader wallet/platform coverage | Authorized dynamic registration | Ownership transfer, credential rotation, richer scope/policy controls |
 
 Proposed authentication refinement before registration: [US-001-01 — choose a wallet or approve SIWE login by QR](US-001-01.md). The owner follows the same connect → review SIWE → sign → server verification journey with a custom shadcn/ui wallet dialog and wagmi EIP-6963 discovery.
@@ -84,14 +84,13 @@ Proposed usable harness outcome: a maintainer adopts the convention without reor
 
 ## Next story to detail
 
-- Current targeted request: [US-001-05](US-001-05.md), removing only the intermediate src directories from frontend and backend. Its detailed criteria cover file preservation, root commands/build/start, ownership and negative layout checks, and unchanged authentication/UI behavior. The human selected this maintenance slice before US-002; the linked story owns its approval and delivery record.
-- [US-001-04](US-001-04.md) supplies the predecessor layout; this follow-up removes its intermediate src level without rewriting that story's scope/history. The [structure guide](../docs/PROJECT_STRUCTURE.md#adopted-skeleton) documents current placement and historical paths.
-- Subsequent product refinement remains [US-002](US-002.md), wallet-authorized application registration. Its client-profile/registration decisions remain unresolved; this structural request does not approve them.
-- Story files remain authoritative for all lifecycle and approval records. No map update authorizes implementation or parallel delivery.
+- Current targeted refinement: [US-002](US-002.md), wallet-authorized application registration, one-time credentials and the initial read-only owner list. The human confirmed the registration/client/redirect/credential/limit/recovery design through the interview; the story owns the detailed criteria and decision provenance. Refinement does not authorize implementation.
+- The [structure guide](../docs/PROJECT_STRUCTURE.md#adopted-skeleton) supplies the adopted direct frontend/backend layout. Retain the locally recorded US-001-05 acceptance and explicitly carry its story/evidence paths into the next approved PR.
+- [US-003](US-003.md) adds editing/disabling from the US-002 list. US-004/005 supply actual OIDC sign-in and independent integration. Registration is useful preparation, not completion of the evaluation release.
 
 ## Open human decisions
 
-All defaults below are proposals, not approved policy. No product-document changes are proposed.
+The table preserves planning defaults; linked stories own human decisions and detailed criteria. Historical proposals cannot override those records. No product-document changes are proposed.
 
 | Decision | Proposed default | Impact / alternatives |
 |---|---|---|
@@ -99,6 +98,6 @@ All defaults below are proposals, not approved policy. No product-document chang
 | D2 — Initial wallet/platform audience | Ethereum mainnet (chain ID 1), externally owned accounts; injected wallets in desktop Chromium and mobile wallet in-app browsers | Smart-contract wallets, other chains, external mobile-browser handoff and QR connection remain later work. Name at least one desktop wallet/browser and one mobile wallet/OS/browser combination before US-001 becomes READY; accepting this scope does not establish compatibility. |
 | D3 — Address representation | Lowercase `0x` plus 40 hex characters for authenticated address and future public `sub` | Checksummed form is an alternative. Choosing once avoids inconsistent identity across clients; no chain prefix or internal ID in `sub`. |
 | D4 — Authentication policy | Server-issued nonce valid for 5 minutes; absolute session lifetime 1 hour without sliding renewal; explicit logout; fresh SIWE after expiry; reuse only sessions proven to originate from SIWE | Longer/shorter durations change usability and exposure. SIWE expiration must not exceed nonce deadline, no future issued-at/not-before values accepted, and zero clock-skew allowance proposed. Tests must cover exact boundaries. |
-| D5 — Initial OIDC profile | Confidential server-side web clients; authorization code with PKCE S256; `openid` only; explicit consent each authorization; no refresh tokens or dynamic registration | Public/native clients, remembered consent and additional claims/grants need separate scope. Before US-002/004 becomes READY, resolve redirect policy, credential lifecycle, token/code lifetimes and client-auth method. |
+| D5 — Initial OIDC profile | Confidential server-side web clients; authorization code with PKCE S256; `openid` only; explicit consent each authorization; no refresh tokens or dynamic registration | Public/native clients, remembered consent and additional claims/grants need separate scope. See US-002 for the refined registration profile, redirects, one-time hashed secrets, client_secret_basic, limits and read-only list. Code/token lifetimes and consent details remain for US-004. |
 
-US-001 records the human's decisions for its delivered scope; the historical proposals above do not override that record. For US-001-01, its story records the human-approved QR policy and expanded wallet matrix; refer there for lifecycle and authorization. D5 may remain provisional until the dependent stories are refined. The human approves the selected story and supplies approval metadata through the review channel described in [PROCESS](../docs/PROCESS.md); READY approval needs no PR/CI. Human approval of the locally verified finished result starts PR/CI; human merge completes acceptance, recorded locally and carried into the next approved PR. Approval of this map does not authorize every story.
+US-001 records the human's decisions for its delivered scope; the historical proposals above do not override that record. For US-001-01, its story records the human-approved QR policy and expanded wallet matrix; refer there for lifecycle and authorization. US-002 records the human-confirmed registration design; this does not approve US-004 outcomes or choose code/token lifetimes. The human approves the selected story and supplies approval metadata through the review channel described in [PROCESS](../docs/PROCESS.md); READY approval needs no PR/CI. Human approval of the locally verified finished result starts PR/CI; human merge completes acceptance, recorded locally and carried into the next approved PR. Approval of this map does not authorize every story.
