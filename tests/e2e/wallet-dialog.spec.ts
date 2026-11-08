@@ -53,11 +53,11 @@ for(const theme of ['light','dark'] as const) test(`${theme} phone popup is keyb
   await page.emulateMedia({colorScheme:theme==='light'?'dark':'light'});
   await expect(page.getByRole('link',{name:'Open phone approval link'})).toHaveAttribute('href', requestBeforeThemeChange!);
   await page.emulateMedia({colorScheme:theme});
-  await page.screenshot({path:`work/US-001-04/artifacts/phone-popup-${theme}.png`,fullPage:true});
+  await page.screenshot({path:`work/US-001-05/artifacts/phone-popup-${theme}.png`,fullPage:true});
   await page.setViewportSize({width:320,height:740});
   await expect(page.getByRole('heading',{name:'Choose your wallet'})).toHaveCount(0);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-  await page.screenshot({path:`work/US-001-04/artifacts/phone-popup-mobile-${theme}.png`,fullPage:true});
+  await page.screenshot({path:`work/US-001-05/artifacts/phone-popup-mobile-${theme}.png`,fullPage:true});
   await page.keyboard.press('Escape');await expect(page.getByRole('dialog')).not.toBeVisible();await expect(trigger).toBeFocused();
   expect(external).toEqual([]);expect(cspErrors).toEqual([]);
 });

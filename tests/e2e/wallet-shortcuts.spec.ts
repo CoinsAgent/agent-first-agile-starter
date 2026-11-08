@@ -20,7 +20,7 @@ test('four wallet icons and a phone icon occupy the former action slot and keep 
   expect(await group.getByRole('button').evaluateAll(buttons=>buttons.map(button=>button.getAttribute('aria-label')))).toEqual([...shortcuts.map(([name])=>`Sign in with ${name}`),'Use your phone']);
   const phoneBox=await phone.boundingBox();expect(phoneBox!.width).toBeGreaterThanOrEqual(44);expect(phoneBox!.height).toBeGreaterThanOrEqual(44);
   expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
-  await page.screenshot({path:'work/US-001-04/artifacts/wallet-icons-mobile.png',fullPage:true});
+  await page.screenshot({path:'work/US-001-05/artifacts/wallet-icons-mobile.png',fullPage:true});
 });
 for(const [name] of shortcuts) test(`${name} icon uses supported SDK or extension-only recovery when its extension is absent`,async({page})=>{
   await page.goto('/');const icon=page.getByRole('button',{name:`Sign in with ${name}`,exact:true});await icon.click();

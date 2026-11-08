@@ -55,3 +55,10 @@ Before carrying forward the retained f8d9698 acceptance record, add exact `backl
 Rerun full local verification after integration, then publish a PR targeting main and await both required current-revision checks. Main protection requires `Harness and product verification` and `PR path scope`, enforced for admins; change no host protection. Current main PROCESS governs acceptance after confirmed human merge; no agent merge or acceptance of US-001-04 is authorized. Earlier plan references to the older CI-dependent QA workflow and unpublished prerequisites are historical and superseded by these observed main facts.
 
 Integration full verification exited 0 on c233f98 with 43 harness, 36 structure, 83 application and 68 browser cases (51.7s); whole-diff scope, source equality and dependency review passed. Restore QA_PASSED and publish the authorized PR on the final commit, then inspect required hosted checks on that exact head. No change to CI event cadence or host protection is needed.
+
+
+## Confirmed post-merge acceptance — 2026-11-08
+
+Read-only GitHub inspection confirmed PR #6 was merged by CoinsAgent (User) at 2026-11-08T06:01:29Z, merge SHA 0d5dde0125d5175b455854aa6e3b6458cfb12437. Both required jobs succeeded on reviewed head f7f5bc78eb2287969f6a6582ab177b9b6a931730 in run 42383540729. Under current PROCESS, this human merge constitutes acceptance.
+
+Before updating the record, declare only backlog/US-001-04.md, work/US-001-04/plan.md and work/US-001-04/evidence.md as acceptance-record paths; all are already in this story's scope manifest. Retain the hosted-evidence appendix and acceptance record locally on codex/accept-us-001-04, based on actual merged main, in /home/ubuntu/us-001-04-ci. Preserve the previous CI-evidence branch. Validate metadata, whitespace and complete-diff paths. No application changes, new product checks, push, PR, hosted CI or agent merge. Carry these three paths into the next approved PR; main remains QA_PASSED until then.

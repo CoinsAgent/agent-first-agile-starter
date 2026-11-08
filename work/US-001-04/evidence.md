@@ -98,3 +98,22 @@ Integration status is temporarily IN_PROGRESS until the full updated local suite
 Fresh integration review confirmed no diff to current main's CI workflow, lifecycle/process, harness checker/tests or installed skills. All migrated module/HTML/style/asset contents match the prior reviewed f298464, and assets/lockfile match current main. The only story-content conflict was approval/status metadata, resolved using explicit chat approval; no AC revision. `node scripts/check_dependencies.mjs --ref <full integrated SHA>` and `git diff --check origin/main HEAD` passed. US-001-03 acceptance provenance is unchanged from retained f8d9698 and its three paths are explicitly declared. Status restored to QA_PASSED after this full run, in accordance with current main PROCESS.
 
 The user authorized publication and hosted CI in this conversation. Publish branch codex/us-001-04-ci against main and verify both required jobs for its exact head. Hosted CI is pending at this checkpoint. Original QA branches and working changes remain preserved; no merge, host-protection change or US-001-04 acceptance performed.
+
+## Hosted CI passed on the exact published candidate
+
+Published authorized [PR #6](https://github.com/CoinsAgent/agent-first-agile-starter/pull/6), branch `codex/us-001-04-ci`, exact head `f7f5bc78eb2287969f6a6582ab177b9b6a931730`, base main `78c848047ced99104127d595e1aaef420121e593`. [Hosted PR workflow 42383540729](https://github.com/CoinsAgent/agent-first-agile-starter/actions/runs/42383540729) completed successfully on 2026-11-07T14:53:10Z. Read-only run metadata confirms `head_sha` is exactly that candidate and event is pull_request.
+
+Both required jobs passed: `Harness and product verification` (128436014514) and `PR path scope` (128436014683). Hosted logs show fresh npm ci and Chromium installation succeeded, then 43 harness tests, 36 structure cases, 83 application tests and 68 browser tests (56.1s), alongside lint, type checking, build/SDK hashes, lockfile sources and complete PR-diff path scope. Local saved log: `artifacts/hosted-ci.log`. This supersedes earlier CI-pending and no-fresh-install limitations for this published candidate.
+
+GitHub confirms PR #6 remains open/unmerged, head unchanged, mergeable true and mergeable_state clean. Current protection still requires both named checks; no host settings changed. US-001-04 remains QA_PASSED, with acceptance metadata blank. The next step is human review and human merge under current main PROCESS; no agent merge or business-acceptance claim is made.
+
+Retain this CI-outcome appendix locally on `codex/us-001-04-ci-evidence` in `/home/ubuntu/us-001-04-ci`, separate from the unchanged published/tested head, to avoid a redundant CI run solely for evidence. The original delivery and original dirty checkout are preserved.
+
+
+## Confirmed human merge and acceptance — 2026-11-08
+
+Live GitHub reads on 2026-11-08 confirm [PR #6](https://github.com/CoinsAgent/agent-first-agile-starter/pull/6) merged at 2026-11-08T06:01:29Z by CoinsAgent (account type User), with merge commit 0d5dde0125d5175b455854aa6e3b6458cfb12437. Both required jobs (Harness and product verification; PR path scope) in run 42383540729 are successful for exact reviewed head f7f5bc78eb2287969f6a6582ab177b9b6a931730. Fetching origin/main confirms the merge commit. Earlier pending statements are historical checkpoints, superseded by these observed facts.
+
+Current PROCESS explicitly makes human merge business acceptance. Recorded ACCEPTED, accepted_by CoinsAgent and accepted_at 2026-11-08, preserving story approval metadata and all ACs. This agent issued no merge action. Preserve the local acceptance record on codex/accept-us-001-04 in /home/ubuntu/us-001-04-ci and carry the three declared record paths into the next approved PR. No acceptance-only PR, push, hosted CI or application change. Main retains QA_PASSED until the later approved PR includes this record.
+
+Acceptance-update validation is limited to metadata, whitespace and complete-diff scope; successful application verification remains the previously recorded exact-head hosted run, not a newly run suite.

@@ -45,7 +45,7 @@ for (const width of [320, 1440]) test(`step one at ${width}px has one action row
   for(const theme of ['light','dark'] as const) {
     await page.emulateMedia({colorScheme:theme});
     expect((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()).violations).toEqual([]);
-    await page.screenshot({path:`work/US-001-04/artifacts/outside-error-${theme}-${width}.png`,fullPage:true});
+    await page.screenshot({path:`work/US-001-05/artifacts/outside-error-${theme}-${width}.png`,fullPage:true});
   }
   await page.getByRole('button',{name:'Cancel sign-in',exact:true}).click();
   await expect(page.getByRole('alert')).toHaveCount(0);

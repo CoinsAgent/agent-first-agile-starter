@@ -1,0 +1,362 @@
+{
+  "version": 1,
+  "story": "US-001-05",
+  "allowed": [
+    {
+      "path": "backend/bootstrap/server.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/index.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/infrastructure/config.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/src/bootstrap/server.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/src/index.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/src/infrastructure/config.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/src/wallet-auth/auth.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/src/wallet-auth/qr.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/wallet-auth/auth.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/wallet-auth/qr.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backlog/STORY_MAP.md",
+      "kind": "file"
+    },
+    {
+      "path": "backlog/US-001-04.md",
+      "kind": "file"
+    },
+    {
+      "path": "backlog/US-001-05.md",
+      "kind": "file"
+    },
+    {
+      "path": "components.json",
+      "kind": "file"
+    },
+    {
+      "path": "config/dependency-baseline.json",
+      "kind": "file"
+    },
+    {
+      "path": "config/project-structure.json",
+      "kind": "file"
+    },
+    {
+      "path": "docs/DEVELOPMENT.md",
+      "kind": "file"
+    },
+    {
+      "path": "docs/PROJECT_STRUCTURE.md",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/assets/walletgate.png",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/assets/wallets/NOTICE.md",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/assets/wallets/coinbase.svg",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/assets/wallets/metamask.svg",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/assets/wallets/rabby.svg",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/assets/wallets/rainbow.svg",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/assets/wallets/trust.svg",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/bootstrap/app.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/index.html",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/lib/utils.ts",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/main.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/pages/sign-in.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/assets/walletgate.png",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/assets/wallets/NOTICE.md",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/assets/wallets/coinbase.svg",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/assets/wallets/metamask.svg",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/assets/wallets/rabby.svg",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/assets/wallets/rainbow.svg",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/assets/wallets/trust.svg",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/bootstrap/app.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/lib/utils.ts",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/main.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/pages/sign-in.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/styles/style.css",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/ui/button.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/ui/dialog.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/wallet-auth/api.ts",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/wallet-auth/components/mobile-approval.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/wallet-auth/components/qr-auth-panel.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/wallet-auth/components/wallet-flow.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/wallet-auth/components/wallet-shortcuts.ts",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/wallet-auth/hooks/use-wallet-auth.ts",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/wallet-auth/wallet-sdk.ts",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/src/wallet-auth/wallet.ts",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/styles/style.css",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/ui/button.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/ui/dialog.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/wallet-auth/api.ts",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/wallet-auth/components/mobile-approval.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/wallet-auth/components/qr-auth-panel.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/wallet-auth/components/wallet-flow.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/wallet-auth/components/wallet-shortcuts.ts",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/wallet-auth/hooks/use-wallet-auth.ts",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/wallet-auth/wallet-sdk.ts",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/wallet-auth/wallet.ts",
+      "kind": "file"
+    },
+    {
+      "path": "package.json",
+      "kind": "file"
+    },
+    {
+      "path": "playwright.config.ts",
+      "kind": "file"
+    },
+    {
+      "path": "scripts/check_dependencies.mjs",
+      "kind": "file"
+    },
+    {
+      "path": "tests/app/auth.test.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/app/qr.test.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/app/wallet-sdk.test.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/e2e/android-layout.spec.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/e2e/inline-sign-in.spec.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/e2e/login.spec.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/e2e/step-one-layout.spec.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/e2e/theme-layout.spec.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/e2e/wallet-dialog.spec.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/e2e/wallet-shortcuts.spec.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/structure/migrated-layout.test.mjs",
+      "kind": "file"
+    },
+    {
+      "path": "tests/structure/project-layout.test.mjs",
+      "kind": "file"
+    },
+    {
+      "path": "tsconfig.json",
+      "kind": "file"
+    },
+    {
+      "path": "vite.config.ts",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-04/evidence.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-04/plan.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-05/check-preservation.py",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-05/evidence.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-05/mapping.json",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-05/plan.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-05/scope.json",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-05/smoke.mjs",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-05/artifacts",
+      "kind": "directory"
+    }
+  ]
+}

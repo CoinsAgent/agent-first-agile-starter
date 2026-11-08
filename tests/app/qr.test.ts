@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { privateKeyToAccount, generatePrivateKey } from 'viem/accounts';
 import { parseSiweMessage } from 'viem/siwe';
-import { createWalletGate, SESSION_MS } from '../../backend/src/wallet-auth/auth';
-import { QR_MS } from '../../backend/src/wallet-auth/qr';
+import { createWalletGate, SESSION_MS } from '../../backend/wallet-auth/auth';
+import { QR_MS } from '../../backend/wallet-auth/qr';
 const origin = 'http://localhost:3000';
 const wallet = privateKeyToAccount(generatePrivateKey());
 const other = privateKeyToAccount(generatePrivateKey());

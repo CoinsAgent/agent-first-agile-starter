@@ -41,7 +41,7 @@ test('authentication content grows on desktop and reflows on small screens in bo
     const toggle=page.getByRole('button',{name:/Switch to (light|dark) mode/});
     if (await page.locator('html').evaluate(el=>el.classList.contains('dark')) !== (theme === 'Dark')) await toggle.click();
     expect((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()).violations).toEqual([]);
-    await page.screenshot({path:`work/US-001-04/artifacts/adaptive-desktop-${theme.toLowerCase()}.png`,fullPage:true});
+    await page.screenshot({path:`work/US-001-05/artifacts/adaptive-desktop-${theme.toLowerCase()}.png`,fullPage:true});
     for (const width of [960,768,640,375,320]) {
       await page.setViewportSize({width,height:740});
       expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
@@ -54,7 +54,7 @@ test('authentication content grows on desktop and reflows on small screens in bo
       await expect(page.getByRole('button',{name:'Sign in with MetaMask',exact:true})).toBeVisible();
     }
     expect((await new AxeBuilder({page}).withTags(['wcag2a','wcag2aa','wcag21aa','wcag22aa']).analyze()).violations).toEqual([]);
-    await page.screenshot({path:`work/US-001-04/artifacts/adaptive-mobile-${theme.toLowerCase()}.png`,fullPage:true});
+    await page.screenshot({path:`work/US-001-05/artifacts/adaptive-mobile-${theme.toLowerCase()}.png`,fullPage:true});
     await page.setViewportSize({width:1920,height:1080});
   }
 });

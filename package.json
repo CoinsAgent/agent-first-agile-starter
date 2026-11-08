@@ -7,13 +7,13 @@
     "node": ">=22.22.0"
   },
   "scripts": {
-    "dev": "tsx --env-file=.env backend/src/index.ts",
+    "dev": "tsx --env-file=.env backend/index.ts",
     "build": "vite build && node scripts/sdk-style-hashes.mjs",
-    "start": "tsx --env-file=.env backend/src/index.ts",
+    "start": "tsx --env-file=.env backend/index.ts",
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "lint": "oxlint --deny-warnings frontend/src backend/src"
+    "lint": "oxlint --deny-warnings frontend backend"
   },
   "dependencies": {
     "@coinbase/wallet-sdk": "4.4.0",
