@@ -52,7 +52,7 @@ Read-only reviewer `registration_facts` independently inspected the complete sco
 - New readers can enter while an exclusive registration waits: sustained ordinary traffic may delay registration. This is an evaluation throughput/fairness limit; production abuse protection is not claimed.
 - Lost secrets require a replacement registration and consume the permanent 20-application allowance; no recovery/reset/rotation is implemented.
 - Automated axe, keyboard, narrow CSS viewport and Chromium page-scale checks do not constitute a complete human screen-reader or every-browser accessibility audit.
-- Hosted CI, finished-result approval, merge/business acceptance and deployment have not occurred for this story.
+- Hosted CI, finished-result PR/CI approval and merge/business acceptance remain pending. Deployment was subsequently authorized separately; see the release record below.
 
 ## Human acceptance
 
@@ -102,6 +102,22 @@ Full run at 6394873 passed 43 harness tests, 41 structure fixtures and 130 appli
 
 Navigation correction verified: focused application+inline-sign-in browser run exited 0, 14/14 passed (20.5s). Reviewer inspected the layout-only change and reported no new concern; prior security verdict remains unchanged. Log artifacts/navigation-regressions.log. The final full run will use a new log rather than overwrite the earlier failed-run evidence.
 
-## Final local engineering result
+## Final local engineering result (before release authorization)
 
 All approved criteria passed the required local engineering checks and independent review at the tested SHA above. Record QA_PASSED for human finished-result review. No PR, hosted CI, merge or deployment was performed. Historical blocked/failing checkpoints below the primary matrix remain provenance, not the current result.
+
+## Explicitly authorized deployment — 2026-11-08
+
+After local QA, the human instructed "stop the old server and deploy again" for the existing port-3000 service and https://walletgate.beeswarm.dev/. This explicitly authorizes this deployment and supersedes the earlier pre-authorization no-deployment checkpoint; it does not authorize PR/CI, merge or ACCEPTED. Story remains QA_PASSED.
+
+- Released exact verified source snapshot e94bb2eff6b650f05efeb6dcebdc3b0a645c6ba9 to /home/ubuntu/walletgate-releases/e94bb2eff6b650f05efeb6dcebdc3b0a645c6ba9 via git archive. Copied the local verified dependency installation independently into the release; no production dependency symlink to the development checkout. npm run build exited 0 (artifacts/release-build.log).
+- Isolated startup smoke on temporary port 3107 and disposable in-memory DB passed: page 200, unauthenticated session/applications 401, generic provider registration/token routes 404. Smoke process stopped afterward (artifacts/release-smoke.log).
+- Stopped the old walletgate.service process (PID 2839970), made a consistent SQLite backup at /home/ubuntu/walletgate-backups/us-002-20261108T120158Z/walletgate.sqlite with private directory/file permissions and successful quick_check, then replaced only the existing 05-release.conf drop-in with the new release path and unchanged Node backend/index.ts entry. Previous drop-in is retained in artifacts/previous-release-dropin.conf; previous release remains at /home/ubuntu/walletgate-releases/fa6cd29b4f91e78b17eac03fa1368e811fb68498.
+- Preserved /etc/walletgate/runtime.env, session secret, trusted HTTPS origin, port 3000 and persistent DATABASE_PATH. Secret/config equality was checked in memory without printing values; no runtime secret was copied into source or artifacts. Original runtime.env is protected: the initial fingerprint read failed before stopping the service; corrected to privileged fingerprint comparison without displaying its output.
+- Additive provider/application migrations completed on the existing DB; original user/session/wallet/QR tables remain and database quick_check passed. No database restore/delete, secret rotation, DNS/certificate change or nginx routing edit occurred. nginx -t passed.
+- New service active with PID 2881658, /proc cwd matches the exact release and local trusted-Host page returns 200. Detailed result artifacts/deployment-result.json at 2026-11-08T12:02:00.278627+00:00.
+- Public HTTPS returned 200 with valid TLS verification, and all three referenced JS/CSS asset fingerprints match the new release. Public /api/session and /api/applications return 401 without authentication; hidden provider registration/token routes remain 404. artifacts/public-release-check.json at 2026-11-08T12:02:43.836360+00:00. Python urllib's default request received an edge 403; standard curl and actual Chromium independently succeeded, without changing security settings.
+- Headless Chromium loaded https://walletgate.beeswarm.dev/#applications, confirmed the registration sign-in context, sign-in heading and MetaMask action. Screenshot artifacts/deployed-registration-auth-gate.png; machine result artifacts/deployed-browser-check.json at 2026-11-08T12:02:45.220Z. No real wallet sign-in or client creation was performed against the persistent deployment; authenticated functionality is covered by local tests.
+- Rollback: stop the service, restore the retained previous 05-release.conf, daemon-reload and restart. No automatic database restore was performed or is implied; keep the consistent backup for operator recovery.
+
+Deployment succeeded. The separate human review/PR/CI/merge/acceptance workflow remains pending.
