@@ -2,7 +2,7 @@ import { oauthProvider } from '@better-auth/oauth-provider';
 import { jwt } from 'better-auth/plugins';
 
 function verified(session?: Record<string, unknown>) {
-  return session?.authMethod === 'siwe' && typeof session.walletAddress === 'string' && /^0x[0-9a-f]{40}$/.test(session.walletAddress) &&
+  return session?.authMethod === 'siwe' && typeof session.walletAddress === 'string' && /^0x[0-9a-f]{40}$/.test(session.walletAddress) && session.userId === session.walletAddress &&
     session.expiresAt instanceof Date && session.expiresAt.getTime() > Date.now();
 }
 // Internal registration infrastructure only. The HTTP facade exposes no provider/JWT routes.

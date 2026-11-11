@@ -38,6 +38,15 @@ The shared prove-identity entry point is refined by [US-001-01](US-001-01.md); t
 | Minimal end-to-end release | [Documented local setup](US-001.md), extended by each story | [Wallet-authorized registration](US-002.md) | [Discovery, keys and authorization code flow](US-004.md) | [Independent relying-party example and reproducible walkthrough](US-005.md) |
 | Later | Production deployment, backup/recovery and operational hardening | Additional registration methods | Public/native clients, additional grants | Additional interoperability suites |
 
+### Wallet identity
+
+| Proposed slice | Select wallet | Prove wallet control | Resolve user | Act as owner |
+|---|---|---|---|---|
+| Shared SIWE identity refinement | [Use an existing supported address](US-001-06.md) | [Validate SIWE through existing local/QR paths](US-001-06.md) | [Persist exactly one user with user.id equal to the canonical address](US-001-06.md) | [Retain that address's independent applications and isolation](US-001-06.md) |
+| Later, separately scoped | Broader wallets/chains | CLI sign-in (human deferred) | Third-party CLI/OIDC integration | Broader session management |
+
+[US-001-06](US-001-06.md) refines the human's clarified Better Auth SIWE identity requirement: one verified address, one persisted user whose ID is that address, and the owner role belonging to that same identity. Success means repeated/case-equivalent sign-ins reuse one user, different addresses stay isolated, and one owner can still manage multiple independent applications. This is address identity, not real-world person or wallet-device uniqueness. The human selected an explicit local development/test reset of old identity and dependent application data, deferred CLI sign-in, and placed this slice next after any current delivery. The linked story owns the detailed deletion boundaries, ACs and final approval gate; no new OAuth grant, CLI credential delivery or product-document change is implied.
+
 ### Maintainer and Codex
 
 This reusable starter/harness journey supports controlled development of WalletGate and future projects. It does not extend the WalletGate product contract or require moving existing application code.
@@ -77,6 +86,7 @@ Proposed usable harness outcome: a maintainer adopts the convention without reor
 | [US-001-03](US-001-03.md) — Verify locally and defer PR/CI | Maintainer reduces repeated hosted verification during implementation | US-001-02; human approval of detailed workflow criteria | Local QA, human review, delayed PR/CI and acceptance after human merge |
 | [US-001-04](US-001-04.md) — Make frontend/backend ownership visible | Maintainer locates existing application code by explicit runtime and feature ownership | US-001-02 delivery gate resolved; separately approved migration scope | Human-selected naming applied through a behavior-preserving migration, with one root package |
 | [US-001-05](US-001-05.md) — Put source directly under frontend and backend | Maintainer removes redundant src nesting while retaining runnable behavior | US-001-04; separate scope/AC approval | Proposed maintenance follow-up before registration; one root package and existing ownership rules |
+| [US-001-06](US-001-06.md) — Use the verified wallet address as the Better Auth user ID | User/owner reuses exactly one persisted user for one verified address | Existing SIWE/QR and owner isolation; explicit local legacy-data reset | Human-selected next slice after current delivery; CLI deferred, no expansion of OIDC/client scope |
 | [US-002](US-002.md) — Register independent applications | Owner obtains distinct client identities and configuration | US-001; client profile decision D5 | Supplies real clients for third-party sign-in |
 | [US-003](US-003.md) — Manage owned applications | Owner maintains and disables only their applications | US-002 | Demonstrates ongoing owner control and isolation |
 | [US-004](US-004.md) — Authorize wallet sign-in | End user consents and returns an authorization code to an application | US-001–US-003; D5 | Provides standards-based consent and token issuance |
@@ -84,6 +94,7 @@ Proposed usable harness outcome: a maintainer adopts the convention without reor
 
 ## Next story to detail
 
+- Latest targeted refinement: [US-001-06](US-001-06.md), adapt Better Auth SIWE so stored user.id equals the verified canonical address, with one address/user/owner identity. Its linked story details persistence, concurrency, session, owner-isolation and explicit local reset ACs plus expected owners. Human-confirmed interview decisions defer CLI and select this as the next slice after any current delivery; the story owns approval metadata and delivery follows PROCESS.
 - Current targeted refinement: [US-002](US-002.md), wallet-authorized application registration, one-time credentials and the initial read-only owner list. The human confirmed the registration/client/redirect/credential/limit/recovery design through the interview; the story owns the detailed criteria and decision provenance. Refinement does not authorize implementation.
 - The [structure guide](../docs/PROJECT_STRUCTURE.md#adopted-skeleton) supplies the adopted direct frontend/backend layout. Retain the locally recorded US-001-05 acceptance and explicitly carry its story/evidence paths into the next approved PR.
 - [US-003](US-003.md) adds editing/disabling from the US-002 list. US-004/005 supply actual OIDC sign-in and independent integration. Registration is useful preparation, not completion of the evaluation release.

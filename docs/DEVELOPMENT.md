@@ -62,7 +62,57 @@ consume the challenge before signature verification; a rejected signature needs
 a new challenge. Sessions last exactly 1 hour from authentication with no sliding
 renewal. Logout revokes only the current browser session server-side. Session
 and attempt credentials use HttpOnly cookies; HTTPS also enables Secure cookies.
-Server responses expose no session token, internal user ID or placeholder email.
+Server responses expose the verified canonical address as both `userId` and
+`address`, plus session expiry; they expose no session token or placeholder email.
+
+## Address-based users and explicit local data reset (US-001-06)
+
+Better Auth SIWE stores `user.id` as the verified lowercase Ethereum address.
+One address resolves to one user/owner; repeated sign-ins and browser/QR paths
+reuse that user. Different addresses remain separate users even if controlled
+by the same person or wallet app. An owner can register multiple independent
+applications; their client IDs and credentials remain separate from the user ID.
+The public address is never a session secret. Supported wallets, mainnet EOA
+scope, challenge validity and absolute session/logout policy remain unchanged.
+
+An incompatible legacy database causes startup to refuse with guidance. Startup
+does not automatically delete or migrate it. This story provides no data-preserving
+migration: for a **local development/test database only**, inspect the exact target,
+stop every server/process using it, and explicitly invoke:
+
+```bash
+node --import tsx scripts/reset-local-data.ts \
+  --database /absolute/path/to/local-test.sqlite \
+  --environment development \
+  --confirm DELETE-LOCAL-USER-DATA
+```
+
+Use `--environment test` for a disposable test database. There is no default
+target, environment-file loading, or implicit confirmation. The command accepts
+only the real absolute path of an existing regular database file; it refuses
+shared/production environment values and production NODE_ENV. A local-looking
+path or a development label does not prove that a database is local: inspect its
+actual use before invoking. These checks are guardrails, not filesystem permissions.
+Shared/production reset needs separate explicit human authorization and is not
+supported by this command/story. No deployed service or database is reset by
+installing, building, testing or starting the app.
+
+The reset **permanently deletes all users, sessions, wallet/account associations,
+pending SIWE challenges/nonces/QR approvals, registered applications and client
+credentials**, including dependent tokens, consents, submission/rate records and
+client assertions. Previous credentials and pending proofs stop working. Users
+must sign in again and register their applications again; old secrets cannot be
+recovered. Source code, server configuration, provider key/resource metadata and
+unrelated database records are preserved. Retain an operator-controlled backup
+before resetting any local data you may need; the command does not make a backup
+or restore one automatically.
+
+Deletion and generation invalidation commit atomically. A failed/busy reset does
+not partially delete records; repeating a successful reset is allowed and clears
+whatever user data is present in that explicitly selected database. Stop writers
+first rather than retrying blindly. Existing server connections are fenced after
+reset, including pending writes, and return restart-required errors; restart them
+before fresh sign-in. The reset does not grant CLI sign-in: that feature is deferred.
 
 ## Android MetaMask check
 

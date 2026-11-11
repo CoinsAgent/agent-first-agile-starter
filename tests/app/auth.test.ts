@@ -57,7 +57,7 @@ describe('SIWE authentication (AC-01, AC-02, AC-06, AC-10)', () => {
     expect(parsed).toMatchObject({ domain: 'localhost:3000', uri: origin, chainId: 1, version: '1', address: wallet.address });
     expect(parsed.expirationTime?.getTime()).toBe(now + CHALLENGE_MS);
     const response = await browser.request('/api/session');
-    expect(await response.json()).toEqual({ address: wallet.address.toLowerCase(), expiresAt: new Date(now + SESSION_MS).toISOString() });
+    expect(await response.json()).toEqual({ userId: wallet.address.toLowerCase(), address: wallet.address.toLowerCase(), expiresAt: new Date(now + SESSION_MS).toISOString() });
     expect(response.headers.get('cache-control')).toBe('no-store');
     expect([...browser.cookies.keys()].some(k=>k.includes('session_token'))).toBe(true);
     const user = gate.db.prepare('SELECT emailVerified FROM user').get() as { emailVerified: number };

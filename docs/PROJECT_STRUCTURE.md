@@ -1,5 +1,9 @@
 # Project structure and code placement
 
+## US-001-06 identity adaptation and local reset placement
+
+Before implementation: `backend/wallet-auth/identity.ts` owns canonical user identity, compatibility inspection and reset-generation fencing; `auth.ts` composes it with supported Better Auth hooks/transactions. `backend/wallet-auth/reset.ts` owns identity/session/proof deletion and atomic reset coordination, exposed through `wallet-auth/index.ts`. `backend/applications/reset.ts` owns application/client/dependent-record deletion through `applications/index.ts`. `scripts/reset-local-data.ts` is a maintenance composition entry consuming those public interfaces; it is not the deferred CLI sign-in feature. Generic infrastructure remains independent of these domains. Tests belong under existing `tests/app/`; no new runtime directory, dependency exception or empty scaffold is introduced. The exact paths are declared in `work/US-001-06/scope.json`. Reset executes only against an explicitly selected local development/test target, never during ordinary startup.
+
 This is the authoritative human-readable structure guide for this repository. Product behavior remains governed by the Vision, Product Contract and approved stories. Story status and human approvals remain in their existing records.
 
 ## Establish the skeleton before code

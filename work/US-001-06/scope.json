@@ -1,0 +1,102 @@
+{
+  "version": 1,
+  "story": "US-001-06",
+  "allowed": [
+    {
+      "path": "backend/wallet-auth/auth.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/wallet-auth/identity.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/wallet-auth/index.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/wallet-auth/reset.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/applications/index.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/applications/reset.ts",
+      "kind": "file"
+    },
+    {
+      "path": "scripts/reset-local-data.ts",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/wallet-auth/api.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/app/auth.test.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/app/qr.test.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/app/identity.test.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/app/reset.test.ts",
+      "kind": "file"
+    },
+    {
+      "path": "docs/PROJECT_STRUCTURE.md",
+      "kind": "file"
+    },
+    {
+      "path": "docs/DEVELOPMENT.md",
+      "kind": "file"
+    },
+    {
+      "path": "backlog/US-001-06.md",
+      "kind": "file"
+    },
+    {
+      "path": "backlog/STORY_MAP.md",
+      "kind": "file"
+    },
+    {
+      "path": "backlog/US-002.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-002/evidence.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-06/plan.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-06/evidence.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-06/scope.json",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-06/artifacts",
+      "kind": "directory"
+    },
+    {
+      "path": "tests/app/identity-fixture.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/oidc/index.ts",
+      "kind": "file"
+    }
+  ]
+}
