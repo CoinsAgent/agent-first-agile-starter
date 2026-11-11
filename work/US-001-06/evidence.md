@@ -22,19 +22,19 @@ Status: PASS
 | Final reset-focused | Exit 0, 18 tests, includes nonempty provider dependency/FK rows | artifacts/reset-final-focused.log |
 | Complete candidate verification at b15bba3bba18137b09eac918bd693a2a9400dbf4 | Exit 0: 43 harness, 41 structure, 158 app, 78 browser tests; full scope/dependency/lint/types/build/lock passed. Subsequent test-only strengthening requires a final committed-revision run | artifacts/full-verify.log |
 
-## Acceptance matrix
-
 ## Verification
 
-Tested and freshly reviewed revision: **3db9e253a95a6e5e9afe8d4c780e1b91d880f7eb**. The full command below exited **0** with 43 harness tests, 41 structure fixtures, 158 application tests and 78 browser tests (1.0m), plus lockfile/download-source, dependency, complete-diff scope, lint, TypeScript and production build checks. No required check was skipped or weakened.
+Tested and freshly reviewed revision: **6fb9c10029ef18dc8d8d50d7dc988b30e34b58af**. The full command below exited **0** with 43 harness tests, 41 structure fixtures, 158 application tests and 78 browser tests (1.0m), plus lockfile/download-source, dependency, complete-diff scope, lint, TypeScript and production build checks. No required check was skipped or weakened.
 
 ```bash
 STRUCTURE_SCOPE_BASE=ad5ed3442f1b8661da5b98a3935c14842e4c8b31 \
-STRUCTURE_SCOPE_HEAD=3db9e253a95a6e5e9afe8d4c780e1b91d880f7eb \
+STRUCTURE_SCOPE_HEAD=6fb9c10029ef18dc8d8d50d7dc988b30e34b58af \
 STRUCTURE_SCOPE_FILE=work/US-001-06/scope.json bash scripts/verify.sh
 ```
 
-Log: artifacts/final-verify.log (ignored local reproducible artifact). Browser test results: existing test-results/ and playwright-report/ (ignored generated output). The human-readable AC mapping below refers to actual passing tests, not generated evidence treated as tests.
+Log: artifacts/record-corrected-verify.log (ignored local reproducible artifact). Browser test results: existing test-results/ and playwright-report/ (ignored generated output). The human-readable AC mapping below refers to actual passing tests, not generated evidence treated as tests.
+
+## Acceptance matrix
 
 | AC | Actual test/review evidence | Result |
 |---|---|---|
@@ -58,7 +58,7 @@ After this passing run, only story lifecycle, plan and evidence records change t
 
 Primary agent performed a separate fresh diff review after implementation. Checked proof-derived IDs, canonical session/owner references, transaction adapter/rollback and consumed attempts, replay/expiry policy, independent-process races, fixed-table reset deletion order, generation guards across old/current connections, local-only command arguments, metadata preservation and complete-path scope. Review found coverage/guard gaps: populate provider dependencies, install fences for legacy schemas, and reject unrelated databases. These are fixed and focused tests pass. No human acceptance or independent human review is claimed.
 
-## Known limitations and human acceptance
+## Known limitations
 
 - No new physical wallet/browser verification: browser wallet tests use simulated providers and real signatures. No UI redesign; existing theme/mobile/keyboard/accessibility browser checks remain applicable.
 - Reset is destructive by design and local development/test only. Labels/path checks are not a deployment-identity or filesystem security boundary. Stop all writers first; after reset, restart server connections. No shared/production data operations or reset were run.
@@ -70,3 +70,9 @@ Primary agent performed a separate fresh diff review after implementation. Check
 ## Evidence format correction
 
 The first lifecycle-record metadata check failed because this document used non-template section titles. The product run had passed, but the required headings Acceptance matrix, Verification and Review were missing. Restored the exact required headings, returned the story to IN_PROGRESS, and rerun the full verification before the next QA_PASSED transition. Product/test source is unchanged from 3db9e25. No check was weakened.
+
+Final format-corrected run completed with exit 0 on 6fb9c10029ef18dc8d8d50d7dc988b30e34b58af: 43 harness, 41 structure, 158 application and 78 browser tests, lock/source/dependency/scope/lint/types/build all passed. Restore QA_PASSED only after this observed result. Final source/test diff against 3db9e25 is empty; record-only changes receive focused validation. Strict standalone maintenance-command TypeScript check also passed with `npx tsc --ignoreConfig --noEmit --target ES2022 --module ESNext --moduleResolution Bundler --esModuleInterop --strict --skipLibCheck scripts/reset-local-data.ts` (TS7 requires --ignoreConfig for explicitly selected files), and `npx oxlint --deny-warnings scripts/reset-local-data.ts` exited 0. Artifact: artifacts/maintenance-static.log.
+
+## Human acceptance
+
+Not yet accepted. The finished result awaits human review and explicit PR/CI authorization. No PR/CI or real database reset/deployment has run. The final record commit changes only lifecycle, plan and evidence; tested implementation remains 6fb9c10.
