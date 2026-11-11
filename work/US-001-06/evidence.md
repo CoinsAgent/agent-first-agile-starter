@@ -22,7 +22,9 @@ Status: PASS
 | Final reset-focused | Exit 0, 18 tests, includes nonempty provider dependency/FK rows | artifacts/reset-final-focused.log |
 | Complete candidate verification at b15bba3bba18137b09eac918bd693a2a9400dbf4 | Exit 0: 43 harness, 41 structure, 158 app, 78 browser tests; full scope/dependency/lint/types/build/lock passed. Subsequent test-only strengthening requires a final committed-revision run | artifacts/full-verify.log |
 
-## Final acceptance matrix
+## Acceptance matrix
+
+## Verification
 
 Tested and freshly reviewed revision: **3db9e253a95a6e5e9afe8d4c780e1b91d880f7eb**. The full command below exited **0** with 43 harness tests, 41 structure fixtures, 158 application tests and 78 browser tests (1.0m), plus lockfile/download-source, dependency, complete-diff scope, lint, TypeScript and production build checks. No required check was skipped or weakened.
 
@@ -52,7 +54,7 @@ The primary agent reread the final test strengthening and complete 23-path diff,
 
 After this passing run, only story lifecycle, plan and evidence records change to record QA_PASSED. Final record commit receives focused harness metadata, whitespace and complete committed scope checks; its product/test code remains identical to the tested revision. Human finished-result review and PR/CI authorization remain pending.
 
-## Fresh technical review
+## Review
 
 Primary agent performed a separate fresh diff review after implementation. Checked proof-derived IDs, canonical session/owner references, transaction adapter/rollback and consumed attempts, replay/expiry policy, independent-process races, fixed-table reset deletion order, generation guards across old/current connections, local-only command arguments, metadata preservation and complete-path scope. Review found coverage/guard gaps: populate provider dependencies, install fences for legacy schemas, and reject unrelated databases. These are fixed and focused tests pass. No human acceptance or independent human review is claimed.
 
@@ -64,3 +66,7 @@ Primary agent performed a separate fresh diff review after implementation. Check
 - SQLite contention may fail a competing attempt safely; tests verify one canonical identity and successful fresh retry. Production throughput/fairness is not claimed.
 - No fresh npm ci was needed locally; existing installation and lockfile verification used. CI, PR and merge are not requested or performed.
 - Acceptance: PENDING human review of the finished result, subsequent PR/CI authorization, passing required checks and actual human merge under PROCESS. No ACCEPTED metadata is set.
+
+## Evidence format correction
+
+The first lifecycle-record metadata check failed because this document used non-template section titles. The product run had passed, but the required headings Acceptance matrix, Verification and Review were missing. Restored the exact required headings, returned the story to IN_PROGRESS, and rerun the full verification before the next QA_PASSED transition. Product/test source is unchanged from 3db9e25. No check was weakened.

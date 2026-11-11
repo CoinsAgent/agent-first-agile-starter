@@ -56,3 +56,5 @@ Final full verification and AC outcomes are recorded in evidence.md. No real dat
 ## Local QA completion
 
 Full verification on 3db9e253a95a6e5e9afe8d4c780e1b91d880f7eb exited 0: 43 harness, 41 structure, 158 application and 78 browser tests plus scope/dependencies/lock/lint/types/build. Final fresh review has no unresolved material findings; evidence maps every AC to actual checks. Record QA_PASSED and present the finished result. Only lifecycle/plan/evidence records follow the tested revision, with focused metadata/whitespace/scope validation. CI and human acceptance remain pending; no PR, deployment or real reset was performed.
+
+Final evidence-format correction: metadata validation rejected renamed template section titles (Acceptance matrix, Verification, Review missing). Correct exact headings rather than weaken the checker. Return IN_PROGRESS, rerun full verification on the record-corrected commit, then restore QA_PASSED. Product/test code unchanged.
