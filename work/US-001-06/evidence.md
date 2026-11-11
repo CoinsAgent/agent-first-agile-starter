@@ -1,6 +1,8 @@
 # Verification evidence — US-001-06
 
-Status: NOT_RUN
+Status: PASS
+
+Current verified implementation: **d1320079149b4b43aadc662707c37b44d42dfadb**, including the human-selected one-time initialization revision. Full verification exited 0: **43 harness, 41 structure, 167 application and 78 browser tests**, plus lockfile/dependencies/scope/lint/types/build. Earlier identity/reset/deployment results below are historical checkpoints. The latest setup verification is detailed at the end of this file.
 
 ## Context and provenance
 
@@ -24,7 +26,7 @@ Status: NOT_RUN
 
 ## Verification
 
-Tested and freshly reviewed revision: **6fb9c10029ef18dc8d8d50d7dc988b30e34b58af**. The full command below exited **0** with 43 harness tests, 41 structure fixtures, 158 application tests and 78 browser tests (1.0m), plus lockfile/download-source, dependency, complete-diff scope, lint, TypeScript and production build checks. No required check was skipped or weakened.
+Historical identity/reset revision: **6fb9c10029ef18dc8d8d50d7dc988b30e34b58af**. The full command below exited **0** with 43 harness tests, 41 structure fixtures, 158 application tests and 78 browser tests (1.0m), plus lockfile/download-source, dependency, complete-diff scope, lint, TypeScript and production build checks. No required check was skipped or weakened.
 
 ```bash
 STRUCTURE_SCOPE_BASE=ad5ed3442f1b8661da5b98a3935c14842e4c8b31 \
@@ -49,6 +51,7 @@ Log: artifacts/record-corrected-verify.log (ignored local reproducible artifact)
 | AC-09 | reset.test.ts populated user/session/wallet/account/challenge/QR/application/submission/rate plus seeded access/refresh/consent/client-resource/assertion rows; all removed, keys/resources/unrelated rows/config/source preserved; rollback, busy refusal, repeated reset, old credentials/proofs and pending/stale writer fencing | PASS |
 | AC-10 | reset.test.ts actual subprocess: explicit disposable legacy target success; missing/relative/duplicate/unknown/ack/environment/production NODE_ENV/unrelated-database refusal; reviewed docs explain target classification and local-only operations | PASS |
 | AC-11 | Complete docs/structure/source/test diff reviewed; full verify passes existing light/dark/mobile/keyboard/accessibility/SIWE/QR/registration browser regressions. New UI interactions/wallets are not introduced | PASS |
+| AC-12 | database.test.ts: real setup command, missing/empty/partial DB startup refusal, init-once/refuse repeat, unchanged schema and preserved users/apps across sign-in/restart, partial-DDL rollback, invalid arguments and sqliteXfixture namespace regression | PASS |
 
 The primary agent reread the final test strengthening and complete 23-path diff, ran git diff --check and complete committed scope validation, and found no remaining material issue. Proposed and actual paths agree with scope.json; no unrelated source edits, dependency upgrades, host changes, early PR/CI, real reset or deployment. Previous US-002 acceptance files are deliberate carry-forward records.
 
@@ -101,6 +104,25 @@ The human explicitly instructed “deploy with a new empty database” after dis
 - Rollback: stop walletgate.service, restore artifacts/previous-release-dropin.conf to /etc/systemd/system/walletgate.service.d/05-release.conf (which removes the added EnvironmentFile reference), daemon-reload and start. The original runtime.env still selects the old preserved database. Do not restore/delete either database automatically; preserve any newly registered identities/apps and obtain a separate decision before moving data. The new environment file may remain unreferenced.
 - Deployment complete. US-001-06 remains QA_PASSED; no PR/CI or merge/acceptance was requested/performed. Record-only updates receive metadata/whitespace/complete-scope checks; no application source changes or repeated application suite are needed.
 
-## One-time initialization revision — verification pending
+## One-time initialization revision — verified
 
-Human explicitly selected one-time table initialization followed by normal startup, replacing automatic runtime schema updates. Prior PASS/deployment observations above are historical; current source revision returns IN_PROGRESS until full checks pass. No deployed service or database is changed by this work. New focused and full results will be appended.
+Human explicitly selected one-time table initialization followed by normal startup, replacing automatic runtime schema updates. Prior PASS/deployment observations above are historical; this source revision returned IN_PROGRESS during delivery and the final passing results are recorded below. No deployed service or database is changed by this work. New focused and full results will be appended.
+
+## One-time setup final verification and fresh review
+
+- Human requested removal of automatic startup schema updates and explicitly selected one-time table initialization before normal startup. Revision preserves identity/authentication/reset behavior, deployed data and original approval metadata.
+- Implementation/reviewed revision: d1320079149b4b43aadc662707c37b44d42dfadb. Full observed command exited **0**:
+
+```bash
+STRUCTURE_SCOPE_BASE=ad5ed3442f1b8661da5b98a3935c14842e4c8b31 \
+STRUCTURE_SCOPE_HEAD=d1320079149b4b43aadc662707c37b44d42dfadb \
+STRUCTURE_SCOPE_FILE=work/US-001-06/scope.json bash scripts/verify.sh
+```
+
+- Actual results: 43 harness tests, 41 structure fixtures, **167 application tests**, **78 browser tests**, required lockfile/source/dependency/complete-scope/lint/TypeScript/build checks all passed. Log: artifacts/init-full-verify.log. Browser startup explicitly initialized a private fresh database before launching the real backend.
+- Focused actual setup tests: 9 passed (artifacts/init-final-focused.log); initial auth/QR/setup checkpoint: 81 passed (init-focused.log); initial all-app checkpoint: 165 passed (init-all-app.log). Standalone strict TypeScript for scripts/init-database.ts exited0 (init-command-types.log); oxlint for that command exited0.
+- Fresh review compared the complete revision against previous local source 9b5c1d7 and the complete branch base. No runtime getMigrations/runMigrations imports/calls or table creation remain in auth.ts/qr.ts. Explicit initialization applies a pinned, row-free schema snapshot and inserts only its random generation marker in one transaction; existing schema/data are refused. New SQL source was placed in schema.ts after the unchanged dependency checker rejected .sql under production roots; no checker/baseline exception was added.
+- Review found LIKE underscore matching could skip a user object named sqliteXfixture; corrected to GLOB with a regression test. The pre-review full run was interrupted during browser tests (artifacts/init-pre-review-verify.log), not reported as a complete passing run. An earlier pre-commit launch was stopped after a whitespace check prevented the intended candidate commit; no success is attributed to it.
+- Existing auth/QR/application/identity/reset assertions remain intact; only fixture provisioning imports changed. Real production-factory startup, initialization subprocess, persisted primary IDs, owner/session policy, concurrency, reset fencing and browser checks pass. No unresolved material review finding. No UI behavior or dependency versions changed.
+- Source revision is **not redeployed**. Port3000 remains on its previously authorized immutable release/database, including user data created there. No init/reset command was run against deployed data. No PR/CI or human merge/acceptance.
+- Restore QA_PASSED after this full result. Subsequent commit changes only story/plan/evidence records and receives focused metadata/whitespace/complete-scope checks; source/tests remain identical to d1320079149b4b43aadc662707c37b44d42dfadb.
