@@ -1,8 +1,8 @@
 # Verification evidence — US-001-06
 
-Status: NOT_RUN
+Status: PASS
 
-Current verified implementation: **d1320079149b4b43aadc662707c37b44d42dfadb**, including the human-selected one-time initialization revision. Full verification exited 0: **43 harness, 41 structure, 167 application and 78 browser tests**, plus lockfile/dependencies/scope/lint/types/build. Earlier identity/reset/deployment results below are historical checkpoints. The latest setup verification is detailed at the end of this file.
+Current verified implementation: **ee311ba06a56ffb55e162bcba6572b228c12ee84**, including the human-requested minimum-intrusion session-hook simplification. Full verification exited 0: **43 harness, 41 structure, 167 application and 78 browser tests**, plus lockfile/dependencies/scope/lint/types/build. Earlier identity/reset/deployment results below are historical checkpoints. The latest session-hook verification is detailed at the end of this file.
 
 ## Context and provenance
 
@@ -141,6 +141,23 @@ The human requested “refresh the deployment env and relase to the port 3000”
 - Rollback: stop walletgate.service, restore artifacts/refresh-previous-release-dropin.conf to /etc/systemd/system/walletgate.service.d/05-release.conf, daemon-reload and start. Previous release /home/ubuntu/walletgate-releases/469af5021a2957d90e7530f737d2c3bf1fa4ce12 and the same initialized database/configuration remain available. No automatic database restore or deletion; the private backup is retained for separately authorized recovery if ever needed.
 - Deployment refresh complete. US-001-06 remains QA_PASSED; no PR/CI, merge or acceptance was requested/performed. Subsequent changes are operational evidence/plan/story records only, checked with metadata/whitespace/complete scope.
 
-## Minimal session-hook revision — pending verification
+## Minimal session-hook revision — verified
 
-The human requested minimum-intrusion simplification. Prior PASS/deployment records above remain historical. Remove custom timestamp overrides and redundant session spread; preserve required proof/provenance/binding checks and metadata. Current source returns IN_PROGRESS until actual focused/full checks and fresh review complete. No live service or data change.
+The human requested minimum-intrusion simplification. Prior PASS/deployment records above remain historical. Remove custom timestamp overrides and redundant session spread; preserve required proof/provenance/binding checks and metadata. This revision returned IN_PROGRESS during delivery; the final actual results below restore QA_PASSED. No live service or data change.
+
+## Minimum-intrusion session hook — final verification
+
+- Human explicitly requested simplification under Product Contract P7. The only production change returns partial custom metadata (`authMethod: siwe`, `walletAddress: verified address`) through Better Auth's supported database-hook merge. Removed redundant session spread and manual createdAt/expiresAt overrides. No assignment to userId/token/native fields, no schema or policy change; existing path/proof/canonical user binding/chain/final proof-expiry guards remain intact.
+- Installed source inspection confirms SIWE calls createSession(user.id), native session creation sets createdAt/token/userId/expiry using configured expiresIn, and createWithHooks merges partial hook.data into native data. No upstream modifications or new framework customization.
+- Focused command `npx vitest run tests/app/auth.test.ts tests/app/qr.test.ts tests/app/identity.test.ts` exited0: **84 tests passed**, including exact one-hour boundaries, no renewal, existing-user login/logout, malformed/replayed/foreign proofs, provenance and identity consistency. Log: artifacts/minimal-hook-focused.log. Lint and TypeScript exited0.
+- Final full command at reviewed commit **ee311ba06a56ffb55e162bcba6572b228c12ee84** exited **0**:
+
+```bash
+STRUCTURE_SCOPE_BASE=ad5ed3442f1b8661da5b98a3935c14842e4c8b31 \
+STRUCTURE_SCOPE_HEAD=ee311ba06a56ffb55e162bcba6572b228c12ee84 \
+STRUCTURE_SCOPE_FILE=work/US-001-06/scope.json bash scripts/verify.sh
+```
+
+- Actual full results: **43 harness, 41 structure, 167 application and 78 browser tests**, lockfile/source/dependency/complete-scope/lint/TypeScript/build all passed. Log artifacts/minimal-hook-full-verify.log. Existing AC01–12 regression coverage remains unchanged and passing; no tests/checks were weakened or added to mirror the implementation.
+- Fresh technical review inspected the four-path incremental diff against c6046b4 and complete branch path scope. Production diff is one removed native-fields override line replaced with a supported partial-metadata return/comment. It preserves required SIWE session provenance, existing identity/address consistency and last-moment validity check. Native config still specifies 1 hour absolute lifetime, disableSessionRefresh and no cookie cache. No unresolved material finding or unrelated source edits.
+- Restore QA_PASSED. Final lifecycle/plan/evidence commit changes no source/tests and receives focused metadata/whitespace/scope validation. No new deployment, init/reset/database operation, PR/CI, human merge or acceptance occurred. Live port3000 remains on the previously authorized 1bf0e6f release.
