@@ -76,3 +76,12 @@ Final format-corrected run completed with exit 0 on 6fb9c10029ef18dc8d8d50d7dc98
 ## Human acceptance
 
 Not yet accepted. The finished result awaits human review and explicit PR/CI authorization. No PR/CI or real database reset/deployment has run. The final record commit changes only lifecycle, plan and evidence; tested implementation remains 6fb9c10.
+
+## Requested deployment — prepared, awaiting deployed-data decision
+
+The human explicitly requested release on existing port 3000 for https://walletgate.beeswarm.dev/. This authorizes deployment, but does not override the approved local-only reset boundary or authorize deleting deployed data.
+
+- Prepared exact snapshot 469af5021a2957d90e7530f737d2c3bf1fa4ce12 with git archive in /home/ubuntu/walletgate-releases/469af5021a2957d90e7530f737d2c3bf1fa4ce12, with an independent copy of installed dependencies. Release build exited 0 (artifacts/release-build.log). Product/test code matches tested 6fb9c10.
+- Isolated production-mode startup on temporary port 3107 with a disposable in-memory DB passed: page200, unauthenticated session/applications401, hidden generic provider routes404. Smoke process stopped afterward. artifacts/release-smoke.log and release-smoke-result.json. No production secrets used.
+- Read-only deployed-database preflight: quick_check ok; 13 users, all with incompatible legacy IDs, and 5 registered applications. New release intentionally refuses this data. Current service release is 0122477a387366d2ad740f414dda743a377a367c. Configured origin/port match https://walletgate.beeswarm.dev/ and 3000. Private target metadata: artifacts/deployment-preflight.json; no secret values printed/copied. Corrected that artifact's root ownership to ubuntu with private mode retained after a local read failed; no runtime file permissions changed.
+- Existing walletgate.service remains active and public HTTPS returns200 with TLS verification. No service stop, runtime config/secret/database change, reset, restore or release switch occurred. Await a separate human decision on fresh deployed data or another explicitly authorized data plan. The suggested path preserves the old database and switches the site to a new empty database. No PR/CI or acceptance is implied; QA_PASSED remains the local implementation result.
