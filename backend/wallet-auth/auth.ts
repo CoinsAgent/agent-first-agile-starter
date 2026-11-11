@@ -133,7 +133,8 @@ export async function createWalletGate(config: Config, connection?: Database.Dat
         const parsed = parseSiweMessage(ctx.body.message);
         const address = proofContext.getStore()?.verifiedAddress;
         if (!parsed.address || !canonicalAddress(address) || session.userId !== address || parsed.address.toLowerCase() !== address || parsed.chainId !== 1 || !parsed.expirationTime || parsed.expirationTime.getTime() <= Date.now()) return false;
-        return { data: { ...session, createdAt: new Date(), expiresAt: new Date(Date.now() + SESSION_MS), authMethod: 'siwe', walletAddress: parsed.address.toLowerCase() } };
+        // Better Auth merges these custom fields into its native session data.
+        return { data: { authMethod: 'siwe', walletAddress: address } };
       } } },
     },
   });

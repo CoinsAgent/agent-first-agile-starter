@@ -1,6 +1,6 @@
 # Verification evidence — US-001-06
 
-Status: PASS
+Status: NOT_RUN
 
 Current verified implementation: **d1320079149b4b43aadc662707c37b44d42dfadb**, including the human-selected one-time initialization revision. Full verification exited 0: **43 harness, 41 structure, 167 application and 78 browser tests**, plus lockfile/dependencies/scope/lint/types/build. Earlier identity/reset/deployment results below are historical checkpoints. The latest setup verification is detailed at the end of this file.
 
@@ -140,3 +140,7 @@ The human requested “refresh the deployment env and relase to the port 3000”
 - Local trusted Host/protocol and public HTTPS checks passed: page200; unauthenticated session/applications401; generic provider routes404. All three public JS/CSS assets exactly match the release; TLS verification enabled. Actual headless Chromium rendered public sign-in and #applications auth gate with no page errors. artifacts/refresh-deployment-result.json, refresh-public-release-check.json, refresh-deployed-browser-check.json and refresh-deployed-sign-in.png. Authenticated behavior remains covered by local real-signature tests; no production sign-in/session credential was used by the agent.
 - Rollback: stop walletgate.service, restore artifacts/refresh-previous-release-dropin.conf to /etc/systemd/system/walletgate.service.d/05-release.conf, daemon-reload and start. Previous release /home/ubuntu/walletgate-releases/469af5021a2957d90e7530f737d2c3bf1fa4ce12 and the same initialized database/configuration remain available. No automatic database restore or deletion; the private backup is retained for separately authorized recovery if ever needed.
 - Deployment refresh complete. US-001-06 remains QA_PASSED; no PR/CI, merge or acceptance was requested/performed. Subsequent changes are operational evidence/plan/story records only, checked with metadata/whitespace/complete scope.
+
+## Minimal session-hook revision — pending verification
+
+The human requested minimum-intrusion simplification. Prior PASS/deployment records above remain historical. Remove custom timestamp overrides and redundant session spread; preserve required proof/provenance/binding checks and metadata. Current source returns IN_PROGRESS until actual focused/full checks and fresh review complete. No live service or data change.
