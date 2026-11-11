@@ -31,14 +31,19 @@ BETTER_AUTH_SECRET=<your locally generated value>
 
 ```bash
 npm run build
+node --import tsx scripts/init-database.ts --database "$(pwd)/data/walletgate.sqlite"
 npm start
 ```
 
 Open `http://localhost:3000` in Chrome with MetaMask. The server serves the built
 frontend, so rebuild after frontend changes. `npm run dev` starts the same local
-server; it also requires an existing build. SQLite schema migrations run on
-startup using Better Auth's migration API. This evaluation starts with a fresh
-database; back up an existing database before upgrading dependencies/schema.
+server; it also requires an existing build. Run the initialization command once
+against the empty database selected by DATABASE_PATH (the command requires its
+absolute path and does not load .env). It applies the pinned initial schema;
+it refuses an existing or partial schema without changing its tables/data.
+Normal startup requires that initialized database and never creates/updates
+tables. Restarting the service preserves current users and applications. There
+is no automatic schema upgrade. This evaluation starts with a fresh database.
 The database, WAL files and `.env` are ignored by Git. Use a test wallet; keep its
 keys entirely inside your wallet software.
 
@@ -62,7 +67,57 @@ consume the challenge before signature verification; a rejected signature needs
 a new challenge. Sessions last exactly 1 hour from authentication with no sliding
 renewal. Logout revokes only the current browser session server-side. Session
 and attempt credentials use HttpOnly cookies; HTTPS also enables Secure cookies.
-Server responses expose no session token, internal user ID or placeholder email.
+Server responses expose the verified canonical address as both `userId` and
+`address`, plus session expiry; they expose no session token or placeholder email.
+
+## Address-based users and explicit local data reset (US-001-06)
+
+Better Auth SIWE stores `user.id` as the verified lowercase Ethereum address.
+One address resolves to one user/owner; repeated sign-ins and browser/QR paths
+reuse that user. Different addresses remain separate users even if controlled
+by the same person or wallet app. An owner can register multiple independent
+applications; their client IDs and credentials remain separate from the user ID.
+The public address is never a session secret. Supported wallets, mainnet EOA
+scope, challenge validity and absolute session/logout policy remain unchanged.
+
+An incompatible legacy database causes startup to refuse with guidance. Startup
+does not automatically delete or migrate it. This story provides no data-preserving
+migration: for a **local development/test database only**, inspect the exact target,
+stop every server/process using it, and explicitly invoke:
+
+```bash
+node --import tsx scripts/reset-local-data.ts \
+  --database /absolute/path/to/local-test.sqlite \
+  --environment development \
+  --confirm DELETE-LOCAL-USER-DATA
+```
+
+Use `--environment test` for a disposable test database. There is no default
+target, environment-file loading, or implicit confirmation. The command accepts
+only the real absolute path of an existing regular database file; it refuses
+shared/production environment values and production NODE_ENV. A local-looking
+path or a development label does not prove that a database is local: inspect its
+actual use before invoking. These checks are guardrails, not filesystem permissions.
+Shared/production reset needs separate explicit human authorization and is not
+supported by this command/story. No deployed service or database is reset by
+installing, building, testing or starting the app.
+
+The reset **permanently deletes all users, sessions, wallet/account associations,
+pending SIWE challenges/nonces/QR approvals, registered applications and client
+credentials**, including dependent tokens, consents, submission/rate records and
+client assertions. Previous credentials and pending proofs stop working. Users
+must sign in again and register their applications again; old secrets cannot be
+recovered. Source code, server configuration, provider key/resource metadata and
+unrelated database records are preserved. Retain an operator-controlled backup
+before resetting any local data you may need; the command does not make a backup
+or restore one automatically.
+
+Deletion and generation invalidation commit atomically. A failed/busy reset does
+not partially delete records; repeating a successful reset is allowed and clears
+whatever user data is present in that explicitly selected database. Stop writers
+first rather than retrying blindly. Existing server connections are fenced after
+reset, including pending writes, and return restart-required errors; restart them
+before fresh sign-in. The reset does not grant CLI sign-in: that feature is deferred.
 
 ## Android MetaMask check
 
@@ -237,7 +292,7 @@ Save the generated client secret immediately using the creation result. It is sh
 
 Each verified wallet has at most 20 registrations and five authenticated registration attempts per fixed one-minute window starting at its first attempt; invalid submissions count too. All interfaces use the same server checks. The cap and rate state persist across restarts. At the cap, deletion/rotation/reset are unavailable in this slice. On network uncertainty, use **Check registration**; if absent, retry the same submission identity. Existing registrations never reveal their secret again. Draft values are kept only in current-tab memory during reauthentication as the same wallet; a different verified owner clears them.
 
-Dependencies: Better Auth/core 1.7.15 and the matching `@better-auth/oauth-provider` 1.7.15, with internal `jwt()` support for hashed secrets. Additive provider/application tables and a client-cap trigger are created through the existing startup migration path; existing SIWE and QR tables/data are retained. Back up an existing database before running an updated application, as with earlier schema changes; delivery testing uses disposable databases, not production data. No new runtime secret, paid service, endpoint permission or manual migration is required.
+Dependencies: Better Auth/core 1.7.15 and the matching `@better-auth/oauth-provider` 1.7.15, with internal `jwt()` support for hashed secrets. The one-time initial schema includes provider/application, SIWE and QR tables, indexes, identity guards and the client-cap trigger. Provision an empty database with the command above before startup; the server does not create or update schema. Existing users/applications in a correctly initialized current database survive ordinary restarts. Delivery tests initialize disposable databases explicitly. No new runtime secret, paid service or endpoint permission is required.
 
 The HTTP facade exposes same-origin JSON `POST /api/applications` (name, redirectUris, requestId), owner-only `GET /api/applications` and `GET /api/applications/:clientId`. It continues to block generic Better Auth/provider mutation and protocol routes. Creation uses supported core/provider transactions for client+submission atomicity, with a SQLite cap constraint. Registration holds exclusive access per SQLite file inside the process so synchronous auth/QR writes cannot become part of another request's transaction; ordinary requests may overlap to preserve in-flight QR cancellation. Bodies are read with the existing 8 KiB bound before joining this queue. Cross-process SQLite busy conflicts are retried a bounded number of times; exhaustion yields a retryable error and the same submission can be reconciled safely. This is an evaluation design, not a production throughput or abuse-resistance claim.
 

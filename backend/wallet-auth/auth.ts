@@ -1,10 +1,10 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
-import { mkdirSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { AsyncLocalStorage } from 'node:async_hooks';
+import { getCurrentAdapter, runWithTransaction } from '@better-auth/core/context';
+import { resolve } from 'node:path';
 import Database from 'better-sqlite3';
 import { betterAuth } from 'better-auth';
 import { APIError, createAuthMiddleware } from 'better-auth/api';
-import { getMigrations } from 'better-auth/db/migration';
 import { siwe } from 'better-auth/plugins';
 import { getAddress, verifyMessage, type Hex } from 'viem';
 import { createSiweMessage, parseSiweMessage } from 'viem/siwe';
@@ -13,6 +13,7 @@ import type { Config } from '../infrastructure/config';
 import { createQrAuth } from './qr';
 import { applicationSchema, ApplicationError, createApplications } from '../applications';
 import { registrationProvider } from '../oidc';
+import { assertCompatibleIdentity, attachIdentityFence, canonicalAddress } from './identity';
 
 export const CHALLENGE_MS = 5 * 60 * 1000;
 export const SESSION_MS = 60 * 60 * 1000;
@@ -41,7 +42,7 @@ async function readJson(request: Request): Promise<unknown> {
   return JSON.parse(Buffer.concat(chunks).toString('utf8'));
 }
 // SIWE/QR requests may overlap (cancellation must interrupt verification), but
-// registration transactions need exclusive access to their SQLite connection.
+// registration and SIWE transactions need exclusive access to their SQLite connection.
 // Existing requests share access; a registration waits until they finish.
 type DatabaseQueue = { readers: number; writer: boolean; readersWaiting: (() => void)[]; writersWaiting: (() => void)[]; references: number };
 const databaseQueues = new Map<string, DatabaseQueue>();
@@ -63,15 +64,21 @@ function acquireDatabase(queue: DatabaseQueue, exclusive: boolean): Promise<() =
   });
 }
 type Challenge = { message: string; expiresAt: number };
-export async function createWalletGate(config: Config) {
-  if (config.databasePath !== ':memory:') mkdirSync(dirname(config.databasePath), { recursive: true, mode: 0o700 });
-  const db = new Database(config.databasePath);
+class VerificationFailed extends Error {
+  constructor(public response: Response) { super('VerificationFailed'); }
+}
+export async function createWalletGate(config: Config, connection?: Database.Database) {
+  let db: Database.Database;
+  try { db = connection ?? new Database(config.databasePath, { fileMustExist: true }); }
+  catch { throw new Error('WalletGate database is missing. Run scripts/init-database.ts --database /absolute/path/to/empty.sqlite before starting the server.'); }
+  let generationCurrent: () => boolean;
+  try { generationCurrent = attachIdentityFence(db); assertCompatibleIdentity(db); } catch (error) { db.close(); throw error; }
+  const proofContext = new AsyncLocalStorage<{ message: string; verifiedAddress?: string }>();
   const queueKey = config.databasePath === ':memory:' ? randomUUID() : resolve(config.databasePath);
   const queue = databaseQueues.get(queueKey) ?? { readers: 0, writer: false, readersWaiting: [], writersWaiting: [], references: 0 };
   queue.references++; databaseQueues.set(queueKey, queue);
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
-  db.exec('CREATE TABLE IF NOT EXISTS walletChallenge (attemptHash TEXT PRIMARY KEY, message TEXT NOT NULL, expiresAt INTEGER NOT NULL)');
   const secure = config.origin.startsWith('https:');
   const attemptCookie = secure ? '__Host-walletgate-attempt' : 'walletgate-attempt';
   const cookie = (token: string, age: number) => `${attemptCookie}=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${age}${secure ? '; Secure' : ''}`;
@@ -94,8 +101,12 @@ export async function createWalletGate(config: Config) {
       verifyMessage: async ({ message, signature, address }) => {
         try {
           const parsed = parseSiweMessage(message);
-          return !!parsed.expirationTime && Date.now() < parsed.expirationTime.getTime() &&
+          const valid = !!parsed.expirationTime && Date.now() < parsed.expirationTime.getTime() &&
             await verifyMessage({ address: address as Hex, message, signature: signature as Hex });
+          const context = proofContext.getStore();
+          if (!valid || !context || context.message !== message || parsed.chainId !== 1) return false;
+          context.verifiedAddress = address.toLowerCase();
+          return true;
         } catch { return false; }
       },
     })],
@@ -105,38 +116,36 @@ export async function createWalletGate(config: Config) {
         if (ctx.headers?.get('origin') !== config.origin) throw unauthorised();
         const body = z.object({ message: z.string().max(4096), signature: z.string().regex(/^0x[0-9a-fA-F]{130}$/) }).strict().safeParse(ctx.body);
         if (!body.success) throw unauthorised();
-        const token = cookieValue(ctx.headers, attemptCookie);
-        const row = db.prepare('SELECT message, expiresAt FROM walletChallenge WHERE attemptHash = ?').get(hash(token)) as Challenge | undefined;
-        if (!row || row.message !== body.data.message || row.expiresAt <= Date.now()) throw unauthorised();
-        const parsed = parseSiweMessage(body.data.message);
-        if (!parsed.issuedAt || parsed.issuedAt.getTime() > Date.now() ||
-            (parsed.notBefore && parsed.notBefore.getTime() > Date.now())) throw unauthorised();
-        // Delete atomically before asynchronous signature verification: two workers cannot accept one attempt.
-        const consumed = db.prepare('DELETE FROM walletChallenge WHERE attemptHash = ? AND message = ? AND expiresAt > ? RETURNING attemptHash').get(hash(token), body.data.message, Date.now());
-        if (!consumed) throw unauthorised();
+        if (proofContext.getStore()?.message !== body.data.message) throw unauthorised();
+        // The SIWE plugin also calls context.adapter directly. Give this
+        // endpoint the supported transaction adapter, not the pooled fallback.
+        return { context: { context: { adapter: await getCurrentAdapter(ctx.context.adapter) } } };
       }),
     },
     databaseHooks: {
+      user: { create: { before: async (user, ctx) => {
+        const address = proofContext.getStore()?.verifiedAddress;
+        if (ctx?.path !== '/siwe/verify' || !canonicalAddress(address)) throw unauthorised();
+        return { data: { ...user, id: address } };
+      } } },
       session: { create: { before: async (session, ctx) => {
         if (ctx?.path !== '/siwe/verify') return false;
         const parsed = parseSiweMessage(ctx.body.message);
-        if (!parsed.address || parsed.chainId !== 1 || !parsed.expirationTime || parsed.expirationTime.getTime() <= Date.now()) return false;
-        return { data: { ...session, createdAt: new Date(), expiresAt: new Date(Date.now() + SESSION_MS), authMethod: 'siwe', walletAddress: parsed.address.toLowerCase() } };
+        const address = proofContext.getStore()?.verifiedAddress;
+        if (!parsed.address || !canonicalAddress(address) || session.userId !== address || parsed.address.toLowerCase() !== address || parsed.chainId !== 1 || !parsed.expirationTime || parsed.expirationTime.getTime() <= Date.now()) return false;
+        // Better Auth merges these custom fields into its native session data.
+        return { data: { authMethod: 'siwe', walletAddress: address } };
       } } },
     },
   });
-  const migrations = await getMigrations(auth.options);
-  await migrations.runMigrations();
-  // The SIWE plugin uses canonical checksummed addresses; prevent concurrent duplicate wallet identities.
-  db.exec('CREATE UNIQUE INDEX IF NOT EXISTS wallet_address_chain_unique ON walletAddress(address, chainId)');
-  // Defense in depth: cap is enforced by SQLite even under independent concurrent connections.
-  db.exec(`CREATE TRIGGER IF NOT EXISTS walletgate_client_cap BEFORE INSERT ON oauthClient
-    WHEN NEW.referenceId IS NOT NULL AND (SELECT count(*) FROM oauthClient WHERE referenceId = NEW.referenceId) >= 20
-    BEGIN SELECT RAISE(ABORT, 'ApplicationLimit'); END`);
   async function session(headers: Headers) {
+    if (!generationCurrent()) return null;
     const data = await auth.api.getSession({ headers });
     if (!data || data.session.authMethod !== 'siwe' || typeof data.session.walletAddress !== 'string' || !/^0x[0-9a-f]{40}$/.test(data.session.walletAddress ?? '') || data.session.expiresAt.getTime() <= Date.now()) return null;
-    return { address: data.session.walletAddress, expiresAt: data.session.expiresAt.toISOString() };
+    const address = data.session.walletAddress;
+    if (data.user.id !== address || data.session.userId !== address ||
+        !db.prepare('SELECT 1 FROM walletAddress WHERE userId = ? AND lower(address) = ? AND chainId = 1').get(address, address)) return null;
+    return { userId: address, address, expiresAt: data.session.expiresAt.toISOString() };
   }
   const applications = createApplications({
     adapter: (await auth.$context).adapter, session,
@@ -146,8 +155,36 @@ export async function createWalletGate(config: Config) {
       response_types: ['code'], scope: 'openid',
     } }),
   });
-  function internal(request: Request, path: string, body: unknown) {
-    return auth.handler(new Request(`${config.origin}/api/auth${path}`, { method: 'POST', headers: request.headers, body: JSON.stringify(body) }));
+  async function internal(request: Request, path: string, body: unknown) {
+    const invoke = () => auth.handler(new Request(`${config.origin}/api/auth${path}`, { method: 'POST', headers: request.headers, body: JSON.stringify(body) }));
+    if (path !== '/siwe/verify') return invoke();
+    // Consume the browser attempt BEFORE the account transaction. A failed
+    // signature/storage operation must not resurrect that attempt on rollback.
+    const parsedBody = z.object({ message: z.string().max(4096), signature: z.string().regex(/^0x[0-9a-fA-F]{130}$/) }).strict().safeParse(body);
+    if (!parsedBody.success || request.headers.get('origin') !== config.origin) return json({ error: 'Invalid sign-in attempt.' }, 401);
+    const { message } = parsedBody.data;
+    const attempt = cookieValue(request.headers, attemptCookie);
+    const row = db.prepare('SELECT message, expiresAt FROM walletChallenge WHERE attemptHash = ?').get(hash(attempt)) as Challenge | undefined;
+    const parsed = parseSiweMessage(message);
+    if (!row || row.message !== message || row.expiresAt <= Date.now() || !parsed.issuedAt || parsed.issuedAt.getTime() > Date.now() ||
+        (parsed.notBefore && parsed.notBefore.getTime() > Date.now())) return json({ error: 'Invalid sign-in attempt.' }, 401);
+    if (!db.prepare('DELETE FROM walletChallenge WHERE attemptHash = ? AND message = ? AND expiresAt > ? RETURNING attemptHash').get(hash(attempt), message, Date.now())) return json({ error: 'Invalid sign-in attempt.' }, 401);
+    try {
+      return await runWithTransaction((await auth.$context).adapter, () => proofContext.run({ message }, async () => {
+        const response = await auth.api.verifySiweMessage({
+          headers: request.headers, body: parsedBody.data,
+          request: new Request(`${config.origin}/api/auth/siwe/verify`, { method: 'POST', headers: request.headers }),
+          asResponse: true,
+        });
+        // Better Auth converts endpoint errors to responses. Throw across the
+        // transaction boundary so incomplete identity creation is rolled back.
+        if (!response.ok) throw new VerificationFailed(response);
+        return response;
+      }));
+    } catch (error) {
+      if (error instanceof VerificationFailed) return error.response;
+      throw error;
+    }
   }
   const qr = createQrAuth(db, config.origin, {
     nonce: async request => {
@@ -171,6 +208,7 @@ export async function createWalletGate(config: Config) {
       } finally { db.prepare('DELETE FROM walletChallenge WHERE attemptHash = ?').run(hash(binding)); }
     },
   });
+  await (await auth.$context).checkSchema?.();
   async function handle(request: Request, readBody = () => readJson(request)): Promise<Response> {
     const url = new URL(request.url);
     if (url.origin !== config.origin) return json({ error: 'Untrusted origin.' }, 403);
@@ -247,11 +285,16 @@ export async function createWalletGate(config: Config) {
       request.headers.get('origin') === config.origin && request.headers.get('content-type')?.startsWith('application/json') &&
       (['/api/applications', '/api/challenge', '/api/verify', '/api/logout'].includes(url.pathname) || url.pathname.startsWith('/api/qr/'));
     const parsed = needsBody ? await readJson(request).then(value => ({ value }), error => ({ error })) : { value: undefined };
-    const release = await acquireDatabase(queue, request.method === 'POST' && url.pathname === '/api/applications');
-    try { return await handle(request, async () => {
-      if ('error' in parsed) throw parsed.error;
-      return parsed.value;
-    }); } finally { release(); }
+    const exclusive = request.method === 'POST' && ['/api/applications', '/api/verify', '/api/qr/complete'].includes(url.pathname);
+    const release = await acquireDatabase(queue, exclusive);
+    try {
+      if (!generationCurrent()) return json({ error: 'Local data was reset. Restart this server before signing in again.' }, 503);
+      const response = await handle(request, async () => {
+        if ('error' in parsed) throw parsed.error;
+        return parsed.value;
+      });
+      return generationCurrent() ? response : json({ error: 'Local data was reset. Restart this server before signing in again.' }, 503);
+    } finally { release(); }
   }
   return { handle: queuedHandle, db, auth, close: () => {
     db.close(); queue.references--; if (!queue.references) databaseQueues.delete(queueKey);

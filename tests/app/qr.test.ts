@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { privateKeyToAccount, generatePrivateKey } from 'viem/accounts';
 import { parseSiweMessage } from 'viem/siwe';
-import { createWalletGate, SESSION_MS } from '../../backend/wallet-auth/auth';
+import { SESSION_MS } from '../../backend/wallet-auth/auth';
+import { createTestWalletGate as createWalletGate } from './database-fixture';
 import { QR_MS } from '../../backend/wallet-auth/qr';
 const origin = 'http://localhost:3000';
 const wallet = privateKeyToAccount(generatePrivateKey());
@@ -51,8 +52,10 @@ describe('custom QR authentication — separate phone approval and desktop redem
     expect((await phone.call('qr/complete',{id:q.id})).status).toBe(410);
     expect((await stranger.call('qr/complete',{id:q.id})).status).toBe(410);
     expect((await desktop.call('qr/complete',{id:q.id})).status).toBe(200);
-    expect(await (await desktop.session()).json()).toEqual({address:wallet.address.toLowerCase(),expiresAt:new Date(now+SESSION_MS).toISOString()});
+    expect(await (await desktop.session()).json()).toEqual({userId:wallet.address.toLowerCase(),address:wallet.address.toLowerCase(),expiresAt:new Date(now+SESSION_MS).toISOString()});
     expect(gate.db.prepare('SELECT authMethod, walletAddress FROM session').get()).toEqual({authMethod:'siwe',walletAddress:wallet.address.toLowerCase()});
+    expect(gate.db.prepare('SELECT id FROM user').all()).toEqual([{id:wallet.address.toLowerCase()}]);
+    expect(gate.db.prepare('SELECT userId FROM walletAddress').all()).toEqual([{userId:wallet.address.toLowerCase()}]);
     expect((await phone.session()).status).toBe(401);
     expect((await desktop.call('qr/complete',{id:q.id})).status).toBe(410);
     expect(gate.db.prepare('SELECT count(*) n FROM walletChallenge').get()).toEqual({n:0});
