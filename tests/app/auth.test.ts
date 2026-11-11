@@ -6,7 +6,8 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createServer, request as httpRequest } from 'node:http';
 import { toNodeHandler } from 'better-auth/node';
-import { createWalletGate, CHALLENGE_MS, SESSION_MS } from '../../backend/wallet-auth/auth';
+import { CHALLENGE_MS, SESSION_MS } from '../../backend/wallet-auth/auth';
+import { createTestWalletGate as createWalletGate } from './database-fixture';
 import { readConfig } from '../../backend/infrastructure/config';
 
 const origin = 'http://localhost:3000';

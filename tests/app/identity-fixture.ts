@@ -1,7 +1,7 @@
 import { randomUUID } from 'node:crypto';
 import { expect } from 'vitest';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
-import { createWalletGate } from '../../backend/wallet-auth/auth';
+import { createTestWalletGate as createWalletGate } from './database-fixture';
 
 export const config = { origin: 'http://localhost:3000', secret: 'identity-test-only-secret-012345678901234567890123456789', databasePath: ':memory:' };
 export type Gate = Awaited<ReturnType<typeof createWalletGate>>;

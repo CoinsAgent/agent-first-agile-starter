@@ -4,7 +4,7 @@ import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 import Database from 'better-sqlite3';
-import { createWalletGate } from '../../backend/wallet-auth/auth';
+import { createTestWalletGate as createWalletGate } from './database-fixture';
 import { resetLocalIdentity } from '../../backend/wallet-auth/reset';
 import { identityTables } from '../../backend/wallet-auth/identity';
 import { applicationDataTables, clearApplicationData } from '../../backend/applications';

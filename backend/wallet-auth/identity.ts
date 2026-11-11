@@ -28,24 +28,21 @@ function incompatible() {
 export function installIdentityFence(db: Database.Database, tables: readonly string[]) {
   db.exec('CREATE TABLE IF NOT EXISTS walletgateIdentityState (id INTEGER PRIMARY KEY CHECK(id = 1), generation TEXT NOT NULL)');
   db.prepare('INSERT OR IGNORE INTO walletgateIdentityState VALUES (1, ?)').run(randomUUID());
-  const generation = (db.prepare('SELECT generation FROM walletgateIdentityState WHERE id = 1').get() as { generation: string }).generation;
-  db.function('walletgate_generation', () => generation);
+  const current = attachIdentityFence(db);
   for (const table of tables) {
     if (!hasTable(db, table)) continue;
     for (const action of ['INSERT', 'UPDATE', 'DELETE']) db.exec(`CREATE TRIGGER IF NOT EXISTS "walletgate_fence_${table}_${action}" BEFORE ${action} ON "${table}"
       WHEN walletgate_generation() != (SELECT generation FROM walletgateIdentityState WHERE id = 1)
       BEGIN SELECT RAISE(ABORT, 'WalletGate reset: restart this connection'); END`);
   }
-  return () => (db.prepare('SELECT generation FROM walletgateIdentityState WHERE id = 1').get() as { generation: string }).generation === generation;
+  return current;
 }
 
-export function installIdentityConstraints(db: Database.Database) {
-  db.exec(`CREATE UNIQUE INDEX IF NOT EXISTS walletgate_one_wallet_per_user ON walletAddress(userId);
-    CREATE UNIQUE INDEX IF NOT EXISTS walletgate_one_user_per_address ON walletAddress(lower(address));
-    CREATE TRIGGER IF NOT EXISTS walletgate_user_address BEFORE INSERT ON user
-    WHEN length(NEW.id) != 42 OR substr(NEW.id, 1, 2) != '0x' OR substr(NEW.id, 3) GLOB '*[^0-9a-f]*'
-    BEGIN SELECT RAISE(ABORT, 'User ID must be a canonical wallet address'); END;
-    CREATE TRIGGER IF NOT EXISTS walletgate_wallet_binding BEFORE INSERT ON walletAddress
-    WHEN lower(NEW.address) != NEW.userId OR NEW.chainId != 1
-    BEGIN SELECT RAISE(ABORT, 'Wallet must match its user ID'); END;`);
+export function attachIdentityFence(db: Database.Database) {
+  if (!hasTable(db, 'walletgateIdentityState') || !hasTable(db, 'user')) throw new Error('WalletGate database is not initialized. Run scripts/init-database.ts --database /absolute/path/to/empty.sqlite before starting the server.');
+  const row = db.prepare('SELECT generation FROM walletgateIdentityState WHERE id = 1').get() as { generation: string } | undefined;
+  if (!row) throw new Error('WalletGate initialization state is missing. Select a correctly initialized database.');
+  const generation = row.generation;
+  db.function('walletgate_generation', () => generation);
+  return () => (db.prepare('SELECT generation FROM walletgateIdentityState WHERE id = 1').get() as { generation: string } | undefined)?.generation === generation;
 }

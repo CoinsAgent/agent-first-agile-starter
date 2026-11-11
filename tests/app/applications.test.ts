@@ -7,7 +7,8 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
-import { createWalletGate, SESSION_MS } from '../../backend/wallet-auth/auth';
+import { SESSION_MS } from '../../backend/wallet-auth/auth';
+import { createTestWalletGate as createWalletGate } from './database-fixture';
 
 const origin = 'http://localhost:3000';
 const config = { origin, secret: 'test-only-applications-session-secret-01234567890123456789', databasePath: ':memory:' };

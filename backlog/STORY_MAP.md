@@ -40,6 +40,8 @@ The shared prove-identity entry point is refined by [US-001-01](US-001-01.md); t
 
 ### Wallet identity
 
+The human selected explicit one-time initialization of an empty database before normal startup for US-001-06. The server consumes initialized storage without creating or upgrading tables; the linked story owns this setup requirement and its verification.
+
 | Proposed slice | Select wallet | Prove wallet control | Resolve user | Act as owner |
 |---|---|---|---|---|
 | Shared SIWE identity refinement | [Use an existing supported address](US-001-06.md) | [Validate SIWE through existing local/QR paths](US-001-06.md) | [Persist exactly one user with user.id equal to the canonical address](US-001-06.md) | [Retain that address's independent applications and isolation](US-001-06.md) |

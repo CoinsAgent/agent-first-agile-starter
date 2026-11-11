@@ -1,6 +1,6 @@
 # Verification evidence — US-001-06
 
-Status: PASS
+Status: NOT_RUN
 
 ## Context and provenance
 
@@ -100,3 +100,7 @@ The human explicitly instructed “deploy with a new empty database” after dis
 - Actual headless Chromium loaded the public sign-in and #applications auth gate without page errors. Screenshot artifacts/deployed-sign-in.png was inspected; artifacts/deployed-browser-check.json reports PASS. No real wallet proof or application creation was performed against the new persistent database; authenticated behavior was covered by local tests.
 - Rollback: stop walletgate.service, restore artifacts/previous-release-dropin.conf to /etc/systemd/system/walletgate.service.d/05-release.conf (which removes the added EnvironmentFile reference), daemon-reload and start. The original runtime.env still selects the old preserved database. Do not restore/delete either database automatically; preserve any newly registered identities/apps and obtain a separate decision before moving data. The new environment file may remain unreferenced.
 - Deployment complete. US-001-06 remains QA_PASSED; no PR/CI or merge/acceptance was requested/performed. Record-only updates receive metadata/whitespace/complete-scope checks; no application source changes or repeated application suite are needed.
+
+## One-time initialization revision — verification pending
+
+Human explicitly selected one-time table initialization followed by normal startup, replacing automatic runtime schema updates. Prior PASS/deployment observations above are historical; current source revision returns IN_PROGRESS until full checks pass. No deployed service or database is changed by this work. New focused and full results will be appended.

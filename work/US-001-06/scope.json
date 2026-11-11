@@ -97,6 +97,38 @@
     {
       "path": "backend/oidc/index.ts",
       "kind": "file"
+    },
+    {
+      "path": "backend/bootstrap/database.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/wallet-auth/qr.ts",
+      "kind": "file"
+    },
+    {
+      "path": "scripts/init-database.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/app/database-fixture.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/app/database.test.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/app/applications.test.ts",
+      "kind": "file"
+    },
+    {
+      "path": "playwright.config.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/bootstrap/schema.ts",
+      "kind": "file"
     }
   ]
 }

@@ -1,21 +1,19 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { AsyncLocalStorage } from 'node:async_hooks';
 import { getCurrentAdapter, runWithTransaction } from '@better-auth/core/context';
-import { mkdirSync } from 'node:fs';
-import { dirname, resolve } from 'node:path';
+import { resolve } from 'node:path';
 import Database from 'better-sqlite3';
 import { betterAuth } from 'better-auth';
 import { APIError, createAuthMiddleware } from 'better-auth/api';
-import { getMigrations } from 'better-auth/db/migration';
 import { siwe } from 'better-auth/plugins';
 import { getAddress, verifyMessage, type Hex } from 'viem';
 import { createSiweMessage, parseSiweMessage } from 'viem/siwe';
 import { z } from 'zod';
 import type { Config } from '../infrastructure/config';
 import { createQrAuth } from './qr';
-import { applicationSchema, ApplicationError, createApplications, applicationDataTables } from '../applications';
+import { applicationSchema, ApplicationError, createApplications } from '../applications';
 import { registrationProvider } from '../oidc';
-import { assertCompatibleIdentity, canonicalAddress, identityTables, installIdentityConstraints, installIdentityFence } from './identity';
+import { assertCompatibleIdentity, attachIdentityFence, canonicalAddress } from './identity';
 
 export const CHALLENGE_MS = 5 * 60 * 1000;
 export const SESSION_MS = 60 * 60 * 1000;
@@ -69,17 +67,18 @@ type Challenge = { message: string; expiresAt: number };
 class VerificationFailed extends Error {
   constructor(public response: Response) { super('VerificationFailed'); }
 }
-export async function createWalletGate(config: Config) {
-  if (config.databasePath !== ':memory:') mkdirSync(dirname(config.databasePath), { recursive: true, mode: 0o700 });
-  const db = new Database(config.databasePath);
-  try { assertCompatibleIdentity(db); } catch (error) { db.close(); throw error; }
+export async function createWalletGate(config: Config, connection?: Database.Database) {
+  let db: Database.Database;
+  try { db = connection ?? new Database(config.databasePath, { fileMustExist: true }); }
+  catch { throw new Error('WalletGate database is missing. Run scripts/init-database.ts --database /absolute/path/to/empty.sqlite before starting the server.'); }
+  let generationCurrent: () => boolean;
+  try { generationCurrent = attachIdentityFence(db); assertCompatibleIdentity(db); } catch (error) { db.close(); throw error; }
   const proofContext = new AsyncLocalStorage<{ message: string; verifiedAddress?: string }>();
   const queueKey = config.databasePath === ':memory:' ? randomUUID() : resolve(config.databasePath);
   const queue = databaseQueues.get(queueKey) ?? { readers: 0, writer: false, readersWaiting: [], writersWaiting: [], references: 0 };
   queue.references++; databaseQueues.set(queueKey, queue);
   db.pragma('journal_mode = WAL');
   db.pragma('foreign_keys = ON');
-  db.exec('CREATE TABLE IF NOT EXISTS walletChallenge (attemptHash TEXT PRIMARY KEY, message TEXT NOT NULL, expiresAt INTEGER NOT NULL)');
   const secure = config.origin.startsWith('https:');
   const attemptCookie = secure ? '__Host-walletgate-attempt' : 'walletgate-attempt';
   const cookie = (token: string, age: number) => `${attemptCookie}=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${age}${secure ? '; Secure' : ''}`;
@@ -138,16 +137,6 @@ export async function createWalletGate(config: Config) {
       } } },
     },
   });
-  const migrations = await getMigrations(auth.options);
-  await migrations.runMigrations();
-  installIdentityConstraints(db);
-  // The SIWE plugin uses canonical checksummed addresses; prevent concurrent duplicate wallet identities.
-  db.exec('CREATE UNIQUE INDEX IF NOT EXISTS wallet_address_chain_unique ON walletAddress(address, chainId)');
-  // Defense in depth: cap is enforced by SQLite even under independent concurrent connections.
-  db.exec(`CREATE TRIGGER IF NOT EXISTS walletgate_client_cap BEFORE INSERT ON oauthClient
-    WHEN NEW.referenceId IS NOT NULL AND (SELECT count(*) FROM oauthClient WHERE referenceId = NEW.referenceId) >= 20
-    BEGIN SELECT RAISE(ABORT, 'ApplicationLimit'); END`);
-  let generationCurrent = () => true;
   async function session(headers: Headers) {
     if (!generationCurrent()) return null;
     const data = await auth.api.getSession({ headers });
@@ -218,7 +207,6 @@ export async function createWalletGate(config: Config) {
       } finally { db.prepare('DELETE FROM walletChallenge WHERE attemptHash = ?').run(hash(binding)); }
     },
   });
-  generationCurrent = installIdentityFence(db, [...identityTables, ...applicationDataTables, 'jwks']);
   await (await auth.$context).checkSchema?.();
   async function handle(request: Request, readBody = () => readJson(request)): Promise<Response> {
     const url = new URL(request.url);

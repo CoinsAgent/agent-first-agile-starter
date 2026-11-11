@@ -19,12 +19,6 @@ type Dependencies = {
 
 // QR coordination is application auth, not a remote wallet RPC connection.
 export function createQrAuth(db: Database.Database, origin: string, deps: Dependencies) {
-  db.exec(`CREATE TABLE IF NOT EXISTS qrRequest (
-    id TEXT PRIMARY KEY, ownerHash TEXT NOT NULL, phoneHash TEXT,
-    confirmation TEXT NOT NULL, expiresAt INTEGER NOT NULL,
-    state TEXT NOT NULL, message TEXT, signature TEXT);
-    CREATE INDEX IF NOT EXISTS qrOwner ON qrRequest(ownerHash);
-    CREATE TABLE IF NOT EXISTS qrRate (key TEXT PRIMARY KEY, start INTEGER NOT NULL, count INTEGER NOT NULL);`);
   const secure = origin.startsWith('https:');
   const ownerName = `${secure ? '__Host-' : ''}walletgate-qr-owner`;
   const phoneName = `${secure ? '__Host-' : ''}walletgate-qr-phone`;
