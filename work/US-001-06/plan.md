@@ -60,3 +60,7 @@ Full verification on 3db9e253a95a6e5e9afe8d4c780e1b91d880f7eb exited 0: 43 harne
 Final evidence-format correction: metadata validation rejected renamed template section titles (Acceptance matrix, Verification, Review missing). Correct exact headings rather than weaken the checker. Return IN_PROGRESS, rerun full verification on the record-corrected commit, then restore QA_PASSED. Product/test code unchanged.
 
 Record-corrected final verification on 6fb9c10029ef18dc8d8d50d7dc988b30e34b58af exited 0 with 43 harness, 41 structure, 158 app and 78 browser tests plus all required checks; metadata format resolved. Standalone maintenance command strict TypeScript and oxlint checks also pass. QA_PASSED restored; final changes limited to story/plan/evidence records. Await human finished-result review before PR/CI.
+
+## Human-authorized port-3000 deployment
+
+The human explicitly requested release to existing port 3000 for https://walletgate.beeswarm.dev/. Prepare exact verified source snapshot 469af5021a2957d90e7530f737d2c3bf1fa4ce12 in an isolated release, build and smoke test before switching the existing service. Preserve runtime.env, secret, origin/port, persistent database and TLS/nginx routing. Read-only compatibility preflight precedes any service stop. Explicit deployment authorization does not override the approved prohibition on shared/production data reset; incompatible deployed data requires a separate human decision. No PR/CI, human acceptance or destructive restore is implied. Existing plan/evidence/artifacts paths cover this execution record.
