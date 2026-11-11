@@ -31,6 +31,16 @@ describe('US-001-06 explicit local reset', () => {
   it('deletes dependent identity/application/proof data, preserves unrelated data/config, fences old servers and restarts cleanly', async () => {
     const b = new IdentityBrowser(gate), phone = new IdentityBrowser(gate); await b.login();
     const client = await (await b.register()).json();
+    // Populate every installed provider-dependent table so deletion order and
+    // preservation are tested with real foreign keys, not only empty tables.
+    const { id: sessionId } = gate.db.prepare('SELECT id FROM session LIMIT 1').get() as { id: string };
+    const clientId = client.application.clientId, userId = b.account.address.toLowerCase(), now = Date.now();
+    gate.db.prepare('INSERT INTO oauthResource (id, identifier, name) VALUES (?, ?, ?)').run('resource-fixture', 'https://api.example', 'Preserved resource');
+    gate.db.prepare('INSERT INTO oauthClientResource (id, clientId, resourceId) VALUES (?, ?, ?)').run('client-resource-fixture', clientId, 'https://api.example');
+    gate.db.prepare('INSERT INTO oauthRefreshToken (id, token, clientId, sessionId, userId, expiresAt, createdAt, scopes) VALUES (?, ?, ?, ?, ?, ?, ?, ?)').run('refresh-fixture', 'fixture-only-refresh', clientId, sessionId, userId, now + 60000, now, '["openid"]');
+    gate.db.prepare('INSERT INTO oauthAccessToken (id, token, clientId, sessionId, userId, refreshId, expiresAt, createdAt, scopes) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)').run('access-fixture', 'fixture-only-access', clientId, sessionId, userId, 'refresh-fixture', now + 60000, now, '["openid"]');
+    gate.db.prepare('INSERT INTO oauthConsent (id, clientId, userId, scopes, createdAt, updatedAt) VALUES (?, ?, ?, ?, ?, ?)').run('consent-fixture', clientId, userId, '["openid"]', now, now);
+    gate.db.prepare('INSERT INTO oauthClientAssertion (id, expiresAt) VALUES (?, ?)').run('assertion-fixture', now + 60000);
     const proof = await b.proof(); const qr = await (await b.call('qr/create', {})).json();
     const qrProof = await (await phone.call('qr/challenge', { id: qr.id, address: phone.account.address, chainId: 1 })).json();
     expect((await phone.call('qr/approve', { id: qr.id, message: qrProof.message, confirmation: qr.confirmation, signature: await phone.account.signMessage({ message: qrProof.message }) })).status).toBe(200);
@@ -40,6 +50,7 @@ describe('US-001-06 explicit local reset', () => {
     expect(reset().reset).toBe(true);
     for (const table of [...identityTables, ...applicationDataTables]) expect(gate.db.prepare(`SELECT count(*) n FROM "${table}"`).get()).toEqual({ n: 0 });
     expect(gate.db.prepare('SELECT * FROM jwks').all()).toEqual(jwks);
+    expect(gate.db.prepare('SELECT identifier, name FROM oauthResource').all()).toEqual([{ identifier: 'https://api.example', name: 'Preserved resource' }]);
     expect(gate.db.prepare('SELECT * FROM unrelated').all()).toEqual([{ value: 'preserve' }]);
     expect(readFileSync('backend/wallet-auth/auth.ts')).toEqual(source); expect(readFileSync(configPath, 'utf8')).toBe('preserve-config');
     expect((await b.call('session')).status).toBe(503);
@@ -65,7 +76,7 @@ describe('US-001-06 explicit local reset', () => {
     await expect(createWalletGate({ ...config, databasePath })).rejects.toThrow(/Incompatible wallet identity/);
     const inspect = new Database(databasePath, { readonly: true });
     expect(inspect.prepare('SELECT id FROM user').all()).toEqual([{ id: 'legacy-random-id' }]); inspect.close();
-    // Full row/schema snapshot through the retained fixture connection proves no conversion.
+    // Full row/table inventory through a fixture connection proves no conversion.
     const reader = new Database(databasePath); gate = { ...gate, db: reader };
     expect(snapshot()).toEqual(before); reader.close();
     expect(command(...args()).status).toBe(0);
