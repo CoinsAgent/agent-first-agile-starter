@@ -1,6 +1,6 @@
 # Verification evidence — US-001-06
 
-Status: NOT_RUN (final committed-revision full verification pending)
+Status: PASS
 
 ## Context and provenance
 
@@ -24,7 +24,33 @@ Status: NOT_RUN (final committed-revision full verification pending)
 
 ## Final acceptance matrix
 
-Final committed-revision results will be entered after the required full check completes; implementation remains IN_PROGRESS until then. The plan maps AC-01–AC-11 to the actual named test scenarios.
+Tested and freshly reviewed revision: **3db9e253a95a6e5e9afe8d4c780e1b91d880f7eb**. The full command below exited **0** with 43 harness tests, 41 structure fixtures, 158 application tests and 78 browser tests (1.0m), plus lockfile/download-source, dependency, complete-diff scope, lint, TypeScript and production build checks. No required check was skipped or weakened.
+
+```bash
+STRUCTURE_SCOPE_BASE=ad5ed3442f1b8661da5b98a3935c14842e4c8b31 \
+STRUCTURE_SCOPE_HEAD=3db9e253a95a6e5e9afe8d4c780e1b91d880f7eb \
+STRUCTURE_SCOPE_FILE=work/US-001-06/scope.json bash scripts/verify.sh
+```
+
+Log: artifacts/final-verify.log (ignored local reproducible artifact). Browser test results: existing test-results/ and playwright-report/ (ignored generated output). The human-readable AC mapping below refers to actual passing tests, not generated evidence treated as tests.
+
+| AC | Actual test/review evidence | Result |
+|---|---|---|
+| AC-01 | identity.test.ts persisted primary key, wallet/account/session refs, API userId/address and distinct technical IDs | PASS |
+| AC-02 | identity.test.ts repeat/case/independent-connection/restart cases; auth.test.ts reload/logout/session tests; qr.test.ts persisted user assertion | PASS |
+| AC-03 | identity.test.ts account switch/two-owner/two-app case and caller-ID rejection; hidden linking/auth routes in auth.test.ts | PASS |
+| AC-04 | identity.test.ts independent Node-process race, independent connections, account/session insertion failures, consumed-attempt replay rejection and fresh retry | PASS |
+| AC-05 | auth.test.ts malformed messages, domain/URI/chain/nonce/substitution/replay/cross-browser/time bounds; identity.test.ts invalid signer leaves no user; qr.test.ts approval/binding/expiry regressions | PASS |
+| AC-06 | identity.test.ts three persisted mismatch cases; auth.test.ts SIWE provenance, session expiry boundaries, logout/replay and independent-session behavior | PASS |
+| AC-07 | applications.test.ts registration/owner boundaries and provider behavior; identity.test.ts two independent apps retained only for original owner; reset.test.ts fresh post-reset registration | PASS |
+| AC-08 | reset.test.ts legacy startup refusal with unchanged row/table inventory; identity.test.ts compatible restart plus retained credential and fresh sign-in; fresh initialization throughout all tests | PASS |
+| AC-09 | reset.test.ts populated user/session/wallet/account/challenge/QR/application/submission/rate plus seeded access/refresh/consent/client-resource/assertion rows; all removed, keys/resources/unrelated rows/config/source preserved; rollback, busy refusal, repeated reset, old credentials/proofs and pending/stale writer fencing | PASS |
+| AC-10 | reset.test.ts actual subprocess: explicit disposable legacy target success; missing/relative/duplicate/unknown/ack/environment/production NODE_ENV/unrelated-database refusal; reviewed docs explain target classification and local-only operations | PASS |
+| AC-11 | Complete docs/structure/source/test diff reviewed; full verify passes existing light/dark/mobile/keyboard/accessibility/SIWE/QR/registration browser regressions. New UI interactions/wallets are not introduced | PASS |
+
+The primary agent reread the final test strengthening and complete 23-path diff, ran git diff --check and complete committed scope validation, and found no remaining material issue. Proposed and actual paths agree with scope.json; no unrelated source edits, dependency upgrades, host changes, early PR/CI, real reset or deployment. Previous US-002 acceptance files are deliberate carry-forward records.
+
+After this passing run, only story lifecycle, plan and evidence records change to record QA_PASSED. Final record commit receives focused harness metadata, whitespace and complete committed scope checks; its product/test code remains identical to the tested revision. Human finished-result review and PR/CI authorization remain pending.
 
 ## Fresh technical review
 
