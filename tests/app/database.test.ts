@@ -12,7 +12,7 @@ let dir: string, databasePath: string;
 beforeEach(() => { dir = mkdtempSync(join(tmpdir(), 'walletgate-init-')); databasePath = join(dir, 'test.sqlite'); });
 afterEach(() => rmSync(dir, { recursive: true, force: true }));
 const command = (...args: string[]) => spawnSync(process.execPath, ['--import', 'tsx', 'scripts/init-database.ts', ...args], { encoding: 'utf8', timeout: 10_000 });
-const schema = (db: Database.Database) => db.prepare("SELECT type,name,sql FROM sqlite_master WHERE name NOT LIKE 'sqlite_%' ORDER BY name").all();
+const schema = (db: Database.Database) => db.prepare("SELECT type,name,sql FROM sqlite_master WHERE name NOT GLOB 'sqlite_*' ORDER BY name").all();
 
 describe('US-001-06 explicit initial schema setup', () => {
   it('requires setup before missing/empty database startup and creates no tables or file implicitly', async () => {
@@ -45,15 +45,15 @@ describe('US-001-06 explicit initial schema setup', () => {
       expect(gate.db.pragma('foreign_key_check')).toEqual([]);
     } finally { gate.close(); }
   });
-  it('refuses a partial or unrelated existing schema without altering its rows/schema', async () => {
+  it.each(['existing', 'sqliteXfixture'])('refuses a partial or unrelated table %s without altering its rows/schema', async table => {
     const db = new Database(databasePath);
-    db.exec("CREATE TABLE existing (id TEXT); INSERT INTO existing VALUES ('preserve')");
+    db.exec(`CREATE TABLE "${table}" (id TEXT); INSERT INTO "${table}" VALUES ('preserve')`);
     const before = schema(db);
     expect(() => initializeDatabase(db)).toThrow(/empty database/);
     expect(command('--database', databasePath).status).toBe(1);
     await expect(createWalletGate({ ...config, databasePath })).rejects.toThrow(/not initialized/);
     expect(schema(db)).toEqual(before);
-    expect(db.prepare('SELECT * FROM existing').all()).toEqual([{ id: 'preserve' }]); db.close();
+    expect(db.prepare(`SELECT * FROM "${table}"`).all()).toEqual([{ id: 'preserve' }]); db.close();
   });
   it('rolls back partial schema creation if initialization fails', () => {
     const db = new Database(databasePath), execute = db.exec.bind(db);
