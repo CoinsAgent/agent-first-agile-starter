@@ -294,3 +294,26 @@ it('releases no token when issuance itself reaches the absolute deadline',async(
   try{const response=await exchange(c,{grant_type:'refresh_token',refresh_token:data.refresh_token});expect(response.status).toBe(500);expect((await response.json()).access_token).toBeUndefined();}finally{spy.mockRestore();log.mockRestore();}
   expect((gate.db.prepare('SELECT count(*) n FROM oauthRefreshToken').get() as {n:number}).n).toBe(1);
 });
+
+describe('US-003 explicit expiry boundary matrix',()=>{
+  for(const delta of [-1,0,1]){
+    it(`pending authorization at deadline ${delta}ms`,async()=>{
+      const b=new Browser();await b.login();const c=await b.client();const flow=await b.begin(c);vi.setSystemTime(now+300000+delta);
+      expect((await b.request('/api/authorization/'+flow.id)).status).toBe(delta<0?200:410);
+    });
+    it(`authorization code at deadline ${delta}ms`,async()=>{
+      const b=new Browser();await b.login();const c=await b.client();const flow=await b.authorize(c);vi.setSystemTime(Math.floor(now/1000)*1000+60000+delta);
+      const result=await exchange(c,{grant_type:'authorization_code',code:flow.code,code_verifier:flow.verifier,redirect_uri:'https://rp.example/callback'});expect(result.status).toBe(delta<0?200:400);
+    });
+    it(`access token at deadline ${delta}ms`,async()=>{
+      const b=new Browser();await b.login();const c=await b.client();const {data}=await issue(b,c);vi.setSystemTime(Math.floor(now/1000)*1000+900000+delta);expect((await userinfo(data.access_token)).status).toBe(delta<0?200:401);
+    });
+    it(`refresh family at deadline ${delta}ms`,async()=>{
+      const b=new Browser();await b.login();const c=await b.client();const {data}=await issue(b,c);const deadline=new Date((gate.db.prepare('SELECT expiresAt FROM oauthRefreshToken').get() as {expiresAt:string}).expiresAt).getTime();vi.setSystemTime(deadline+delta);
+      expect((await exchange(c,{grant_type:'refresh_token',refresh_token:data.refresh_token})).status).toBe(delta<0?200:400);
+    });
+  }
+  it('retains the registered runtime schema check on the transaction adapter',async()=>{
+    expect(typeof(await gate.auth.$context).checkSchema).toBe('function');await(await gate.auth.$context).checkSchema?.();
+  });
+});
