@@ -65,7 +65,7 @@ Fresh databases only; no conversion. The separate human-authorized operation-tes
 
 ## Human acceptance
 
-PENDING human review, approved PR/CI and human merge. No acceptance claimed.
+ACCEPTED through confirmed human merge after passing required current-head CI. Actual merge/check provenance is recorded below; earlier pending checkpoints remain historical.
 
 ## Human-authorized port-3000 operation-test release
 
@@ -87,3 +87,11 @@ The human reviewed the implementation explanation and deployed operation-test re
 Read-only inspection after the human's operation test found two newly registered clients with native userId matching the owner's verified address and referenceId null; real owner/client identifiers and credential hashes are omitted from publication. No live data was changed by that inspection. Full verification remains valid for the unchanged product/tests. Focused metadata, whitespace and complete committed scope checks precede publication. Current main was reconfirmed as2583a5f8a78cba5b9bcbece7bacf54adefc143f8; all 19 paths remain within the declared scope, including retained US-001-06 acceptance.
 
 Opening the PR starts Harness and product verification and PR path scope. Do not dispatch duplicate CI or change host protections. Save actual PR/head/check provenance under ignored artifacts/approved-pr-ci-result.json. Status remains QA_PASSED with acceptance fields empty until confirmed human merge after required current-head checks; no agent merge.
+
+## Hosted CI and confirmed human acceptance
+
+- Published [PR #10](https://github.com/CoinsAgent/agent-first-agile-starter/pull/10), head b564524d3a4bdcc1130b689293d31196b6b2b752, base2583a5f8a78cba5b9bcbece7bacf54adefc143f8, only after the human explicitly authorized opening its PR and running CI. Product/tests remain identical to full-local-verified f957d0b.
+- [Workflow43149590296](https://github.com/CoinsAgent/agent-first-agile-starter/actions/runs/43149590296) concluded success on that exact published head. Required PR path scope job130955351397 completed success at 2026-11-12T03:38:53Z; required Harness and product verification job130955351151 completed success at 2026-11-12T03:40:37Z. All required job steps succeeded. There was no extra dispatch, record-only source push or check/protection change. Actual host result snapshots are retained in ignored artifacts/approved-pr-ci-result.json and approved-pr-status.json on the delivery workspace.
+- After the human stated “the pr merged”, read-only GitHub inspection confirmed state MERGED, mergedBy CoinsAgent (is_bot=false), mergedAt2026-11-12T03:41:31Z and merge commit1eaa567d959c3e1fc9317f3422deef6a2a1f372b. The merge occurred after the required checks passed on current head. The agent performed no merge action.
+- Fetched origin/main equals the observed merge commit; git diff --quiet b564524d3a4bdcc1130b689293d31196b6b2b752 origin/main exited0, confirming the merged tree matches the reviewed published head. Under PROCESS this confirmed human merge is acceptance. On codex/accept-us-001-07 based on merged main, record status ACCEPTED, accepted_by CoinsAgent, accepted_at2026-11-12. Preserve this local acceptance commit and include backlog/US-001-07.md and this evidence file in the next approved PR with explicit scope. No acceptance-only PR/push or post-merge full run.
+- Only these two lifecycle/evidence files change; approval metadata, approved ACs and product/tests are unchanged. Focused harness metadata/unit, whitespace and complete committed path-scope checks are run for the record-only diff. Main retains its earlier QA_PASSED record until a later approved PR publishes this local acceptance. No additional deployment/data operation is authorized or performed by acceptance recording; the previously authorized operation-test release remains separate.
