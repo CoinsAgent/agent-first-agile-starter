@@ -31,6 +31,7 @@ For UI story shaping, implementation and review, also read `docs/UI_DESIGN_CONTR
 ## Human authorization and safety
 
 - Only a human can authorize `DRAFT → READY`, modify approved product outcomes/ACs, or authorize `QA_PASSED → ACCEPTED`.
+- Standing human instruction for explicit READY approvals: unless the human overrides the values, record `approved_by` as their verified GitHub username and `approved_at` as the date of that READY decision in Asia/Shanghai. Do not ask for those metadata again when available; this default never authorizes READY without an explicit human decision and does not apply to acceptance.
 - **Never invent human identity/approval metadata or claim acceptance without an explicit human decision.** Record supplied metadata only when explicitly authorized. Under PROCESS, confirmed human merge of the reviewed story PR constitutes acceptance: record the observed merger/date and merge provenance locally afterward, then publish that record in the next approved PR. Never mark ACCEPTED before merge or infer it from CI alone. File metadata alone does not prove a human decision. Record explicit approval through the agreed review channel; never impersonate a host review.
 - Pause for decisions that affect product outcomes, contract, privacy/security posture, destructive data operations, secrets, cost commitments, production releases or permissions.
 - Do not bypass, remove or weaken failing checks; fix the underlying defect or report `BLOCKED`.

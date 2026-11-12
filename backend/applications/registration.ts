@@ -6,7 +6,7 @@ import type { BetterAuthOptions, BetterAuthPlugin } from 'better-auth';
 import { z } from 'zod';
 
 type Owner = { address: string; expiresAt: string };
-type Client = { clientId: string; name?: string; redirectUris: string[]; createdAt: Date; referenceId?: string };
+type Client = { clientId: string; name?: string; redirectUris: string[]; createdAt: Date; userId?: string; referenceId?: string | null };
 type Submission = { key: string; owner: string; requestId: string; digest: string; clientId: string };
 type Rate = { id: string; owner: string; startedAt: Date; attempts: number };
 type Created = { client_id: string; client_secret?: string };
@@ -99,7 +99,7 @@ export function createApplications<Options extends BetterAuthOptions>(deps: Depe
   }
   async function list(headers: Headers, clientId?: string) {
     const owner = await requireOwner(headers);
-    const clients = await deps.adapter.findMany<Client>({ model: 'oauthClient', where: [...where('referenceId', owner.address), ...(clientId ? where('clientId', clientId) : [])], limit: 20, sortBy: { field: 'createdAt', direction: 'desc' } });
+    const clients = await deps.adapter.findMany<Client>({ model: 'oauthClient', where: [...where('userId', owner.address), ...(clientId ? where('clientId', clientId) : [])], limit: 20, sortBy: { field: 'createdAt', direction: 'desc' } });
     const claims = await deps.adapter.findMany<Submission>({ model: 'applicationSubmission', where: where('owner', owner.address), limit: 20 });
     const result = clients.map(client => project(client, claims.find(claim => claim.clientId === client.clientId)?.requestId));
     if (clientId && !result.length) throw new ApplicationError(404, 'Application not found.');
@@ -117,16 +117,16 @@ export function createApplications<Options extends BetterAuthOptions>(deps: Depe
       const prior = await tx.findOne<Submission>({ model: 'applicationSubmission', where: where('key', key) });
       if (prior) {
         if (prior.digest !== digest) throw new ApplicationError(409, 'This submission already used different values. Start a new registration.');
-        const client = await tx.findOne<Client>({ model: 'oauthClient', where: [...where('clientId', prior.clientId), ...where('referenceId', owner.address)] });
+        const client = await tx.findOne<Client>({ model: 'oauthClient', where: [...where('clientId', prior.clientId), ...where('userId', owner.address)] });
         if (!client) throw new Error('IncompleteRegistration');
         return { application: project(client, input.requestId), replayed: true };
       }
-      const count = await tx.count({ model: 'oauthClient', where: where('referenceId', owner.address) });
+      const count = await tx.count({ model: 'oauthClient', where: where('userId', owner.address) });
       if (count >= 20) throw new ApplicationError(409, 'You have reached the 20-application limit. Secret recovery, deletion and allowance resets are not available in this release.');
       const created = await deps.create(headers, input);
       if (!created.client_secret) throw new Error('MissingClientSecret');
       const client = await tx.findOne<Client>({ model: 'oauthClient', where: where('clientId', created.client_id) });
-      if (!client || client.referenceId !== owner.address) throw new Error('ClientOwnershipMismatch');
+      if (!client || client.userId !== owner.address || client.referenceId != null) throw new Error('ClientOwnershipMismatch');
       await tx.create({ model: 'applicationSubmission', data: { key, owner: owner.address, requestId: input.requestId, digest, clientId: created.client_id } });
       return { application: project(client, input.requestId), clientSecret: created.client_secret, replayed: false };
     });

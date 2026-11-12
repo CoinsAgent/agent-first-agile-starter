@@ -47,7 +47,9 @@ describe('US-002 registration and owner boundaries', () => {
     expect(a.application.clientId !== owner.account.address.toLowerCase()).toBe(true);
     expect(a.application.name).toBe('<script>Untrusted name</script>');
     const rows = gate.db.prepare('SELECT * FROM oauthClient').all() as Record<string, unknown>[];
-    expect(rows.every(row => row.referenceId === owner.account.address.toLowerCase())).toBe(true);
+    const address = owner.account.address.toLowerCase();
+    expect(rows.every(row => row.userId === address && row.referenceId === null)).toBe(true);
+    expect(gate.db.prepare('SELECT u.id, s.userId FROM user u JOIN session s ON s.userId = u.id').all()).toEqual([{ id: address, userId: address }]);
     expect(rows[0].clientSecret === a.clientSecret).toBe(false);
     expect(rows[0].clientSecret === createHash('sha256').update(a.clientSecret).digest('base64url')).toBe(true);
     expect(rows[0].grantTypes).toBe('["authorization_code"]');
@@ -72,11 +74,15 @@ describe('US-002 registration and owner boundaries', () => {
   });
   it('rejects expired/unproven sessions, ownership overrides and cross-origin creation', async () => {
     const owner = new Browser(); await owner.login();
-    expect((await owner.create({ owner: '0x' + '1'.repeat(40) })).status).toBe(400);
+    for (const field of ['owner', 'userId', 'referenceId']) expect((await owner.create({ [field]: '0x' + '1'.repeat(40) })).status).toBe(400);
     expect((await owner.request('/api/applications', {}, { origin: 'https://evil.example' })).status).toBe(403);
     gate.db.prepare("UPDATE session SET authMethod = 'password'").run();
     expect((await owner.create()).status).toBe(401);
     gate.db.prepare("UPDATE session SET authMethod = 'siwe'").run();
+    gate.db.prepare("UPDATE session SET walletAddress = ?").run('0x' + '1'.repeat(40));
+    expect((await owner.create()).status).toBe(401);
+    expect((await owner.request('/api/applications')).status).toBe(401);
+    gate.db.prepare('UPDATE session SET walletAddress = ?').run(owner.account.address.toLowerCase());
     vi.setSystemTime(now + SESSION_MS - 1); expect((await owner.request('/api/applications')).status).toBe(200);
     vi.setSystemTime(now + SESSION_MS); expect((await owner.create()).status).toBe(401);
     expect(count()).toBe(0);
@@ -152,6 +158,10 @@ describe('US-002 validation, limits and atomic submissions', () => {
     const results = await Promise.all([b.create(), b.create()]);
     expect(results.map(r => r.status).sort()).toEqual([201, 409]); expect(count()).toBe(20);
     expect((await b.create()).status).toBe(409);
+    const other = new Browser(); await other.login(); expect((await other.create()).status).toBe(201);
+    // Exercise the database guard independently of the domain pre-check.
+    expect(() => gate.db.prepare(`INSERT INTO oauthClient (id, clientId, userId, redirectUris)
+      VALUES (?, ?, ?, '[]')`).run(randomUUID(), randomUUID(), b.account.address.toLowerCase())).toThrow(/ApplicationLimit/);
   });
   it('persists configuration and retry claims across a server restart', async () => {
     const dir = mkdtempSync(join(tmpdir(), 'walletgate-applications-'));
@@ -159,10 +169,14 @@ describe('US-002 validation, limits and atomic submissions', () => {
       gate.close(); gate = await createWalletGate({ ...config, databasePath: join(dir, 'test.sqlite') });
       const b = new Browser(); await b.login(); const requestId = randomUUID();
       expect((await b.create({ requestId })).status).toBe(201);
+      const second = await (await b.create()).json();
+      await b.request('/api/logout', {}); await b.login();
       gate.close(); gate = await createWalletGate({ ...config, databasePath: join(dir, 'test.sqlite') });
       const replay = await b.create({ requestId }); expect(replay.status).toBe(200);
       const body = await replay.json(); expect(body.replayed).toBe(true); expect('clientSecret' in body).toBe(false);
-      expect((await (await b.request('/api/applications')).json()).applications).toHaveLength(1);
+      expect((await (await b.request('/api/applications')).json()).applications).toHaveLength(2);
+      const detail = await b.request(`/api/applications/${second.application.clientId}`);
+      expect(detail.status).toBe(200); expect((await detail.json()).application.clientId).toBe(second.application.clientId);
     } finally { rmSync(dir, { recursive: true, force: true }); }
   });
   it('preserves concurrent QR creation when registration rolls back', async () => {
@@ -203,7 +217,7 @@ describe('US-002 validation, limits and atomic submissions', () => {
     } finally { second?.close(); rmSync(dir, { recursive: true, force: true }); }
   });
 
-  it('reconciles a same-submission race across independent Node processes', async () => {
+  it.each(['replay', 'cap'])('enforces %s across independent Node processes', async scenario => {
     const dir = mkdtempSync(join(tmpdir(), 'walletgate-process-race-'));
     const script = `
       import { createInterface } from 'node:readline';
@@ -224,14 +238,18 @@ describe('US-002 validation, limits and atomic submissions', () => {
     try {
       gate.close(); const databasePath = join(dir, 'test.sqlite'); gate = await createWalletGate({ ...config, databasePath });
       const b = new Browser(); await b.login(); const requestId = randomUUID();
+      if (scenario === 'cap') {
+        for (let i = 0; i < 19; i++) { vi.setSystemTime(now + Math.floor(i / 5) * 60_000); expect((await b.create()).status).toBe(201); }
+        vi.setSystemTime(now + 4 * 60_000);
+      }
       child.stdin.write(JSON.stringify({ config: { ...config, databasePath }, cookie: [...b.cookies].map(([k, v]) => `${k}=${v}`).join('; '), body: { name: 'My application', redirectUris: ['https://app.example/callback?source=wallet'], requestId } }) + '\n');
       expect(JSON.parse(String((await once(lines, 'line'))[0])).ready).toBe(true);
       const resultLine = once(lines, 'line'); child.stdin.write('go\n');
-      const parent = await b.create({ requestId }); const parentBody = await parent.json();
+      const parent = await b.create({ requestId: scenario === 'cap' ? randomUUID() : requestId }); const parentBody = await parent.json();
       const remote = JSON.parse(String((await resultLine)[0]));
-      expect([parent.status, remote.status].sort()).toEqual([200, 201]);
+      expect([parent.status, remote.status].sort()).toEqual(scenario === 'cap' ? [201, 409] : [200, 201]);
       expect(Number(typeof parentBody.clientSecret === 'string') + Number(remote.secret)).toBe(1);
-      expect(count()).toBe(1);
+      expect(count()).toBe(scenario === 'cap' ? 20 : 1);
     } finally { lines.close(); child.kill(); rmSync(dir, { recursive: true, force: true }); }
   }, 20_000);
 

@@ -1,0 +1,86 @@
+{
+  "version": 1,
+  "story": "US-001-07",
+  "allowed": [
+    {
+      "path": "AGENTS.md",
+      "kind": "file"
+    },
+    {
+      "path": "backlog/STORY_MAP.md",
+      "kind": "file"
+    },
+    {
+      "path": "backlog/US-001-07.md",
+      "kind": "file"
+    },
+    {
+      "path": "backlog/US-001-06.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-06/evidence.md",
+      "kind": "file"
+    },
+    {
+      "path": "backend/oidc/index.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/applications/registration.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/applications/ownership.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/applications/index.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/bootstrap/schema.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/wallet-auth/auth.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/app/applications.test.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/app/database.test.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/app/reset.test.ts",
+      "kind": "file"
+    },
+    {
+      "path": "docs/PROJECT_STRUCTURE.md",
+      "kind": "file"
+    },
+    {
+      "path": "docs/DEVELOPMENT.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-07/plan.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-07/evidence.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-07/scope.json",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-07/artifacts",
+      "kind": "directory"
+    }
+  ]
+}

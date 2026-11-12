@@ -9,7 +9,7 @@ Current verified implementation: **ee311ba06a56ffb55e162bcba6572b228c12ee84**, i
 - Approval: Forrest / 2026-11-11, explicit READY and deliver-story requests with supplied metadata.
 - Branch: codex/us-001-06-address-identity; complete-diff base ad5ed3442f1b8661da5b98a3935c14842e4c8b31. US-002 acceptance-only commit 7c62060 is retained and within declared scope; live host merge/check facts confirmed before WIP evaluation.
 - Runtime: Node v22.22.1, npm 9.2.0; installed committed-lock dependencies reused, no dependency versions changed. Tests use disposable SQLite data; no real reset or deployment.
-- CI: not requested; PR publication requires explicit human approval of the locally verified result.
+- CI: both required jobs passed on published head 17a45038021bc2df7186c4b8314661040134124c in run https://github.com/CoinsAgent/agent-first-agile-starter/actions/runs/43002292173. Human merge/acceptance provenance is recorded below; earlier pending checkpoints are historical.
 
 ## Observed verification before final candidate
 
@@ -78,7 +78,7 @@ Final format-corrected run completed with exit 0 on 6fb9c10029ef18dc8d8d50d7dc98
 
 ## Human acceptance
 
-Not yet accepted. The finished result awaits human review and explicit PR/CI authorization. No PR/CI or real database reset/deployment has run. The final record commit changes only lifecycle, plan and evidence; tested implementation remains 6fb9c10.
+ACCEPTED through confirmed human merge after passing required current-head CI. The final section records actual merge/check provenance; earlier pending and local-only checkpoints remain historical. No agent merge or new deployment/data operation follows from acceptance.
 
 ## Requested deployment — prepared, awaiting deployed-data decision
 
@@ -198,3 +198,12 @@ Fresh origin/main is ad5ed3442f1b8661da5b98a3935c14842e4c8b31 and is an ancestor
 User manual confirmation: after deployment, the user supplied their session response; read-only, token-free inspection confirmed SIWE provenance and matching user/wallet address, with native createdAt 2026-11-11T10:08:53.157Z and expiresAt 2026-11-11T11:08:53.157Z, exactly3600s. The user confirmed expiry remained unchanged on reload. The user's real address/session ID are deliberately not included in this publication record. Actual manual expiry-boundary401 has not been confirmed; exact expiry/logout boundaries already pass automated tests.
 
 Open PR creation starts the unchanged required Harness and product verification and PR path scope jobs. No duplicate dispatch or protection/workflow changes. Inspect CI at bounded useful checkpoints and save host provenance in ignored artifacts/approved-pr-ci-result.json; avoid record-only source pushes just to report CI. The agent will not merge; human merge after required current-head CI/review constitutes acceptance under PROCESS. US-001-06 remains QA_PASSED with acceptance fields blank. Deployment authorization/results remain separate.
+
+## Hosted CI and confirmed human acceptance
+
+- Human finished-result approval: “I have review US-001-06 and authorize opening its PR and running CI”. Published head 17a45038021bc2df7186c4b8314661040134124c; opened [PR #9](https://github.com/CoinsAgent/agent-first-agile-starter/pull/9) against main ad5ed3442f1b8661da5b98a3935c14842e4c8b31. This head's source/tests are identical to full-local-tested ee311ba06a56ffb55e162bcba6572b228c12ee84.
+- [Workflow run 43002292173](https://github.com/CoinsAgent/agent-first-agile-starter/actions/runs/43002292173) completed successfully for that exact head, event pull_request. Required PR path scope job130461117324 completed success at 2026-11-11T10:17:04Z; required Harness and product verification job130461116826 completed success at 2026-11-11T10:18:48Z. Workflow completed 2026-11-11T10:18:49Z. Setup/npm ci/browser installation and required verification steps completed; no required check/protection change or duplicate dispatch was performed. Actual host metadata retained in ignored artifacts/approved-pr-ci-result.json.
+- GitHub plugin and gh API confirm merged=true; merged_by CoinsAgent, merger_type User, merged_at 2026-11-11T10:20:31Z, merge commit2583a5f8a78cba5b9bcbece7bacf54adefc143f8. The merge happened after passing required checks on current published head. The agent performed no merge action.
+- Fresh origin/main is the observed merge commit and its tree matches the reviewed head. Under PROCESS the human merge establishes acceptance. Record status ACCEPTED, accepted_by CoinsAgent and accepted_at 2026-11-11 locally on codex/accept-us-001-06 based on merged main. Preserve that branch/commit for recovery and carry backlog/US-001-06.md plus this evidence file into the next approved PR with explicitly declared paths. Do not push/open an acceptance-only PR or trigger post-merge CI.
+- Acceptance recording changes only those two lifecycle/evidence files; original approval metadata and ACs are unchanged. Run focused harness metadata and whitespace checks, plus complete committed path-scope check for this record-only diff. No application code changed, so no additional product-suite run or deployment is implied. Main retains the earlier QA metadata until a later approved PR carries this local record.
+- User additionally requested listing current application/client rows during this completion turn. Queried only public configuration columns of deployed oauthClient through a read-only connection; no client secrets/session credentials selected, no data/source mutation. Real owner/client details are returned only in the user conversation and are not included in this publication evidence.

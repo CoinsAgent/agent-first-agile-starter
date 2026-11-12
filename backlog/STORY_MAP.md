@@ -22,6 +22,8 @@ files own lifecycle status, approved ACs and approval metadata.
 
 Proposed authentication refinement before registration: [US-001-01 — choose a wallet or approve SIWE login by QR](US-001-01.md). The owner follows the same connect → review SIWE → sign → server verification journey with a custom shadcn/ui wallet dialog and wagmi EIP-6963 discovery.
 
+Targeted ownership refinement: [US-001-07](US-001-07.md) connects the verified wallet user to each registered client through native `oauthClient.userId`, then uses that identity for viewing, authorization and limits. The human selected fresh databases only, no conversion of existing clients, and this slice before US-003 editing/disabling. Success means wallet A retains two independent clients across reauthentication/restart while wallet B cannot access them; incompatible storage is refused without conversion or deletion.
+
 ### End user
 
 | Proposed slice | Arrive from an application | Prove identity | Decide access | Return signed in |
@@ -90,12 +92,14 @@ Proposed usable harness outcome: a maintainer adopts the convention without reor
 | [US-001-05](US-001-05.md) — Put source directly under frontend and backend | Maintainer removes redundant src nesting while retaining runnable behavior | US-001-04; separate scope/AC approval | Proposed maintenance follow-up before registration; one root package and existing ownership rules |
 | [US-001-06](US-001-06.md) — Use the verified wallet address as the Better Auth user ID | User/owner reuses exactly one persisted user for one verified address | Existing SIWE/QR and owner isolation; explicit local legacy-data reset | Human-selected next slice after current delivery; CLI deferred, no expansion of OIDC/client scope |
 | [US-002](US-002.md) — Register independent applications | Owner obtains distinct client identities and configuration | US-001; client profile decision D5 | Supplies real clients for third-party sign-in |
+| [US-001-07](US-001-07.md) — Own OAuth clients through the verified wallet user ID | Owner uses one persisted wallet identity for registration and viewing | US-001-06 and US-002 | Human-selected ownership refinement before US-003; fresh databases only, no existing-client conversion |
 | [US-003](US-003.md) — Manage owned applications | Owner maintains and disables only their applications | US-002 | Demonstrates ongoing owner control and isolation |
 | [US-004](US-004.md) — Authorize wallet sign-in | End user consents and returns an authorization code to an application | US-001–US-003; D5 | Provides standards-based consent and token issuance |
 | [US-005](US-005.md) — Integrate an independent relying party | Developer verifies wallet identity without IdP frontend dependencies | US-004 | Demonstrates the complete release across two clients |
 
 ## Next story to detail
 
+- Next targeted refinement: [US-001-07](US-001-07.md), native user ownership for OAuth clients on fresh databases. The human selected no conversion and ownership before US-003; the linked story details user-owned persistence, isolation, limits, retries, setup compatibility and expected code owners. It requires its own human READY approval before delivery.
 - Latest targeted refinement: [US-001-06](US-001-06.md), adapt Better Auth SIWE so stored user.id equals the verified canonical address, with one address/user/owner identity. Its linked story details persistence, concurrency, session, owner-isolation and explicit local reset ACs plus expected owners. Human-confirmed interview decisions defer CLI and select this as the next slice after any current delivery; the story owns approval metadata and delivery follows PROCESS.
 - Current targeted refinement: [US-002](US-002.md), wallet-authorized application registration, one-time credentials and the initial read-only owner list. The human confirmed the registration/client/redirect/credential/limit/recovery design through the interview; the story owns the detailed criteria and decision provenance. Refinement does not authorize implementation.
 - The [structure guide](../docs/PROJECT_STRUCTURE.md#adopted-skeleton) supplies the adopted direct frontend/backend layout. Retain the locally recorded US-001-05 acceptance and explicitly carry its story/evidence paths into the next approved PR.

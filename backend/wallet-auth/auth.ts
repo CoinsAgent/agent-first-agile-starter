@@ -11,7 +11,7 @@ import { createSiweMessage, parseSiweMessage } from 'viem/siwe';
 import { z } from 'zod';
 import type { Config } from '../infrastructure/config';
 import { createQrAuth } from './qr';
-import { applicationSchema, ApplicationError, createApplications } from '../applications';
+import { applicationSchema, ApplicationError, assertCompatibleApplications, createApplications } from '../applications';
 import { registrationProvider } from '../oidc';
 import { assertCompatibleIdentity, attachIdentityFence, canonicalAddress } from './identity';
 
@@ -72,7 +72,7 @@ export async function createWalletGate(config: Config, connection?: Database.Dat
   try { db = connection ?? new Database(config.databasePath, { fileMustExist: true }); }
   catch { throw new Error('WalletGate database is missing. Run scripts/init-database.ts --database /absolute/path/to/empty.sqlite before starting the server.'); }
   let generationCurrent: () => boolean;
-  try { generationCurrent = attachIdentityFence(db); assertCompatibleIdentity(db); } catch (error) { db.close(); throw error; }
+  try { generationCurrent = attachIdentityFence(db); assertCompatibleApplications(db); assertCompatibleIdentity(db); } catch (error) { db.close(); throw error; }
   const proofContext = new AsyncLocalStorage<{ message: string; verifiedAddress?: string }>();
   const queueKey = config.databasePath === ':memory:' ? randomUUID() : resolve(config.databasePath);
   const queue = databaseQueues.get(queueKey) ?? { readers: 0, writer: false, readersWaiting: [], writersWaiting: [], references: 0 };
