@@ -12,7 +12,6 @@ export function registrationProvider() {
     allowDynamicClientRegistration: false, allowUnauthenticatedClientRegistration: false,
     scopes: ['openid'], grantTypes: ['authorization_code'],
     clientRegistrationAllowedScopes: ['openid'],
-    clientReference: ({ session }) => verified(session) ? session!.walletAddress as string : undefined,
     clientPrivileges: ({ session, action }) => verified(session) && ['create', 'read', 'list'].includes(action),
   })] as const;
 }

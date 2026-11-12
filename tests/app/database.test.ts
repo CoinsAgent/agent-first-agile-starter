@@ -66,3 +66,37 @@ describe('US-001-06 explicit initial schema setup', () => {
     expect(() => statSync(databasePath)).toThrow();
   });
 });
+
+describe('US-001-07 fresh-only native client ownership readiness', () => {
+  const snapshot = (db: Database.Database) => ({ schema: schema(db), data: (db.prepare("SELECT name FROM sqlite_master WHERE type = 'table' ORDER BY name").all() as { name: string }[])
+    .map(({ name }) => [name, db.prepare(`SELECT * FROM "${name}" ORDER BY rowid`).all()]) });
+  it.each(['old empty guard', 'old guard and legacy identity', 'missing guard', 'reference owner', 'mixed owner', 'unowned client', 'missing user'])('refuses %s without changing any schema or rows', async kind => {
+    const init = new Database(databasePath); initializeDatabase(init); init.close();
+    const gate = await createWalletGate({ ...config, databasePath });
+    try {
+      if (kind.includes('guard')) {
+        if (kind === 'old guard and legacy identity') {
+          const b = new IdentityBrowser(gate); await b.login(); expect((await b.register()).status).toBe(201);
+          gate.db.pragma('foreign_keys = OFF'); gate.db.exec("UPDATE user SET id = 'legacy-user-id'");
+        }
+        gate.db.exec('DROP TRIGGER walletgate_client_cap');
+        if (kind.startsWith('old')) gate.db.exec(`CREATE TRIGGER walletgate_client_cap BEFORE INSERT ON oauthClient
+          WHEN NEW.referenceId IS NOT NULL AND (SELECT count(*) FROM oauthClient WHERE referenceId = NEW.referenceId) >= 20
+          BEGIN SELECT RAISE(ABORT, 'ApplicationLimit'); END`);
+      } else {
+        const b = new IdentityBrowser(gate); await b.login(); expect((await b.register()).status).toBe(201);
+        if (kind === 'reference owner') gate.db.exec('UPDATE oauthClient SET referenceId = userId, userId = NULL');
+        if (kind === 'mixed owner') gate.db.exec('UPDATE oauthClient SET referenceId = userId');
+        if (kind === 'unowned client') gate.db.exec('UPDATE oauthClient SET userId = NULL');
+        if (kind === 'missing user') {
+          gate.db.pragma('foreign_keys = OFF'); gate.db.exec("UPDATE oauthClient SET userId = '0x1111111111111111111111111111111111111111'");
+        }
+      }
+      const before = snapshot(gate.db); gate.close();
+      await expect(createWalletGate({ ...config, databasePath })).rejects.toThrow(/Incompatible application ownership.*fresh.*init-database/);
+      const inspect = new Database(databasePath, { readonly: true });
+      try { expect(snapshot(inspect)).toEqual(before); } finally { inspect.close(); }
+      expect(command('--database', databasePath).status).toBe(1);
+    } finally { if (gate.db.open) gate.close(); }
+  });
+});

@@ -1,3 +1,5 @@
+import { clientCapTrigger } from '../applications';
+
 // Pinned initial schema, applied only to an empty database by explicit setup.
 export const initialSchema = String.raw`
 -- Initial WalletGate schema for the pinned Better Auth/core/provider 1.7.15 stack.
@@ -90,9 +92,7 @@ CREATE UNIQUE INDEX walletgate_one_user_per_address ON walletAddress(lower(addre
 
 CREATE UNIQUE INDEX walletgate_one_wallet_per_user ON walletAddress(userId);
 
-CREATE TRIGGER walletgate_client_cap BEFORE INSERT ON oauthClient
-    WHEN NEW.referenceId IS NOT NULL AND (SELECT count(*) FROM oauthClient WHERE referenceId = NEW.referenceId) >= 20
-    BEGIN SELECT RAISE(ABORT, 'ApplicationLimit'); END;
+${clientCapTrigger}
 
 CREATE TRIGGER "walletgate_fence_account_DELETE" BEFORE DELETE ON "account"
       WHEN walletgate_generation() != (SELECT generation FROM walletgateIdentityState WHERE id = 1)

@@ -31,6 +31,7 @@ describe('US-001-06 explicit local reset', () => {
   it('deletes dependent identity/application/proof data, preserves unrelated data/config, fences old servers and restarts cleanly', async () => {
     const b = new IdentityBrowser(gate), phone = new IdentityBrowser(gate); await b.login();
     const client = await (await b.register()).json();
+    expect(gate.db.prepare('SELECT userId, referenceId FROM oauthClient').get()).toEqual({ userId: b.account.address.toLowerCase(), referenceId: null });
     // Populate every installed provider-dependent table so deletion order and
     // preservation are tested with real foreign keys, not only empty tables.
     const { id: sessionId } = gate.db.prepare('SELECT id FROM session LIMIT 1').get() as { id: string };
@@ -70,7 +71,7 @@ describe('US-001-06 explicit local reset', () => {
     const b = new IdentityBrowser(gate); await b.login(); await b.register();
     gate.db.pragma('foreign_keys = OFF');
     gate.db.prepare("UPDATE user SET id = 'legacy-random-id'").run();
-    for (const table of ['account', 'session', 'walletAddress']) gate.db.prepare(`UPDATE "${table}" SET userId = 'legacy-random-id'`).run();
+    for (const table of ['account', 'session', 'walletAddress', 'oauthClient']) gate.db.prepare(`UPDATE "${table}" SET userId = 'legacy-random-id'`).run();
     gate.db.pragma('foreign_keys = ON');
     const before = snapshot(); gate.close(); closed = true;
     await expect(createWalletGate({ ...config, databasePath })).rejects.toThrow(/Incompatible wallet identity/);

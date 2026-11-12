@@ -80,6 +80,31 @@ applications; their client IDs and credentials remain separate from the user ID.
 The public address is never a session secret. Supported wallets, mainnet EOA
 scope, challenge validity and absolute session/logout policy remain unchanged.
 
+### Native application ownership (US-001-07)
+
+New registrations use Better Auth/core/provider 1.7.15's default user ownership:
+`oauthClient.userId = session.userId = user.id = verified lowercase address`;
+`oauthClient.referenceId` is null. Client IDs remain independent of that address.
+Owner list/detail queries, submission reconciliation and the 20-client quota all
+use this user relationship. SIWE privileges, five registration attempts per fixed
+minute, hashed credentials and one-time secret disclosure remain unchanged.
+
+This version requires a separate fresh database initialized with its current
+schema. Startup checks ownership rows and the exact pinned user-based quota guard
+without writing schema or user/client data. It refuses reference-owned, unowned,
+mixed-owned or orphan clients and missing/older quota guards, including an empty
+database initialized by the previous version. Manually customized guard SQL is
+also refused. It never converts existing clients or silently serves an empty list
+for their owners. Keep the existing database intact, explicitly initialize a
+different empty target with the command above, then select that target using
+`DATABASE_PATH`. The initializer refuses existing/partial targets.
+
+The identity reset below deletes local development/test data; it does not update
+an older quota guard and cannot make an incompatible schema usable. This story
+does not authorize resetting or replacing a shared/deployed database. Any live
+database switch or release requires separate authorization. No existing-client
+conversion procedure is provided.
+
 An incompatible legacy database causes startup to refuse with guidance. Startup
 does not automatically delete or migrate it. This story provides no data-preserving
 migration: for a **local development/test database only**, inspect the exact target,

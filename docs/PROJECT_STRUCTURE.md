@@ -1,5 +1,9 @@
 # Project structure and code placement
 
+## US-001-07 native client ownership placement
+
+`backend/applications/ownership.ts` owns the user-based client cap definition and read-only storage compatibility check, exported through `applications/index.ts`. The fixed fresh schema in bootstrap consumes that cap definition; wallet-auth composition calls the public compatibility check before enabling normal database operation. Applications retains registration/query/limit behavior, and oidc configures supported native provider ownership. No domain imports bootstrap, no new runtime area or dependency exception is introduced, and no existing database is upgraded. Exact delivery paths are declared in `work/US-001-07/scope.json`.
+
 ## US-001-06 identity adaptation and local reset placement
 
 The human-selected fresh-environment revision places one-time schema composition in `backend/bootstrap/database.ts` with pinned `schema.ts`, invoked explicitly by `scripts/init-database.ts`. Normal wallet-auth startup consumes initialized storage and attaches its connection fence; it does not create/alter schema. `tests/app/database-fixture.ts` initializes isolated test databases; `database.test.ts` verifies the command and startup boundary. No empty runtime folders, new dependency directions or existing-data upgrade are introduced.
