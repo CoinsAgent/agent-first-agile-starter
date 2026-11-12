@@ -1,6 +1,6 @@
 # Verification evidence — US-001-07
 
-Status: NOT_RUN
+Status: PASS
 
 ## Context and provenance
 
@@ -19,19 +19,49 @@ Command: bash scripts/verify.sh. Exit 0 before product edits: 43 harness tests, 
 
 ## Acceptance matrix
 
-AC-01 through AC-09: NOT_RUN; see plan for verification mapping.
+All results below are from actual full verification of implementation f957d0b1dab4f92d7400270486ef1c5cc82c2b97. No product/test changes follow that run.
+
+| AC | Executed checks and observed outcome | Result |
+|---|---|---|
+| AC-01 | applications.test.ts real-provider creation: two unique clients/secrets, user/session address join, native userId, null referenceId and hashed secret | PASS |
+| AC-02 | applications.test.ts two-client restart + logout/reauthentication, owner list/detail, retry without secret; browser persistent-list flow | PASS |
+| AC-03 | applications.test.ts wrong-owner guessed reads, anonymous/expired/unproven/mismatched sessions, strict owner/userId/referenceId override refusal, blocked generic routes | PASS |
+| AC-04 | applications.test.ts twentieth/21st client, separate-owner allowance, direct SQL guard, independent connections/restart and separate Node-process cap race | PASS |
+| AC-05 | applications.test.ts fixed-window exact boundary/invalid attempts, concurrent replay with one secret, submission rollback, post-reauth/restart reconciliation and independent-process retry | PASS |
+| AC-06 | database.test.ts real one-time initializer, seven refusal cases with complete schema/all-table-row snapshots unchanged (old empty guard, old guard + legacy identity, missing guard, reference/mixed/unowned/orphan clients); current restart does not change schema | PASS |
+| AC-07 | Full auth/QR/identity/reset suite; native client FK reset and rollback; hash and no repeat-secret assertions; existing one-hour expiry/logout boundaries | PASS |
+| AC-08 | 78 Playwright tests including registration/list/result, reauthentication/recovery, keyboard/focus, responsive/light/dark/axe, QR and authentication regressions | PASS |
+| AC-09 | Full verify, docs/structure review and complete committed scope; all required local checks executed | PASS |
 
 ## Verification
 
-Final full verification: NOT_RUN. CI not requested; explicit finished-result approval required first.
+Command (exit 0):
+
+```bash
+STRUCTURE_SCOPE_BASE=2583a5f8a78cba5b9bcbece7bacf54adefc143f8 \
+STRUCTURE_SCOPE_HEAD=f957d0b1dab4f92d7400270486ef1c5cc82c2b97 \
+STRUCTURE_SCOPE_FILE=work/US-001-07/scope.json bash scripts/verify.sh
+```
+
+The actual invocation used HEAD, which resolved to the exact SHA above. Log: artifacts/final-verify.log. Observed 43 Python harness tests, 41 Node structure fixtures, 175 application tests across seven files, 78 Playwright tests; lockfile, dependency, scope, lint, types and production build passed. Dependency output preserves the five existing baselined private imports without new violations. Browser tests initialize a separate disposable database on port3100; port3000 and deployed data are untouched.
+
+GitHub main was read-only reconfirmed as2583a5f8a78cba5b9bcbece7bacf54adefc143f8. All 19 changed paths are declared. Previous acceptance story/evidence are carried from a396aa2 unchanged. The final lifecycle/evidence commit changes only this story and its plan/evidence; focused metadata, whitespace and complete-scope checks are run afterward. No full-suite repetition for record-only changes.
+
+CI has not been requested. Human approval of the locally verified finished result is required before a PR/CI. This is QA_PASSED, not ACCEPTED.
 
 ## Review
 
-NOT_RUN.
+Method: primary agent performed a separate fresh read-only review pass of the complete diff against merged main, approved ACs, provider source, owning interfaces and tests. No external reviewer or human approval is claimed.
+
+- Found and fixed startup error ordering; the added old-guard-plus-legacy-identity test passes in the full run. Application readiness runs before any WAL/configuration/user/client writes and before legacy identity guidance can mask schema incompatibility.
+- Verified supported native provider assignment: removing clientReference lets createOAuthClientEndpoint use session.session.userId; privilege checks and external route restrictions stay intact. No owner patch, session hook change or upstream modification.
+- Verified all owner queries/counts/reconciliation use userId, the initial guard counts userId, the post-create check rejects reference ownership, and submission/rate keys remain canonical addresses.
+- Reviewed compatibility refusal, reset FK ordering, independent-process cap/replay tests, secret handling and unchanged UI. Exact guard comparison is conservative and documented; SQL identifiers are fixed, not request input.
+- Complete 19-path diff contains only scoped product/tests/docs, authorized shaping/READY-default records and confirmed prior acceptance. No dependency/protection/workflow changes or extra product behavior. No unresolved material findings.
 
 ## Known limitations
 
-Fresh databases only; no conversion or deployment authorized. Runtime tools already installed; cloud environment status tool is unavailable in this executor. Tests use disposable local databases and existing Playwright.
+Fresh databases only; no conversion or deployment authorized. Older or manually customized quota guards are refused, even for empty databases; deployment will need a separately authorized fresh target. Automated browser wallets do not establish new physical-device compatibility; no UI/wallet support was added. Runtime tools already installed; cloud environment status tool is unavailable in this executor. Tests use disposable local databases and existing Playwright.
 
 ## Human acceptance
 
