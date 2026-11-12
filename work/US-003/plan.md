@@ -42,9 +42,9 @@ Native refresh family/sliding expiry and session token hooks differ from approve
 ## Execution checklist
 
 - [x] Baseline and focused feasibility checks
-- [ ] All approved ACs implemented and verified
-- [ ] Full verification and complete-diff technical review
-- [ ] QA_PASSED evidence and human review; PR/CI not requested
+- [x] All approved ACs implemented and verified
+- [x] Full verification and complete-diff technical review
+- [x] QA_PASSED evidence prepared; human review pending; PR/CI not requested
 
 ## Technical revisions
 
@@ -59,3 +59,7 @@ Native refresh family/sliding expiry and session token hooks differ from approve
 Fresh read-only reviewer oidc_facts identified and rechecked fixes for: max_age crossing during consent; exact-expiry bearer whitespace; standard POST authorization/UserInfo; concurrent first-tab binding cookies; ID-token/response expiry crossing the absolute family deadline during async minting. Targeted regressions cover each. Schema checks remain attached to the original configured adapter instance; no checker/host protection is disabled. Child public minting context captures the declared token response before HTTP rendering, verifies signed/response expiry and current deadline, then uses the original renderer. Unsafe time-boundary output returns5xx and outer transaction rolls issuance/rotation back; clients may retry safely.
 
 Observed current focused checks:40 OIDC tests pass in artifacts/oidc-time-race.log (before the json renderer's async typing-only correction);213 app tests passed before the two added async-race tests;6 consent browser tests passed before Deny's secondary presentation adjustment. Types pass after async typing correction. These historical focused results are not final full verification. Full verify against a committed current head is next.
+
+## Final local outcome
+
+Full verification on6d0b18f34aa2fe70875e6d193d058f7f1a1a6007 exited0:43 harness tests,41 structure fixtures,228 application tests (53 OIDC),84 browser tests, scope/dependencies/lockfile/lint/types/build. artifacts/final-verify-with-boundaries.log. Every AC maps to actual passing evidence. Fresh review findings are resolved; full main-to-head27-path diff is scoped and reviewed. No product dependencies, schema, host protections or upstream source changed. The lifecycle/evidence commit changes only this plan, evidence and status; product/tests are identical to the full-tested revision. Status QA_PASSED is local engineering; explicit human finished-result approval is next before PR/CI. No release/deployment or acceptance is claimed.
