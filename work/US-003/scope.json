@@ -1,0 +1,106 @@
+{
+  "version": 1,
+  "story": "US-003",
+  "allowed": [
+    {
+      "path": "backlog/STORY_MAP.md",
+      "kind": "file"
+    },
+    {
+      "path": "backlog/US-001.md",
+      "kind": "file"
+    },
+    {
+      "path": "backlog/US-001-06.md",
+      "kind": "file"
+    },
+    {
+      "path": "backlog/US-001-07.md",
+      "kind": "file"
+    },
+    {
+      "path": "backlog/US-002.md",
+      "kind": "file"
+    },
+    {
+      "path": "backlog/US-003.md",
+      "kind": "file"
+    },
+    {
+      "path": "backlog/US-004.md",
+      "kind": "file"
+    },
+    {
+      "path": "backlog/US-005.md",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-001-07/evidence.md",
+      "kind": "file"
+    },
+    {
+      "path": "docs/PROJECT_STRUCTURE.md",
+      "kind": "file"
+    },
+    {
+      "path": "docs/DEVELOPMENT.md",
+      "kind": "file"
+    },
+    {
+      "path": "backend/oidc/index.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/oidc/protocol.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/oidc/policy.ts",
+      "kind": "file"
+    },
+    {
+      "path": "backend/wallet-auth/auth.ts",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/authorization/index.ts",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/authorization/consent.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/authorization/style.css",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/pages/consent.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "frontend/bootstrap/app.tsx",
+      "kind": "file"
+    },
+    {
+      "path": "tests/app/oidc.test.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/e2e/oidc.spec.ts",
+      "kind": "file"
+    },
+    {
+      "path": "work/US-003",
+      "kind": "directory"
+    },
+    {
+      "path": "tests/app/applications.test.ts",
+      "kind": "file"
+    },
+    {
+      "path": "tests/app/oidc-worker.ts",
+      "kind": "file"
+    }
+  ]
+}

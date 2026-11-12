@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { MobileApproval } from '../wallet-auth/components/mobile-approval';
 import { SignIn } from '../pages/sign-in';
+import { ConsentPage } from '../pages/consent';
 import { ApplicationsPage } from '../pages/applications';
 import { setNonce } from 'get-nonce';
 import { preloadWalletSdks } from '../wallet-auth/wallet-sdk';
@@ -29,13 +30,15 @@ function ThemeControl() {
   </button>;
 }
 export function App() {
+  const [authorization, setAuthorization] = useState(() => new URLSearchParams(location.hash.slice(1)).get('authorize'));
+  useEffect(() => { const update = () => setAuthorization(new URLSearchParams(location.hash.slice(1)).get('authorize')); window.addEventListener('hashchange', update); return () => window.removeEventListener('hashchange', update); }, []);
   const [applications, setApplications] = useState(() => location.hash === '#applications');
   useEffect(() => { const update = () => setApplications(location.hash === '#applications'); window.addEventListener('hashchange', update); return () => window.removeEventListener('hashchange', update); }, []);
   const [phoneId, setPhoneId] = useState(() => new URLSearchParams(location.hash.slice(1)).get('approve'));
   useEffect(() => { const update = () => setPhoneId(new URLSearchParams(location.hash.slice(1)).get('approve')); window.addEventListener('hashchange', update); return () => window.removeEventListener('hashchange', update); }, []);
   return <main>
     <header className="page-header"><a href="/" className="brand"><span className="brand-mark" aria-hidden="true">W</span><span>WalletGate</span></a><div className="header-controls"><span className="network"><span aria-hidden="true">◆</span> Ethereum Mainnet</span><ThemeControl /></div></header>
-    <div className="auth-layout">{phoneId ? <MobileApproval key={phoneId} id={phoneId} /> : applications ? <ApplicationsPage /> : <SignIn />}</div>
+    <div className="auth-layout">{phoneId ? <MobileApproval key={phoneId} id={phoneId} /> : authorization ? <ConsentPage key={authorization} id={authorization} /> : applications ? <ApplicationsPage /> : <SignIn />}</div>
     <footer>Your wallet. Your way in.<span>Signatures prove control. They never share your private key.</span></footer>
   </main>;
 }

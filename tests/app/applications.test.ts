@@ -90,9 +90,9 @@ describe('US-002 registration and owner boundaries', () => {
   it.each(['scope', 'grant_types', 'token_endpoint_auth_method', 'application_type', 'refresh_token'])('rejects profile override %s', async field => {
     const owner = new Browser(); await owner.login(); expect((await owner.create({ [field]: 'unsupported' })).status).toBe(400); expect(count()).toBe(0);
   });
-  it('keeps generic provider, mutation and protocol endpoints unavailable', async () => {
+  it('keeps generic provider and mutation endpoints unavailable', async () => {
     const owner = new Browser(); await owner.login();
-    for (const path of ['/api/auth/oauth2/create-client', '/api/auth/oauth2/register', '/api/auth/oauth2/rotate-client-secret', '/api/auth/oauth2/update-client', '/api/auth/oauth2/delete-client', '/api/auth/oauth2/token', '/api/auth/oauth2/authorize', '/api/auth/jwks', '/.well-known/openid-configuration']) {
+    for (const path of ['/api/auth/oauth2/create-client', '/api/auth/oauth2/register', '/api/auth/oauth2/rotate-client-secret', '/api/auth/oauth2/update-client', '/api/auth/oauth2/delete-client', '/.well-known/openid-configuration']) {
       expect((await owner.request(path, {})).status).toBe(404);
       expect((await owner.request(path)).status).toBe(404);
     }

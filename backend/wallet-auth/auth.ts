@@ -3,7 +3,9 @@ import { AsyncLocalStorage } from 'node:async_hooks';
 import { getCurrentAdapter, runWithTransaction } from '@better-auth/core/context';
 import { resolve } from 'node:path';
 import Database from 'better-sqlite3';
-import { betterAuth } from 'better-auth';
+import { betterAuth, type BetterAuthOptions } from 'better-auth';
+import type { DBAdapter } from '@better-auth/core/db/adapter';
+import { getAdapter } from 'better-auth/db/adapter';
 import { APIError, createAuthMiddleware } from 'better-auth/api';
 import { siwe } from 'better-auth/plugins';
 import { getAddress, verifyMessage, type Hex } from 'viem';
@@ -12,7 +14,7 @@ import { z } from 'zod';
 import type { Config } from '../infrastructure/config';
 import { createQrAuth } from './qr';
 import { applicationSchema, ApplicationError, assertCompatibleApplications, createApplications } from '../applications';
-import { registrationProvider } from '../oidc';
+import { registrationProvider, createProtocol } from '../oidc';
 import { assertCompatibleIdentity, attachIdentityFence, canonicalAddress } from './identity';
 
 export const CHALLENGE_MS = 5 * 60 * 1000;
@@ -22,9 +24,9 @@ const cookieValue = (headers: Headers, name: string) => headers.get('cookie')?.s
 const json = (body: unknown, status = 200, headers?: HeadersInit) => new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store', ...headers } });
 
 class RequestTooLarge extends Error {}
-async function readJson(request: Request): Promise<unknown> {
+async function readText(request: Request): Promise<string> {
   const reader = request.body?.getReader();
-  if (!reader) throw new SyntaxError('Missing JSON body');
+  if (!reader) return '';
   const chunks: Uint8Array[] = [];
   let bytes = 0;
   while (true) {
@@ -39,8 +41,9 @@ async function readJson(request: Request): Promise<unknown> {
     }
     chunks.push(value);
   }
-  return JSON.parse(Buffer.concat(chunks).toString('utf8'));
+  return Buffer.concat(chunks).toString('utf8');
 }
+async function readJson(request: Request): Promise<unknown> { return JSON.parse(await readText(request)); }
 // SIWE/QR requests may overlap (cancellation must interrupt verification), but
 // registration and SIWE transactions need exclusive access to their SQLite connection.
 // Existing requests share access; a registration waits until they finish.
@@ -83,7 +86,7 @@ export async function createWalletGate(config: Config, connection?: Database.Dat
   const attemptCookie = secure ? '__Host-walletgate-attempt' : 'walletgate-attempt';
   const cookie = (token: string, age: number) => `${attemptCookie}=${token}; Path=/; HttpOnly; SameSite=Strict; Max-Age=${age}${secure ? '; Secure' : ''}`;
   const unauthorised = () => new APIError('UNAUTHORIZED', { message: 'Sign-in attempt is invalid or expired. Start again.' });
-  const auth = betterAuth({
+  const authOptions = {
     appName: 'WalletGate', baseURL: config.origin, secret: config.secret, database: db,
     trustedOrigins: [config.origin],
     emailAndPassword: { enabled: false },
@@ -95,7 +98,7 @@ export async function createWalletGate(config: Config, connection?: Database.Dat
       },
     },
     advanced: { useSecureCookies: secure, defaultCookieAttributes: { httpOnly: true, sameSite: 'lax', secure } },
-    plugins: [applicationSchema, ...registrationProvider(), siwe({
+    plugins: [applicationSchema, ...registrationProvider(db), siwe({
       domain: new URL(config.origin).host, anonymous: true,
       getNonce: async () => randomBytes(24).toString('hex'),
       verifyMessage: async ({ message, signature, address }) => {
@@ -137,7 +140,18 @@ export async function createWalletGate(config: Config, connection?: Database.Dat
         return { data: { authMethod: 'siwe', walletAddress: address } };
       } } },
     },
-  });
+  } satisfies BetterAuthOptions;
+  const nativeAdapter = await getAdapter(authOptions);
+  // Keep the adapter instance so its registered schema checks remain attached.
+  const database: DBAdapter = nativeAdapter;
+  database.transaction = async callback => {
+    if (db.inTransaction) return callback(nativeAdapter);
+    db.exec('BEGIN IMMEDIATE');
+    try { const result = await callback(nativeAdapter); db.exec('COMMIT'); return result; }
+    catch (error) { db.exec('ROLLBACK'); throw error; }
+  };
+  if (database.options) database.options.adapterConfig.transaction = database.transaction;
+  const auth = betterAuth({ ...authOptions, database: () => database });
   async function session(headers: Headers) {
     if (!generationCurrent()) return null;
     const data = await auth.api.getSession({ headers });
@@ -209,12 +223,19 @@ export async function createWalletGate(config: Config, connection?: Database.Dat
     },
   });
   await (await auth.$context).checkSchema?.();
+  const protocol = createProtocol({ origin: config.origin, db, native: request => auth.handler(request), identity: async headers => {
+    if (!await session(headers)) return null;
+    const current = await auth.api.getSession({ headers });
+    return current ? { id: current.session.id, address: current.user.id, createdAt: current.session.createdAt.getTime() } : null;
+  } });
   async function handle(request: Request, readBody = () => readJson(request)): Promise<Response> {
     const url = new URL(request.url);
     if (url.origin !== config.origin) return json({ error: 'Untrusted origin.' }, 403);
-    if (request.method === 'POST' && (request.headers.get('origin') !== config.origin || !request.headers.get('content-type')?.startsWith('application/json')))
-      return json({ error: 'Use a same-origin JSON request.' }, 403);
     try {
+      const protocolResponse = await protocol(request);
+      if (protocolResponse) return protocolResponse;
+      if (request.method === 'POST' && (request.headers.get('origin') !== config.origin || !request.headers.get('content-type')?.startsWith('application/json')))
+        return json({ error: 'Use a same-origin JSON request.' }, 403);
       if (url.pathname === '/api/applications' && request.method === 'POST') {
         const result = await applications.create(request.headers, () => readBody());
         return json(result, result.replayed ? 200 : 201);
@@ -278,6 +299,11 @@ export async function createWalletGate(config: Config, connection?: Database.Dat
   }
   async function queuedHandle(request: Request): Promise<Response> {
     const url = new URL(request.url);
+    const isProtocol = url.pathname.startsWith('/api/authorization/') || url.pathname.startsWith('/api/auth/');
+    if (isProtocol && request.method === 'POST') {
+      try { request = new Request(request.url, { method: request.method, headers: request.headers, body: await readText(request) }); }
+      catch (error) { return json({ error: error instanceof RequestTooLarge ? 'Request too large.' : 'Invalid request.' }, error instanceof RequestTooLarge ? 413 : 400); }
+    }
     // Read bounded input before joining the database queue: a slow sender must
     // never hold every other browser's database operations. Preserve parse errors
     // for the handler, including authenticated rate accounting on invalid input.
@@ -285,16 +311,22 @@ export async function createWalletGate(config: Config, connection?: Database.Dat
       request.headers.get('origin') === config.origin && request.headers.get('content-type')?.startsWith('application/json') &&
       (['/api/applications', '/api/challenge', '/api/verify', '/api/logout'].includes(url.pathname) || url.pathname.startsWith('/api/qr/'));
     const parsed = needsBody ? await readJson(request).then(value => ({ value }), error => ({ error })) : { value: undefined };
-    const exclusive = request.method === 'POST' && ['/api/applications', '/api/verify', '/api/qr/complete'].includes(url.pathname);
+    const exclusive = isProtocol || request.method === 'POST' && ['/api/applications', '/api/verify', '/api/qr/complete'].includes(url.pathname);
     const release = await acquireDatabase(queue, exclusive);
     try {
       if (!generationCurrent()) return json({ error: 'Local data was reset. Restart this server before signing in again.' }, 503);
-      const response = await handle(request, async () => {
-        if ('error' in parsed) throw parsed.error;
-        return parsed.value;
-      });
+      const invoke = async () => {
+        const response = await handle(request, async () => {
+          if ('error' in parsed) throw parsed.error;
+          return parsed.value;
+        });
+        if (isProtocol && response.status >= 500) throw new VerificationFailed(response);
+        return response;
+      };
+      const baseAdapter = (await auth.$context).adapter;
+      const response = isProtocol ? await runWithTransaction(baseAdapter, invoke) : await invoke();
       return generationCurrent() ? response : json({ error: 'Local data was reset. Restart this server before signing in again.' }, 503);
-    } finally { release(); }
+    } catch (error) { if (error instanceof VerificationFailed) return error.response; throw error; } finally { release(); }
   }
   return { handle: queuedHandle, db, auth, close: () => {
     db.close(); queue.references--; if (!queue.references) databaseQueues.delete(queueKey);
