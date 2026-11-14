@@ -67,3 +67,7 @@ Full verification on6d0b18f34aa2fe70875e6d193d058f7f1a1a6007 exited0:43 harness 
 ## Separately authorized operation-test deployment
 
 The human explicitly requested refreshing the environment and releasing on port3000 for https://walletgate.beeswarm.dev/. Prepared immutable92204ea with offline locked install/build, a private existing-storage compatibility check and actual-release disposable HTTP SIWE/OIDC/refresh/revocation smoke; all passed. Switched only the release drop-in, preserving existing secret/origin/database/port/runtime files and one user/two clients, with consistent private backup and rollback. Provisioned RSA via the supported resolver while preserving the old key, then passed public TLS/assets/metadata/client-auth boundaries and actual Chromium rendering. Exact release/database/backup/rollback provenance and artifacts are in evidence.md. No code/AC/dependency/schema change, data reset, PR/CI or acceptance. Status remains QA_PASSED; human operation testing and finished-result PR approval remain next.
+
+## Human authorization for PR/CI publication
+
+The human explicitly requested “open its PR and run CI.” Publish the reviewed result after focused record validation and complete scope check. Product/tests remain identical to6d0b18f; existing main is1eaa567. Do not start a second dispatch or change checks/protection. Inspect actual required checks at useful completion checkpoints; fix in-scope failures under PROCESS. Human merge remains acceptance and is never performed by the agent.
