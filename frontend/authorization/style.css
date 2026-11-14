@@ -1,0 +1,9 @@
+.authorization-shell { width: 100%; max-width: 520px; display: grid; gap: 24px; }
+.authorization-card { max-height: none; overflow-wrap: anywhere; }
+.authorization-card h1 { font-size: 1.5rem; }
+.authorization-card p { margin-block: 16px; }
+.authorization-card dl { text-align: left; }
+.authorization-card dt { margin-top: 12px; font-weight: 600; }
+.authorization-card dd { margin: 4px 0 0; font-family: monospace; overflow-wrap: anywhere; }
+.authorization-actions { display: flex; gap: 16px; justify-content: space-between; }
+.authorization-actions button { min-height: 44px; min-width: 96px; }
