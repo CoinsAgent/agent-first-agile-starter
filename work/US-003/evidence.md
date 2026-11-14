@@ -10,7 +10,7 @@ Status: PASS
 - Base: `1eaa567d959c3e1fc9317f3422deef6a2a1f372b` (merged main), read-only reconfirmed from GitHub during delivery.
 - Tested revision: `6d0b18f34aa2fe70875e6d193d058f7f1a1a6007`. The subsequent QA record changes only this evidence, plan and story lifecycle; product/tests remain identical.
 - Runtime: Node v22.22.1, npm9.2.0, Better Auth/core/provider1.7.15, better-sqlite3, installed Playwright Chromium1248. Existing tools/dependencies reused; no package/lock change.
-- CI workflow URL: Not requested. Human approval of the locally verified finished result is required before PR/CI.
+- CI workflow URL: https://github.com/CoinsAgent/agent-first-agile-starter/actions/runs/43551002730 — SUCCESS on published head307d3a1f247a692e9ec2e8673914eef6d95fec83 after explicit human finished-result approval.
 
 ### Previous acceptance recovery
 
@@ -90,7 +90,7 @@ Reviewer confirmed exported minting/adapter APIs, the corrected original finding
 
 ## Human acceptance
 
-PENDING. This is QA_PASSED local engineering, not ACCEPTED. Human review and explicit approval of this finished result are required before opening a PR and starting unchanged required CI. The human then merges after required current-head CI succeeds. No PR, hosted CI, reset or production permission change has been performed. The separately human-authorized operation-test deployment below does not imply PR/CI approval or human merge acceptance.
+ACCEPTED through confirmed human merge after passing required current-head CI. Actual merge/check provenance is recorded below; earlier pending checkpoints are historical. This records the observed human decision, not an agent or CI acceptance.
 
 ## Human-authorized port-3000 operation-test release
 
@@ -112,3 +112,12 @@ PENDING. This is QA_PASSED local engineering, not ACCEPTED. Human review and exp
 After the deployed operation-test handoff and the human's report “Synapse and Element works now”, the human explicitly instructed “open its PR and run CI.” This authorizes publication of the finished US-003 branch and its unchanged required PR checks. Reviewed local head before this approval record is07993e2; product/tests are identical to full-local-verified6d0b18f and deployed92204ea. Matrix integration itself was not independently observed by this agent; the quoted human report is not fabricated automated evidence.
 
 Main was read-only reconfirmed as1eaa567d959c3e1fc9317f3422deef6a2a1f372b and no existing story PR was found. Scope, metadata/harness and whitespace checks precede publication. This authorization record changes only plan/evidence; approved ACs, product/tests and existing protections are unchanged. Opening the approved PR starts Harness and product verification and PR path scope; do not dispatch a duplicate run. Save actual host PR/head/CI snapshots under ignored artifacts/approved-pr-status.json and approved-pr-ci-result.json. Story remains QA_PASSED with empty acceptance metadata until confirmed human merge after passing required current-head CI. Earlier pending-approval statements are historical checkpoints.
+
+## Hosted CI and confirmed human acceptance
+
+- Published [PR #11](https://github.com/CoinsAgent/agent-first-agile-starter/pull/11) only after the human explicitly instructed “open its PR and run CI.” Published head307d3a1f247a692e9ec2e8673914eef6d95fec83, base1eaa567d959c3e1fc9317f3422deef6a2a1f372b. Product/tests remain identical to full-local-verified6d0b18f.
+- [Workflow43551002730](https://github.com/CoinsAgent/agent-first-agile-starter/actions/runs/43551002730) concluded success on that exact head. Required PR path scope job132313180862 completed SUCCESS at2026-11-14T03:19:15Z; required Harness and product verification job132313181080 completed SUCCESS at2026-11-14T03:21:29Z. Every required job step succeeded. There was no duplicate dispatch, record-only post-publication push, check/protection change or agent merge. Actual host snapshots are retained in ignored artifacts/approved-pr-status.json and approved-pr-ci-result.json on the delivery workspace.
+- After the human reported “merged”, read-only GitHub inspection confirmed MERGED, mergedBy CoinsAgent (is_bot=false), mergedAt2026-11-14T03:22:29Z and merge SHA c224199b3da4333f73cbf09d320f97c1d0774082. Merge occurred after both required checks passed on the current reviewed head. This is human acceptance under PROCESS.
+- Fetched origin/main equals that merge commit. `git diff --quiet 307d3a1f247a692e9ec2e8673914eef6d95fec83 c224199b3da4333f73cbf09d320f97c1d0774082` exited0, confirming the merged tree matches the reviewed published head.
+- Preserve the acceptance-only update locally on codex/accept-us-003 based on c224199. Declared changed paths for this record are only backlog/US-003.md and work/US-003/evidence.md; no product/test/AC or original approval metadata changes. Record status ACCEPTED, accepted_by CoinsAgent, accepted_at2026-11-14. Include these paths explicitly in the next approved story PR. No acceptance-only push/PR or duplicate post-merge full CI/test cycle; main retains its earlier QA metadata until a later approved PR publishes this local record.
+- Focused metadata/harness, whitespace and complete committed scope checks validate this record-only change. Acceptance does not authorize additional release, database or permission operations. The previously authorized operation-test deployment is unchanged.
