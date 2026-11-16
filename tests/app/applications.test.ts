@@ -15,6 +15,9 @@ async function iat(){const response=await b.api('/api/management/iat',token.acce
 const count=()=> (gate.db.prepare("SELECT count(*) n FROM oauthClient WHERE clientId != 'walletgate-cli'").get() as {n:number}).n;
 async function create(extra:Record<string,unknown>={}){return b.api('/api/applications',await iat(),input(extra));}
 describe('US-004 preserves registration validation with IAT authorization',()=>{
+ it.each(['owner','userId','referenceId','subject','client_id','scope','grant_types','application_type','token_endpoint_auth_method'])('rejects caller-supplied ownership/profile field %s under a valid IAT',async field=>{
+  expect((await create({[field]:'unauthorized-override'})).status).toBe(400);expect(count()).toBe(0);
+ });
  it.each(['','  ','x'.repeat(101)])('rejects name boundary %s',async name=>{expect((await create({name})).status).toBe(400);expect(count()).toBe(0);});
  it('accepts one/100 Unicode characters, independent duplicate display names and hashed one-time secrets',async()=>{
   const a=await(await create({name:'a'})).json(),c=await(await create({name:'😀'.repeat(100)})).json();
