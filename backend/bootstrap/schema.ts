@@ -1,7 +1,10 @@
+import { managementSchema } from '../oidc';
 import { clientCapTrigger } from '../applications';
 
 // Pinned initial schema, applied only to an empty database by explicit setup.
 export const initialSchema = String.raw`
+${managementSchema}
+
 -- Initial WalletGate schema for the pinned Better Auth/core/provider 1.7.15 stack.
 -- Apply only to an empty database through scripts/init-database.ts. No row data.
 
@@ -9,7 +12,7 @@ CREATE TABLE "account" ("id" text not null primary key, "accountId" text not nul
 
 CREATE TABLE "applicationRate" ("id" text not null primary key, "owner" text not null unique, "startedAt" date not null, "attempts" integer not null);
 
-CREATE TABLE "applicationSubmission" ("id" text not null primary key, "key" text not null unique, "owner" text not null, "requestId" text not null, "digest" text not null, "clientId" text not null unique);
+CREATE TABLE "applicationSubmission" ("id" text not null primary key, "key" text not null unique, "owner" text not null, "requestId" text not null, "digest" text not null, "clientId" text not null unique, "result" text not null, "grantId" text not null);
 
 CREATE TABLE "jwks" ("id" text not null primary key, "publicKey" text not null, "privateKey" text not null, "createdAt" date not null, "expiresAt" date, "alg" text, "crv" text);
 
@@ -93,6 +96,9 @@ CREATE UNIQUE INDEX walletgate_one_user_per_address ON walletAddress(lower(addre
 CREATE UNIQUE INDEX walletgate_one_wallet_per_user ON walletAddress(userId);
 
 ${clientCapTrigger}
+CREATE TRIGGER walletgate_client_owner_immutable BEFORE UPDATE OF userId,referenceId ON oauthClient
+  WHEN NEW.userId IS NOT OLD.userId OR NEW.referenceId IS NOT OLD.referenceId
+  BEGIN SELECT RAISE(ABORT, 'Client ownership is immutable'); END;
 
 CREATE TRIGGER "walletgate_fence_account_DELETE" BEFORE DELETE ON "account"
       WHEN walletgate_generation() != (SELECT generation FROM walletgateIdentityState WHERE id = 1)

@@ -1,3 +1,4 @@
+import { ManagementBrowser } from './management-fixture';
 import { randomUUID } from 'node:crypto';
 import { expect } from 'vitest';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
@@ -9,7 +10,17 @@ export class IdentityBrowser {
   cookies = new Map<string, string>();
   account = privateKeyToAccount(generatePrivateKey());
   constructor(public gate: Gate) {}
-  async call(path: string, body?: unknown) {
+  async call(path: string, body?: unknown): Promise<Response> {
+    if(path==='applications' || path.startsWith('applications/')) {
+      const current=await this.call('session');
+      if(current.ok){
+        const browser=new ManagementBrowser(this.gate);browser.account=this.account;browser.cookies=this.cookies;
+        const clients=this.gate.db.prepare('SELECT clientId FROM oauthClient WHERE referenceId = ?').all(this.account.address.toLowerCase()) as {clientId:string}[];
+        const token=await browser.authorize(Object.fromEntries(clients.map(c=>[c.clientId,['read']])));
+        if(body!==undefined)return browser.register(token,body);
+        return browser.api('/api/'+path,token.access_token);
+      }
+    }
     const response = await this.gate.handle(new Request(`${config.origin}/api/${path}`, {
       method: body === undefined ? 'GET' : 'POST', headers: { origin: config.origin, 'content-type': 'application/json', cookie: this.cookie() },
       body: body === undefined ? undefined : JSON.stringify(body),

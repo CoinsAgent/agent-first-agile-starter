@@ -7,3 +7,18 @@
 .authorization-card dd { margin: 4px 0 0; font-family: monospace; overflow-wrap: anywhere; }
 .authorization-actions { display: flex; gap: 16px; justify-content: space-between; }
 .authorization-actions button { min-height: 44px; min-width: 96px; }
+.management-choice { display: flex; align-items: center; gap: 12px; min-height: 44px; text-align: left; }
+.management-choice input { width: 20px; height: 20px; flex-shrink: 0; accent-color: var(--primary); }
+.authorization-card fieldset { min-width: 0; text-align: left; border: 1px solid var(--border); border-radius: 8px; padding: 12px; margin-block: 16px; }
+.authorization-card legend { overflow-wrap: anywhere; padding-inline: 4px; font-weight: 600; }
+.management-targets { width: 100%; }
+.management-id { font-family: monospace; overflow-wrap: anywhere; }
+.management-authorization { border-top: 1px solid var(--border); margin-top: 24px; padding-top: 16px; text-align: left; }
+.management-authorization h2 { font-size: 1.125rem; overflow-wrap: anywhere; }
+.management-authorization button { min-height: 44px; margin: 8px 8px 0 0; }
+.authorization-card a { text-decoration: underline; text-underline-offset: 3px; }
+
+@media(max-width:767px) {
+  main[data-management="true"] .page-header { flex-wrap: wrap; justify-content: center; }
+  main[data-management="true"] .header-controls { flex-wrap: wrap; max-width: 100%; justify-content: center; }
+}

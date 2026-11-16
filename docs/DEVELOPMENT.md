@@ -336,3 +336,70 @@ Refresh tokens require explicit `offline_access` consent. Each original authoriz
 WalletGate logout ends the browser's wallet session. Issued tokens survive that logout/session expiry until their own expiry or applicable revocation. An RP controls its own login session; WalletGate does not promise coordinated logout. Explicitly revoke an access token to stop its UserInfo access. Revoke a refresh token to end that original-authorization family and every active access token in its lineage; separate authorizations are unaffected. Owning-client-authenticated reuse of a recognized used refresh token also ends that family, including when invalid scopes accompany the reuse. Revocation cannot retract independently held signed ID tokens. Code replay may invalidate tokens issued from that code. Restart sign-in after expiry/revocation; an exhausted offline family requires fresh SIWE and consent.
 
 Reproducible checks: `npx vitest run tests/app/oidc.test.ts` exercises real provider issuance, independent RSA verification, lifecycle/expiry, restart, rollback and separate-process refresh competition on disposable databases. `npm run build` followed by `npx playwright test tests/e2e/oidc.spec.ts` exercises browser wallet continuation, consent, denial, keyboard interaction, zoom and light/dark accessibility. The full entry point remains `bash scripts/verify.sh`. These are local engineering checks; US-005 supplies the complete standalone RP walkthrough, and certification/production release are separate.
+
+## US-004 Linux CLI client management
+
+US-004 uses a **new explicitly initialized environment and database**. Do not point it at an older database, reset existing data or convert ownership in place. Normal startup refuses incompatible storage without changing it. Select a new absolute `DATABASE_PATH`, configure the intended `TRUSTED_ORIGIN` and existing secret policy, then run:
+
+```sh
+node --import tsx scripts/init-database.ts --database /absolute/path/to/new-walletgate.sqlite
+npm run build
+npm start
+```
+
+Initialization requires an empty database. It provisions one system public `walletgate-cli` identity and its management resource, outside wallet application quotas and CRUD. The system identity has no client secret. Every wallet-owned application is registered through a verified-wallet IAT, with immutable `oauthClient.referenceId` ownership and null `userId`; canonical authenticated `user.id` remains the wallet. No browser session can register/list/read/update/delete clients. Old `/#applications` links show CLI guidance. Browser sessions are used for SIWE authentication, consent selection and owner authorization revocation.
+
+The supported first slice is Linux desktop and remote Linux/SSH with the repository Node runtime (`node >=22.22.0`) and locked dependencies. macOS/Windows, Device Authorization, hosted callback relays, package registry publication and production readiness are not promised.
+
+### Authorize and run commands
+
+From the repository, with a protected credential directory outside it:
+
+```sh
+npm run cli -- login --origin https://YOUR-WALLETGATE --label My-Linux-CLI
+npm run cli -- iat
+npm run cli -- create --name 'Example RP' --redirect https://rp.example/callback --request-id YOUR-STABLE-UUID
+npm run cli -- list
+npm run cli -- get CLIENT_ID
+npm run cli -- update CLIENT_ID --name 'Updated RP' --redirect https://rp.example/new-callback
+npm run cli -- delete CLIENT_ID --yes
+npm run cli -- logout
+```
+
+Generate a UUID once for each intended registration and keep it for retries. For example, `node -e 'console.log(crypto.randomUUID())'` prints a new nonsecret submission ID. Repeat `--redirect` for multiple URIs; update supplies the **complete** name/redirect set, not a partial patch. Redirects for RPs remain HTTPS/non-loopback, exact and free of fragments, credentials and wildcards. Removal of a redirect invalidates pending authorization/code redemption using it while retaining already-issued families. Delete is permanent, requires interactive typing of the selected ID or explicit `--yes`, returns the quota slot and invalidates pending authorizations, codes, refresh and opaque UserInfo access for that client. It cannot retract signed ID tokens or RP-owned sessions.
+
+Login opens the system browser, or prints an `authorization_url` JSON event with `--no-open`. The CLI binds its callback listener to `127.0.0.1`, generates a fresh PKCE verifier/state and uses no shared client secret. The owner signs in through SIWE (or reuses an unexpired proven SIWE session), then explicitly chooses registration permission and per-client read/update/delete permissions. Nothing is preselected. A public client ID or installation label does not verify the executable/device. The browser continuation lasts five minutes, supports denial/cancellation and completes once.
+
+Registration and management are separate: `create` obtains an IAT internally and prints the stable `registration_request_id` before sending creation. `iat` explicitly acquires one and writes it to a protected local file, returning only the path and expiry. IATs last five minutes and permit one successful creation; invalid metadata is not a successful use. IAT issuance and registration each have separate five-attempt fixed one-minute windows per wallet, across authorizations. Owners may hold 20 current clients. New authorizations never reset limits.
+
+A newly created client is **not** automatically a management target. Run login again with the same profile, choose its permissions in the browser, and explicitly approve replacement of that profile's authorization. Successful replacement invalidates only that profile's old authorization; cancellation/failure preserves it and other installations are unaffected. `list`/`get` require read permission. Update/delete do not imply read; without read their result contains only the ID/outcome. Missing, already-deleted and unauthorized targets share the not-found-or-not-authorized response.
+
+### Remote SSH browser return
+
+Run the CLI on the remote Linux host:
+
+```sh
+npm run cli -- login --origin https://YOUR-WALLETGATE --label Remote-agent --no-open --ssh-host YOUR-SSH-HOST
+```
+
+The JSON event includes an `ssh_forward` argument array. On the browser's local computer, establish that `ssh -N -L PORT:127.0.0.1:PORT YOUR-SSH-HOST` tunnel using the emitted port, then open the emitted authorization URL there. Use the same port on each end; keep the remote CLI and tunnel alive until completion. SSH access itself must already be available and authorized. If forwarding is unavailable, this slice cannot complete remote browser login; it does not weaken redirect checks or route the callback through a hosted relay.
+
+### Credentials, renewal and revocation
+
+Default storage is `$XDG_STATE_HOME/walletgate` or `~/.local/state/walletgate`. Select another absolute directory with `--state-dir /private/path` and a profile with `--profile NAME`. The directory must be owned by the current OS user with mode0700, files mode0600; symlinks, unsafe permissions and repository-local credential paths are rejected. Files are not encrypted and another process running as the same OS user can read them. Host-account compromise is outside this protection.
+
+Management tokens are opaque, resource-bound delegated credentials. Access lasts at most15 minutes; successful authorized management use or refresh resets the seven-day inactivity window, with a hard30-day deadline from initial consent. Expired authorization requires human approval again. Ordinary browser logout does not revoke independent CLI authority. Refresh rotates with **no replay grace**: retrying a consumed refresh credential, including after a lost response, invalidates only its authorization and requires reauthorization. The CLI refreshes on access expiry/inactivity and never silently expands permission or switches wallet.
+
+Open `/#authorizations` while signed in to list your authorizations and revoke one installation. The list shows a descriptive label, unique ID, creation/last activity/expiry and permissions, without adding IP tracking or fingerprinting. Revocation rejects its access/refresh credentials and outstanding IATs; existing registered clients remain. CLI logout revokes server-side before deleting its local credential. If the server cannot confirm revocation, logout exits nonzero and **retains credentials** for retry; use browser revocation for an inaccessible installation. Never infer server revocation from local deletion.
+
+New client secrets are shown only to the CLI during successful creation, then saved to a protected `client-CLIENT_ID.json` file in the selected state directory (or an explicit `--secret-file /private/path`). Ordinary JSON output contains its path, never the secret. Do not read credentials/secret files into AI prompts, command arguments, shell history or routine logs. There is no secret redisclosure. A repeated committed submission returns public metadata without the old secret, even after its IAT was consumed/expired, provided the original parent registration authorization is valid; a different installation or replacement authorization cannot take over its reconciliation authority. Changed metadata conflicts; deletion cannot be undone by replay. Lost secrets require explicit browser consent to delete that client and register a replacement; do not automatically delete as error recovery.
+
+Commands emit JSON result/events; diagnostics go to stderr. Exit codes:0 success,1 connectivity/unexpected failure,2 input/operation error,3 authorization/reauthorization required,4 unconfirmed logout revocation,5 rate limit,6 missing/unauthorized target. Credentials are accepted internally from protected storage, never raw command-line token options. HTTPS is required except HTTP loopback for development. HTTP redirects are not followed when transmitting credentials.
+
+### Companion AI agent skill
+
+The repository-local `.agents/skills/walletgate-cli/SKILL.md` is delivered with the CLI and references these commands. Installation into another agent environment is user-directed; no automatic external configuration or registry publishing occurs. The human performs initial consent and reauthorization. The skill invokes permitted commands and handles structured errors; it does not receive wallet keys, tokens, cookies or client secrets. Execution authorization from the human's task is still required for destructive commands, in addition to the server grant and CLI confirmation.
+
+### Verification
+
+`npx vitest run tests/app/management.test.ts tests/app/applications.test.ts tests/app/cli.test.ts` exercises actual provider/SQLite and CLI credential boundaries. `npx playwright test tests/e2e/management.spec.ts tests/e2e/applications.spec.ts tests/e2e/oidc.spec.ts` exercises browser consent/revocation/guidance, actual CLI login/commands and RP regressions. Use full `bash scripts/verify.sh` for the required complete local gate. Tests use disposable initialized databases and generated wallets, never live deployment credentials.

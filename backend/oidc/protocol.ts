@@ -110,7 +110,7 @@ export function createProtocol(deps: Dependencies) {
       const metadata = await response.json();
       const fields = ['issuer', 'authorization_endpoint', 'token_endpoint', 'userinfo_endpoint', 'jwks_uri', 'revocation_endpoint', 'response_types_supported', 'response_modes_supported', 'grant_types_supported', 'subject_types_supported', 'id_token_signing_alg_values_supported', 'scopes_supported', 'claims_supported', 'code_challenge_methods_supported'];
       const selected = Object.fromEntries(fields.filter(key => metadata[key] !== undefined).map(key => [key, metadata[key]]));
-      return json({ ...selected, token_endpoint_auth_methods_supported: ['client_secret_basic'], revocation_endpoint_auth_methods_supported: ['client_secret_basic'], claims_parameter_supported: false, request_parameter_supported: false, request_uri_parameter_supported: false });
+      return json({ ...selected, token_endpoint_auth_methods_supported: ['client_secret_basic','none'], revocation_endpoint_auth_methods_supported: ['client_secret_basic','none'], claims_parameter_supported: false, request_parameter_supported: false, request_uri_parameter_supported: false });
     }
     if (postPaths.includes(url.pathname) && request.method === 'POST') {
       if (!request.headers.get('content-type')?.startsWith('application/x-www-form-urlencoded')) return json({ error: 'invalid_request' }, 400);
@@ -124,4 +124,16 @@ export function createProtocol(deps: Dependencies) {
     }
     return null;
   };
+}
+
+// Remove only pending/code records for this client and a now-invalid redirect.
+export function invalidateClientAuthorization(db: Database.Database, clientId: string, redirects?: string[]) {
+  const rows = db.prepare('SELECT id,value FROM verification').all() as { id:string;value:string }[];
+  for (const row of rows) {
+    try {
+      const value=JSON.parse(row.value);
+      const query=typeof value.query==='string'?Object.fromEntries(new URLSearchParams(value.query)):value.query;
+      if(query?.client_id===clientId && (!redirects || !redirects.includes(query.redirect_uri))) db.prepare('DELETE FROM verification WHERE id = ?').run(row.id);
+    } catch { /* Non-protocol verification rows are outside this operation. */ }
+  }
 }

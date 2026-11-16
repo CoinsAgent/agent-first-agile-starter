@@ -7,6 +7,7 @@ import { mkdtempSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { generatePrivateKey, privateKeyToAccount } from 'viem/accounts';
+import { ManagementBrowser } from './management-fixture';
 import { createTestWalletGate } from './database-fixture';
 const origin = 'http://localhost:3000';
 const config = { origin, secret: 'oidc-test-only-secret-012345678901234567890123456789', databasePath: ':memory:' };
@@ -27,7 +28,8 @@ class Browser {
     expect((await this.request('/api/verify',{ message:c.message, signature:await this.account.signMessage({ message:c.message }) })).status).toBe(200);
   }
   async client() {
-    const response = await this.request('/api/applications',{ name:'My application', redirectUris:['https://rp.example/callback'], requestId:randomUUID() });
+    const manager=new ManagementBrowser(gate);manager.account=this.account;manager.cookies=this.cookies;
+    const response=await manager.register(undefined,{name:'My application',redirectUris:['https://rp.example/callback'],requestId:randomUUID()});
     expect(response.status).toBe(201);
     const data = await response.json();
     return { id:data.application.clientId as string, secret:data.clientSecret as string };
@@ -123,12 +125,12 @@ describe('US-003 token policy and negative boundaries',()=>{
   });
   it('caps last-minute ID/access expiry at the durable original family deadline',async()=>{
     const b=new Browser();await b.login();const c=await b.client();const {data}=await issue(b,c);
-    const first=gate.db.prepare('SELECT expiresAt FROM oauthRefreshToken').get() as {expiresAt:number};const deadline=new Date(first.expiresAt).getTime();
+    const first=gate.db.prepare('SELECT expiresAt FROM oauthRefreshToken WHERE clientId != \'walletgate-cli\'').get() as {expiresAt:number};const deadline=new Date(first.expiresAt).getTime();
     expect(deadline).toBe(Math.floor(now/1000)*1000+7*86400000);
     vi.setSystemTime(deadline-60000);
     const response=await exchange(c,{grant_type:'refresh_token',refresh_token:data.refresh_token});const next=await response.json();expect(response.status,JSON.stringify(next)).toBe(200);expect(next.expires_in).toBe(60);
     const claims=JSON.parse(Buffer.from(next.id_token.split('.')[1],'base64url').toString());expect(claims.exp*1000).toBe(deadline);
-    const rows=gate.db.prepare('SELECT expiresAt FROM oauthRefreshToken').all() as {expiresAt:number}[];expect(rows.every(r=>new Date(r.expiresAt).getTime()===deadline)).toBe(true);
+    const rows=gate.db.prepare('SELECT expiresAt FROM oauthRefreshToken WHERE clientId != \'walletgate-cli\'').all() as {expiresAt:number}[];expect(rows.every(r=>new Date(r.expiresAt).getTime()===deadline)).toBe(true);
     vi.setSystemTime(deadline);expect((await userinfo(next.access_token)).status).toBe(401);expect((await exchange(c,{grant_type:'refresh_token',refresh_token:next.refresh_token})).status).toBe(400);
   });
   it('rejects code at its expiry and code redemption after wallet logout',async()=>{
@@ -182,8 +184,8 @@ describe('US-003 token policy and negative boundaries',()=>{
   });
   it('preserves signing keys and absolute family deadline through restart',async()=>{
     gate.close();const dir=mkdtempSync(join(tmpdir(),'walletgate-oidc-'));const persistent={...config,databasePath:join(dir,'test.sqlite')};gate=await createTestWalletGate(persistent);
-    try{const b=new Browser();await b.login();const c=await b.client();const {data}=await issue(b,c);const keys=await(await b.request('/api/auth/jwks')).json();const deadline=(gate.db.prepare('SELECT expiresAt FROM oauthRefreshToken').get() as {expiresAt:number}).expiresAt;
-      gate.close();vi.setSystemTime(now+86400000);gate=await createTestWalletGate(persistent);expect(await(await b.request('/api/auth/jwks')).json()).toEqual(keys);const next=await exchange(c,{grant_type:'refresh_token',refresh_token:data.refresh_token});expect(next.status).toBe(200);expect((gate.db.prepare('SELECT MAX(expiresAt) AS expiry FROM oauthRefreshToken').get() as {expiry:number}).expiry).toBe(deadline);
+    try{const b=new Browser();await b.login();const c=await b.client();const {data}=await issue(b,c);const keys=await(await b.request('/api/auth/jwks')).json();const deadline=(gate.db.prepare('SELECT expiresAt FROM oauthRefreshToken WHERE clientId != \'walletgate-cli\'').get() as {expiresAt:number}).expiresAt;
+      gate.close();vi.setSystemTime(now+86400000);gate=await createTestWalletGate(persistent);expect(await(await b.request('/api/auth/jwks')).json()).toEqual(keys);const next=await exchange(c,{grant_type:'refresh_token',refresh_token:data.refresh_token});expect(next.status).toBe(200);expect((gate.db.prepare('SELECT MAX(expiresAt) AS expiry FROM oauthRefreshToken WHERE clientId != \'walletgate-cli\'').get() as {expiry:number}).expiry).toBe(deadline);
     }finally{gate.close();gate=await createTestWalletGate(config);rmSync(dir,{recursive:true,force:true});}
   });
 });
@@ -203,7 +205,7 @@ describe('US-003 persistence, rollback and boundary regressions',()=>{
   });
   it('requires new SIWE when offline authorization restarts after a family deadline',async()=>{
     const b=new Browser();await b.login();const c=await b.client();const {data}=await issue(b,c);
-    const row=gate.db.prepare('SELECT expiresAt FROM oauthRefreshToken').get() as {expiresAt:string};const deadline=new Date(row.expiresAt).getTime();
+    const row=gate.db.prepare('SELECT expiresAt FROM oauthRefreshToken WHERE clientId != \'walletgate-cli\'').get() as {expiresAt:string};const deadline=new Date(row.expiresAt).getTime();
     vi.setSystemTime(deadline-1000);await b.login();vi.setSystemTime(deadline);
     expect((await exchange(c,{grant_type:'refresh_token',refresh_token:data.refresh_token})).status).toBe(400);
     const pending=await b.begin(c);expect((await(await b.request('/api/authorization/'+pending.id)).json()).needsLogin).toBe(true);
@@ -219,11 +221,11 @@ describe('US-003 persistence, rollback and boundary regressions',()=>{
     const [response]=await Promise.all([exchange(c,{grant_type:'refresh_token',refresh_token:data.refresh_token}),b.request('/api/logout',{})]);const next=await response.json();expect(response.status).toBe(200);expect((await userinfo(next.access_token)).status).toBe(200);
   });
   it('rolls back failed issuance without leaving partial token rows or a rotated refresh',async()=>{
-    const b=new Browser();await b.login();const c=await b.client();const {data}=await issue(b,c);const before=gate.db.prepare('SELECT id,revoked,rotatedAt FROM oauthRefreshToken').all();const accessCount=(gate.db.prepare('SELECT count(*) n FROM oauthAccessToken').get() as {n:number}).n;
+    const b=new Browser();await b.login();const c=await b.client();const {data}=await issue(b,c);const before=gate.db.prepare('SELECT id,revoked,rotatedAt FROM oauthRefreshToken WHERE clientId != \'walletgate-cli\'').all();const accessCount=(gate.db.prepare('SELECT count(*) n FROM oauthAccessToken WHERE clientId != \'walletgate-cli\'').get() as {n:number}).n;
     gate.db.exec("CREATE TRIGGER oidc_test_failure BEFORE INSERT ON oauthAccessToken BEGIN SELECT RAISE(ABORT, 'fixture storage failure'); END");
     const log=vi.spyOn(console,'error').mockImplementation(()=>{});
     try{expect((await exchange(c,{grant_type:'refresh_token',refresh_token:data.refresh_token})).status).toBe(500);}finally{log.mockRestore();gate.db.exec('DROP TRIGGER oidc_test_failure');}
-    expect(gate.db.prepare('SELECT id,revoked,rotatedAt FROM oauthRefreshToken').all()).toEqual(before);expect((gate.db.prepare('SELECT count(*) n FROM oauthAccessToken').get() as {n:number}).n).toBe(accessCount);
+    expect(gate.db.prepare('SELECT id,revoked,rotatedAt FROM oauthRefreshToken WHERE clientId != \'walletgate-cli\'').all()).toEqual(before);expect((gate.db.prepare('SELECT count(*) n FROM oauthAccessToken WHERE clientId != \'walletgate-cli\'').get() as {n:number}).n).toBe(accessCount);
     expect((await exchange(c,{grant_type:'refresh_token',refresh_token:data.refresh_token})).status).toBe(200);
   });
   it('selects RSA for the new public issuer while retaining an older stored EdDSA key',async()=>{
@@ -241,7 +243,7 @@ describe('US-003 persistence, rollback and boundary regressions',()=>{
     gate.close();const dir=mkdtempSync(join(tmpdir(),'walletgate-oidc-process-'));const persistent={...config,databasePath:join(dir,'test.sqlite')};gate=await createTestWalletGate(persistent);
     try{const b=new Browser();await b.login();const client=await b.client();const {data}=await issue(b,client);
       const worker=()=>new Promise<{status:number}>((resolve,reject)=>{const child=spawn(process.execPath,['--import','tsx','tests/app/oidc-worker.ts'],{stdio:['pipe','pipe','pipe']});let output='',error='';child.stdout.on('data',chunk=>output+=chunk);child.stderr.on('data',chunk=>error+=chunk);child.on('error',reject);child.on('exit',code=>{if(code!==0)reject(new Error('Fixture process failed: '+error));else{try{resolve(JSON.parse(output));}catch{reject(new Error('Invalid fixture process response'));}}});child.stdin.end(JSON.stringify({config:persistent,client,refreshToken:data.refresh_token}));});
-      const responses=await Promise.all([worker(),worker()]);expect(responses.map(r=>r.status).sort()).toEqual([200,400]);expect((gate.db.prepare('SELECT count(*) n FROM oauthAccessToken WHERE revoked IS NULL').get() as {n:number}).n).toBe(0);
+      const responses=await Promise.all([worker(),worker()]);expect(responses.map(r=>r.status).sort()).toEqual([200,400]);expect((gate.db.prepare('SELECT count(*) n FROM oauthAccessToken WHERE clientId != \'walletgate-cli\' AND revoked IS NULL').get() as {n:number}).n).toBe(0);
     }finally{gate.close();gate=await createTestWalletGate(config);rmSync(dir,{recursive:true,force:true});}
   },15000);
 });
@@ -250,7 +252,7 @@ describe('US-003 protocol rejection cases',()=>{
   it.each(['unknown client','missing PKCE','plain PKCE','wrong redirect','invalid scope','invalid prompt','invalid max_age'])('rejects %s without issuing tokens',async kind=>{
     const b=new Browser();await b.login();const c=await b.client();const q=new URLSearchParams({client_id:c.id,redirect_uri:'https://rp.example/callback',response_type:'code',scope:'openid',code_challenge:'a'.repeat(43),code_challenge_method:'S256'});
     if(kind==='unknown client')q.set('client_id','unknown');if(kind==='missing PKCE'){q.delete('code_challenge');q.delete('code_challenge_method');}if(kind==='plain PKCE')q.set('code_challenge_method','plain');if(kind==='wrong redirect')q.set('redirect_uri','https://untrusted.example/callback');if(kind==='invalid scope')q.set('scope','openid email');if(kind==='invalid prompt')q.set('prompt','none login');if(kind==='invalid max_age')q.set('max_age','-1');
-    const result=await b.request('/api/auth/oauth2/authorize?'+q);const location=result.headers.get('location')??'';expect(location).not.toContain('#authorize=');expect(location).not.toContain('code=');expect(location).not.toContain('untrusted.example');expect((gate.db.prepare('SELECT count(*) n FROM oauthAccessToken').get() as {n:number}).n).toBe(0);
+    const result=await b.request('/api/auth/oauth2/authorize?'+q);const location=result.headers.get('location')??'';expect(location).not.toContain('#authorize=');expect(location).not.toContain('code=');expect(location).not.toContain('untrusted.example');expect((gate.db.prepare('SELECT count(*) n FROM oauthAccessToken WHERE clientId != \'walletgate-cli\'').get() as {n:number}).n).toBe(0);
   });
   it('rejects malformed consent JSON and missing bearer without leaking tokens',async()=>{
     const b=new Browser();await b.login();const c=await b.client();const pending=await b.begin(c);await b.request('/api/authorization/'+pending.id);const headers={origin,'content-type':'application/json',cookie:[...b.cookies].map(([k,v])=>k+'='+v).join('; ')};
@@ -281,18 +283,18 @@ it('keeps simultaneous first authorization tabs independently bound',async()=>{
 });
 
 it('rolls back signed output that crosses the family cap during async issuance',async()=>{
-  const b=new Browser();await b.login();const c=await b.client();const {data}=await issue(b,c);const deadline=new Date((gate.db.prepare('SELECT expiresAt FROM oauthRefreshToken').get() as {expiresAt:string}).expiresAt).getTime();
+  const b=new Browser();await b.login();const c=await b.client();const {data}=await issue(b,c);const deadline=new Date((gate.db.prepare('SELECT expiresAt FROM oauthRefreshToken WHERE clientId != \'walletgate-cli\'').get() as {expiresAt:string}).expiresAt).getTime();
   vi.setSystemTime(deadline-60000);const context=await gate.auth.$context;const lookup=context.internalAdapter.findUserById.bind(context.internalAdapter);const spy=vi.spyOn(context.internalAdapter,'findUserById').mockImplementation(async id=>{vi.setSystemTime(deadline-59000);return lookup(id);});
   const log=vi.spyOn(console,'error').mockImplementation(()=>{});
   try{expect((await exchange(c,{grant_type:'refresh_token',refresh_token:data.refresh_token})).status).toBe(500);}finally{spy.mockRestore();log.mockRestore();}
-  expect((gate.db.prepare('SELECT count(*) n FROM oauthRefreshToken').get() as {n:number}).n).toBe(1);expect((gate.db.prepare('SELECT revoked FROM oauthRefreshToken').get() as {revoked:null}).revoked).toBeNull();
+  expect((gate.db.prepare('SELECT count(*) n FROM oauthRefreshToken WHERE clientId != \'walletgate-cli\'').get() as {n:number}).n).toBe(1);expect((gate.db.prepare('SELECT revoked FROM oauthRefreshToken WHERE clientId != \'walletgate-cli\'').get() as {revoked:null}).revoked).toBeNull();
   const retry=await exchange(c,{grant_type:'refresh_token',refresh_token:data.refresh_token});expect(retry.status).toBe(200);const next=await retry.json();expect(JSON.parse(Buffer.from(next.id_token.split('.')[1],'base64url').toString()).exp*1000).toBe(deadline);
 });
 it('releases no token when issuance itself reaches the absolute deadline',async()=>{
-  const b=new Browser();await b.login();const c=await b.client();const {data}=await issue(b,c);const deadline=new Date((gate.db.prepare('SELECT expiresAt FROM oauthRefreshToken').get() as {expiresAt:string}).expiresAt).getTime();vi.setSystemTime(deadline-1000);
+  const b=new Browser();await b.login();const c=await b.client();const {data}=await issue(b,c);const deadline=new Date((gate.db.prepare('SELECT expiresAt FROM oauthRefreshToken WHERE clientId != \'walletgate-cli\'').get() as {expiresAt:string}).expiresAt).getTime();vi.setSystemTime(deadline-1000);
   const context=await gate.auth.$context;const create=context.adapter.create.bind(context.adapter);const spy=vi.spyOn(context.adapter,'create').mockImplementation(async args=>{if(args.model==='oauthAccessToken')vi.setSystemTime(deadline);return create(args);});const log=vi.spyOn(console,'error').mockImplementation(()=>{});
   try{const response=await exchange(c,{grant_type:'refresh_token',refresh_token:data.refresh_token});expect(response.status).toBe(500);expect((await response.json()).access_token).toBeUndefined();}finally{spy.mockRestore();log.mockRestore();}
-  expect((gate.db.prepare('SELECT count(*) n FROM oauthRefreshToken').get() as {n:number}).n).toBe(1);
+  expect((gate.db.prepare('SELECT count(*) n FROM oauthRefreshToken WHERE clientId != \'walletgate-cli\'').get() as {n:number}).n).toBe(1);
 });
 
 describe('US-003 explicit expiry boundary matrix',()=>{
@@ -309,7 +311,7 @@ describe('US-003 explicit expiry boundary matrix',()=>{
       const b=new Browser();await b.login();const c=await b.client();const {data}=await issue(b,c);vi.setSystemTime(Math.floor(now/1000)*1000+900000+delta);expect((await userinfo(data.access_token)).status).toBe(delta<0?200:401);
     });
     it(`refresh family at deadline ${delta}ms`,async()=>{
-      const b=new Browser();await b.login();const c=await b.client();const {data}=await issue(b,c);const deadline=new Date((gate.db.prepare('SELECT expiresAt FROM oauthRefreshToken').get() as {expiresAt:string}).expiresAt).getTime();vi.setSystemTime(deadline+delta);
+      const b=new Browser();await b.login();const c=await b.client();const {data}=await issue(b,c);const deadline=new Date((gate.db.prepare('SELECT expiresAt FROM oauthRefreshToken WHERE clientId != \'walletgate-cli\'').get() as {expiresAt:string}).expiresAt).getTime();vi.setSystemTime(deadline+delta);
       expect((await exchange(c,{grant_type:'refresh_token',refresh_token:data.refresh_token})).status).toBe(delta<0?200:400);
     });
   }

@@ -4,7 +4,8 @@
   "source_roots": [
     "frontend",
     "backend",
-    "shared"
+    "shared",
+    "cli"
   ],
   "aliases": {
     "@/": "frontend"
@@ -123,6 +124,13 @@
       "kind": "directory",
       "role": "shared",
       "runtime": "server"
+    },
+    {
+      "path": "cli",
+      "kind": "directory",
+      "role": "feature",
+      "feature": "management-cli",
+      "runtime": "server"
     }
   ],
   "feature_roots": [],
@@ -147,7 +155,8 @@
     "docs": "Product, design, structure, process and development guides",
     "backlog": "Story map and authoritative lifecycle records",
     "work": "Per-story execution plans/evidence; historical tracked artifacts",
-    "root_files": "Package/lock, tool and entry configuration, environment templates, README, license/ignore files and AGENTS instructions; individual files still require approved scope"
+    "root_files": "Package/lock, tool and entry configuration, environment templates, README, license/ignore files and AGENTS instructions; individual files still require approved scope",
+    "cli": "Linux management CLI; HTTP-only domain with secure local credentials"
   },
   "root_files": [
     ".env.example",

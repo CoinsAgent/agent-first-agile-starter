@@ -31,7 +31,7 @@ describe('US-001-06 explicit local reset', () => {
   it('deletes dependent identity/application/proof data, preserves unrelated data/config, fences old servers and restarts cleanly', async () => {
     const b = new IdentityBrowser(gate), phone = new IdentityBrowser(gate); await b.login();
     const client = await (await b.register()).json();
-    expect(gate.db.prepare('SELECT userId, referenceId FROM oauthClient').get()).toEqual({ userId: b.account.address.toLowerCase(), referenceId: null });
+    expect(gate.db.prepare('SELECT userId, referenceId FROM oauthClient WHERE clientId != \'walletgate-cli\'').get()).toEqual({ userId: null, referenceId: b.account.address.toLowerCase() });
     // Populate every installed provider-dependent table so deletion order and
     // preservation are tested with real foreign keys, not only empty tables.
     const { id: sessionId } = gate.db.prepare('SELECT id FROM session LIMIT 1').get() as { id: string };
@@ -49,9 +49,9 @@ describe('US-001-06 explicit local reset', () => {
     gate.db.exec("CREATE TABLE unrelated (value TEXT); INSERT INTO unrelated VALUES ('preserve')");
     const jwks = gate.db.prepare('SELECT * FROM jwks').all();
     expect(reset().reset).toBe(true);
-    for (const table of [...identityTables, ...applicationDataTables]) expect(gate.db.prepare(`SELECT count(*) n FROM "${table}"`).get()).toEqual({ n: 0 });
+    for (const table of [...identityTables, ...applicationDataTables]) expect(gate.db.prepare(`SELECT count(*) n FROM "${table}"${table === 'oauthClient' || table === 'oauthClientResource' ? " WHERE clientId != 'walletgate-cli'" : ''}`).get()).toEqual({ n: 0 });
     expect(gate.db.prepare('SELECT * FROM jwks').all()).toEqual(jwks);
-    expect(gate.db.prepare('SELECT identifier, name FROM oauthResource').all()).toEqual([{ identifier: 'https://api.example', name: 'Preserved resource' }]);
+    expect(gate.db.prepare('SELECT identifier, name FROM oauthResource WHERE identifier != \'urn:walletgate:management\'').all()).toEqual([{ identifier: 'https://api.example', name: 'Preserved resource' }]);
     expect(gate.db.prepare('SELECT * FROM unrelated').all()).toEqual([{ value: 'preserve' }]);
     expect(readFileSync('backend/wallet-auth/auth.ts')).toEqual(source); expect(readFileSync(configPath, 'utf8')).toBe('preserve-config');
     expect((await b.call('session')).status).toBe(503);
@@ -71,10 +71,11 @@ describe('US-001-06 explicit local reset', () => {
     const b = new IdentityBrowser(gate); await b.login(); await b.register();
     gate.db.pragma('foreign_keys = OFF');
     gate.db.prepare("UPDATE user SET id = 'legacy-random-id'").run();
-    for (const table of ['account', 'session', 'walletAddress', 'oauthClient']) gate.db.prepare(`UPDATE "${table}" SET userId = 'legacy-random-id'`).run();
+    gate.db.exec('DROP TRIGGER walletgate_client_owner_immutable');
+    for (const table of ['account', 'session', 'walletAddress']) gate.db.prepare(`UPDATE "${table}" SET userId = 'legacy-random-id'`).run();
     gate.db.pragma('foreign_keys = ON');
     const before = snapshot(); gate.close(); closed = true;
-    await expect(createWalletGate({ ...config, databasePath })).rejects.toThrow(/Incompatible wallet identity/);
+    await expect(createWalletGate({ ...config, databasePath })).rejects.toThrow(/Incompatible (wallet identity|application ownership)/);
     const inspect = new Database(databasePath, { readonly: true });
     expect(inspect.prepare('SELECT id FROM user').all()).toEqual([{ id: 'legacy-random-id' }]); inspect.close();
     // Full row/table inventory through a fixture connection proves no conversion.
@@ -114,7 +115,7 @@ describe('US-001-06 explicit local reset', () => {
     const pending = b.call('challenge', { address: b.account.address, chainId: 1 });
     await ready; reset(); unblock();
     expect((await pending).status).toBe(503);
-    for (const table of ['walletChallenge', 'verification', 'user']) expect(gate.db.prepare(`SELECT count(*) n FROM "${table}"`).get()).toEqual({ n: 0 });
+    for (const table of ['walletChallenge', 'verification', 'user']) expect(gate.db.prepare(`SELECT count(*) n FROM "${table}"${table === 'oauthClient' || table === 'oauthClientResource' ? " WHERE clientId != 'walletgate-cli'" : ''}`).get()).toEqual({ n: 0 });
   });
   it.each([
     { name: 'no arguments', input: () => [] },
