@@ -13,7 +13,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "lint": "oxlint --deny-warnings frontend backend"
+    "lint": "oxlint --deny-warnings frontend backend cli",
+    "cli": "tsx cli/index.ts"
   },
   "dependencies": {
     "@better-auth/core": "1.7.15",

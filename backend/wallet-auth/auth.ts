@@ -13,8 +13,8 @@ import { createSiweMessage, parseSiweMessage } from 'viem/siwe';
 import { z } from 'zod';
 import type { Config } from '../infrastructure/config';
 import { createQrAuth } from './qr';
-import { applicationSchema, ApplicationError, assertCompatibleApplications, createApplications } from '../applications';
-import { registrationProvider, createProtocol } from '../oidc';
+import { applicationSchema, ApplicationError, assertCompatibleApplications, createManagedApplications } from '../applications';
+import { registrationProvider, createProtocol, managementProvider, createManagement, invalidateClientAuthorization } from '../oidc';
 import { assertCompatibleIdentity, attachIdentityFence, canonicalAddress } from './identity';
 
 export const CHALLENGE_MS = 5 * 60 * 1000;
@@ -161,13 +161,20 @@ export async function createWalletGate(config: Config, connection?: Database.Dat
         !db.prepare('SELECT 1 FROM walletAddress WHERE userId = ? AND lower(address) = ? AND chainId = 1').get(address, address)) return null;
     return { userId: address, address, expiresAt: data.session.expiresAt.toISOString() };
   }
-  const applications = createApplications({
-    adapter: (await auth.$context).adapter, session,
-    create: (headers, input) => auth.api.createOAuthClient({ headers, body: {
-      client_name: input.name, redirect_uris: input.redirectUris, application_type: 'web',
-      token_endpoint_auth_method: 'client_secret_basic', grant_types: ['authorization_code'],
-      response_types: ['code'], scope: 'openid',
-    } }),
+  const managementConfig = managementProvider(db);
+  const managementAuth = betterAuth({ ...authOptions, database: () => database, plugins: [applicationSchema, ...managementConfig.plugins] });
+  const management = createManagement({ db, origin:config.origin, options:managementConfig.options,
+    native: request=>managementAuth.handler(request), identity:async headers=>{
+      if(!await session(headers))return null;
+      const current=await auth.api.getSession({headers});
+      return current?{id:current.session.id,address:current.user.id}:null;
+    }, context:async()=>({context:await managementAuth.$context,setHeader:()=>{},json:async(body:unknown)=>body} as unknown as import('@better-auth/core').GenericEndpointContext),
+  });
+  const applications = createManagedApplications({ db, authenticate:management.authenticate,
+    register: (headers,body)=>{
+      const safe=new Headers({'content-type':'application/json'});safe.set('authorization',headers.get('authorization')??'');
+      return auth.handler(new Request(config.origin+'/api/auth/oauth2/register',{method:'POST',headers:safe,body:JSON.stringify(body)}));
+    }, invalidate:(id,redirects)=>invalidateClientAuthorization(db,id,redirects),
   });
   async function internal(request: Request, path: string, body: unknown) {
     const invoke = () => auth.handler(new Request(`${config.origin}/api/auth${path}`, { method: 'POST', headers: request.headers, body: JSON.stringify(body) }));
@@ -232,19 +239,14 @@ export async function createWalletGate(config: Config, connection?: Database.Dat
     const url = new URL(request.url);
     if (url.origin !== config.origin) return json({ error: 'Untrusted origin.' }, 403);
     try {
+      const managementResponse = await management.handle(request);
+      if (managementResponse) return managementResponse;
+      const applicationResponse = await applications(request);
+      if (applicationResponse) return applicationResponse;
       const protocolResponse = await protocol(request);
       if (protocolResponse) return protocolResponse;
       if (request.method === 'POST' && (request.headers.get('origin') !== config.origin || !request.headers.get('content-type')?.startsWith('application/json')))
         return json({ error: 'Use a same-origin JSON request.' }, 403);
-      if (url.pathname === '/api/applications' && request.method === 'POST') {
-        const result = await applications.create(request.headers, () => readBody());
-        return json(result, result.replayed ? 200 : 201);
-      }
-      if (request.method === 'GET' && (url.pathname === '/api/applications' || /^\/api\/applications\/[^/]+$/.test(url.pathname))) {
-        const id = url.pathname === '/api/applications' ? undefined : decodeURIComponent(url.pathname.slice('/api/applications/'.length));
-        const list = await applications.list(request.headers, id);
-        return json(id ? { application: list[0] } : { applications: list });
-      }
       if (url.pathname.startsWith('/api/qr/') && request.method === 'POST') return await qr(request, url.pathname.slice('/api/qr/'.length), await readBody());
       if (url.pathname === '/api/session' && request.method === 'GET') {
         const current = await session(request.headers);
@@ -299,8 +301,8 @@ export async function createWalletGate(config: Config, connection?: Database.Dat
   }
   async function queuedHandle(request: Request): Promise<Response> {
     const url = new URL(request.url);
-    const isProtocol = url.pathname.startsWith('/api/authorization/') || url.pathname.startsWith('/api/auth/');
-    if (isProtocol && request.method === 'POST') {
+    const isProtocol = url.pathname.startsWith('/api/authorization/') || url.pathname.startsWith('/api/auth/') || url.pathname.startsWith('/api/management/') || url.pathname.startsWith('/api/applications');
+    if (isProtocol && ['POST','PATCH','DELETE'].includes(request.method)) {
       try { request = new Request(request.url, { method: request.method, headers: request.headers, body: await readText(request) }); }
       catch (error) { return json({ error: error instanceof RequestTooLarge ? 'Request too large.' : 'Invalid request.' }, error instanceof RequestTooLarge ? 413 : 400); }
     }
@@ -309,7 +311,7 @@ export async function createWalletGate(config: Config, connection?: Database.Dat
     // for the handler, including authenticated rate accounting on invalid input.
     const needsBody = request.method === 'POST' && url.origin === config.origin &&
       request.headers.get('origin') === config.origin && request.headers.get('content-type')?.startsWith('application/json') &&
-      (['/api/applications', '/api/challenge', '/api/verify', '/api/logout'].includes(url.pathname) || url.pathname.startsWith('/api/qr/'));
+      (['/api/challenge', '/api/verify', '/api/logout'].includes(url.pathname) || url.pathname.startsWith('/api/qr/'));
     const parsed = needsBody ? await readJson(request).then(value => ({ value }), error => ({ error })) : { value: undefined };
     const exclusive = isProtocol || request.method === 'POST' && ['/api/applications', '/api/verify', '/api/qr/complete'].includes(url.pathname);
     const release = await acquireDatabase(queue, exclusive);
@@ -320,7 +322,8 @@ export async function createWalletGate(config: Config, connection?: Database.Dat
           if ('error' in parsed) throw parsed.error;
           return parsed.value;
         });
-        if (isProtocol && response.status >= 500) throw new VerificationFailed(response);
+        // Registration rolls its writes back to its own savepoint, preserving rate accounting.
+        if (isProtocol && response.status >= 500 && !(url.pathname==='/api/applications' && request.method==='POST')) throw new VerificationFailed(response);
         return response;
       };
       const baseAdapter = (await auth.$context).adapter;
