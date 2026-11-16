@@ -40,9 +40,9 @@ Use focused checks while implementing, full bash scripts/verify.sh and complete 
 ## Execution checklist
 
 - [x] Baseline completed and recorded
-- [ ] Implementation and meaningful AC tests
-- [ ] Full local verification, scope and independent review
-- [ ] QA_PASSED handoff with tested revision/evidence
+- [x] Implementation and meaningful AC tests
+- [x] Full local verification, scope and independent review
+- [x] QA_PASSED handoff with tested revision/evidence
 - [ ] Explicit finished-result human approval before PR/CI
 - [ ] Human merge before ACCEPTED
 
@@ -53,3 +53,7 @@ Two supported Better Auth configurations share the same transaction adapter and 
 The complete approved shaping diff and prior US-003 acceptance record are included against c224199. New app registration fixtures follow real SIWE/code/IAT paths; old web/session registration expectations are intentionally replaced by token-only equivalents, preserving metadata/rate/quota/idempotency/rollback and RP regressions. No check is disabled. Browser artifacts now use US-004 paths instead of writing US-003 artifacts.
 
 Independent review found and fixed registration/replay inactivity updates, mutable-config disclosure through reconciliation, and missing original-parent binding. Submission records now keep immutable public snapshots and original grant IDs. Added actual-provider regressions; expired IATs cannot authenticate replay, but the original valid management grant can reconcile. No AC/outcome change.
+
+## Final local result
+
+Tested revision3d4ad9816d3c0c92326d4e2023d38c1cf0da52e0 passed full verification with explicit full-diff scope:43 Python tests,41 structure fixtures,287 application/CLI tests,81 browser tests, lockfile/lint/types/build/dependency checks. Independent reviewer rechecked all fixes and found no remaining critical issue. Product source matches reviewed5fd2e35. See evidence.md for actual commands, failures/resolutions, scope and limits. QA status/evidence recording changes no product/tests. Await human review/finished-result approval before PR/CI; no release or data operation performed.
